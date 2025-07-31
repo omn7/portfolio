@@ -46,39 +46,38 @@ const SkillsSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-background">
+    <section className="py-20" style={{ background: 'linear-gradient(120deg, #10151a 0%, #1a222b 100%)' }}>
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground mb-4">Skills & Technologies</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            A comprehensive overview of the technologies and tools I work with to create amazing digital experiences.
+          <h2 className="text-4xl font-extrabold text-white mb-4 tracking-tight drop-shadow-lg">Skills & Technologies</h2>
+          <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto">
+            A comprehensive overview of the technologies and tools I use to create amazing digital experiences.
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2 relative">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-2">
           {skillCategories.map((category, categoryIndex) => (
-            <div className="relative rounded-xl overflow-hidden">
-              <div className="absolute inset-0 z-20 pointer-events-none rounded-xl">
-                <div className="w-full h-full rounded-xl animate-thunder-border border-2 border-transparent" style={{ boxShadow: '0 0 24px 6px #ff1744, 0 0 32px 4px #ff1744 inset' }} />
-              </div>
-              <Card key={categoryIndex} className="bg-card border-border shadow-card-custom relative overflow-hidden rounded-xl">
+            <div key={categoryIndex} className="relative rounded-2xl overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl group transition-all duration-300 hover:scale-[1.025]">
+              <div className="absolute inset-0 pointer-events-none rounded-2xl border-2 border-transparent group-hover:border-primary/40 transition-all duration-300" style={{ boxShadow: '0 0 32px 0 #00c3ff33, 0 0 64px 0 #ffff1c22' }} />
+              <Card className="bg-transparent border-none shadow-none relative overflow-visible rounded-2xl">
                 <CardHeader>
-                  <CardTitle className="text-xl text-card-foreground">{category.title}</CardTitle>
+                  <CardTitle className="text-xl text-white font-semibold tracking-wide drop-shadow-sm flex items-center gap-2">
+                    {category.title}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                     {category.skills.map((skill, skillIndex) => (
                       <div
                         key={skillIndex}
-                        className="flex flex-col items-center space-y-3 p-4 rounded-lg bg-skill-card hover:bg-nav-hover transition-all duration-300 group cursor-pointer"
+                        className="flex flex-col items-center space-y-3 p-4 rounded-xl bg-white/10 hover:bg-primary/10 transition-all duration-300 group cursor-pointer shadow-md hover:shadow-xl"
                       >
                         <div className="w-12 h-12 flex items-center justify-center">
                           <img
                             src={skill.logo}
                             alt={`${skill.name} logo`}
-                            className="w-10 h-10 transition-transform duration-300 group-hover:scale-110"
+                            className="w-10 h-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
                             onError={(e) => {
-                              // Fallback if image fails to load
                               e.currentTarget.style.display = 'none';
                               e.currentTarget.nextElementSibling?.classList.remove('hidden');
                             }}
@@ -88,7 +87,7 @@ const SkillsSection = () => {
                             {skill.name.slice(0, 2).toUpperCase()}
                           </div>
                         </div>
-                        <span className="text-sm font-medium text-card-foreground text-center group-hover:text-primary transition-colors">
+                        <span className="text-sm font-medium text-white text-center group-hover:text-primary transition-colors">
                           {skill.name}
                         </span>
                       </div>
@@ -102,7 +101,7 @@ const SkillsSection = () => {
 
         {/* Additional Skills Section */}
         <div className="mt-16 text-center">
-          <h3 className="text-2xl font-semibold text-foreground mb-8">SOFT SKILLS</h3>
+          <h3 className="text-2xl font-semibold text-white mb-8 tracking-wide">SOFT SKILLS</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               "Research",
@@ -112,9 +111,9 @@ const SkillsSection = () => {
             ].map((competency, index) => (
               <div
                 key={index}
-                className="p-4 bg-card border border-border rounded-lg hover:shadow-card-custom transition-all duration-300 group break-words"
+                className="p-4 bg-white/10 border border-white/20 rounded-xl hover:shadow-xl transition-all duration-300 group break-words backdrop-blur-md"
               >
-                <h4 className="font-medium text-card-foreground group-hover:text-primary transition-colors text-xs sm:text-sm break-words">
+                <h4 className="font-medium text-white group-hover:text-primary transition-colors text-xs sm:text-sm break-words">
                   {competency}
                 </h4>
               </div>

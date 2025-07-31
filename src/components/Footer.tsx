@@ -28,7 +28,7 @@ const Footer = () => {
     <footer
       className="border-t border-border py-8"
       style={{
-        background: "linear-gradient(90deg, #131010 0%, #1a1a1a 100%)"
+        background: "#000000"
       }}
     >
       <div className="container mx-auto flex flex-col items-center justify-center gap-3 text-center">
