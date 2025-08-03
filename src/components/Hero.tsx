@@ -5,10 +5,7 @@ import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   const handleResumeDownload = () => {
-    const link = document.createElement('a');
-    link.href = '/sample-resume.pdf';
-    link.download = 'Resume.pdf';
-    link.click();
+    window.open('https://drive.google.com/file/d/1kVusiSECN6M4Yb9Xsrp_NCxIe6Dr2LlL/view', '_blank');
   };
 
   const portfolioData = {

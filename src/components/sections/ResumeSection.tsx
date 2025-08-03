@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Eye, FileText, Mail, Phone, MapPin, Globe, Linkedin, Github } from "lucide-react";
 
-const RESUME_URL = "https://drive.google.com/file/d/18hLKpHXs5nnMMX4swLNIBF86KPN5pJ_q/view?usp=sharing";
+const RESUME_URL = "https://drive.google.com/file/d/1kVusiSECN6M4Yb9Xsrp_NCxIe6Dr2LlL/view";
 
 const ResumeSection = () => {
   const handleDownload = () => {
