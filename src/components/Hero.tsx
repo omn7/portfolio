@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   const handleResumeDownload = () => {
-    window.open('https://drive.google.com/file/d/1kVusiSECN6M4Yb9Xsrp_NCxIe6Dr2LlL/view', '_blank');
+    window.open('https://drive.google.com/file/d/1kdkcr4ii43_6OZDs39wJLYM2whZZ49td/view?usp=drivesdk', '_blank');
   };
 
   const portfolioData = {
