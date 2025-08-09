@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Eye, FileText, Mail, Phone, MapPin, Globe, Linkedin, Github } from "lucide-react";
+import { Download, Eye, FileText, Mail, Phone, MapPin, Globe, Linkedin, Github, X, TwitterIcon } from "lucide-react";
 
 const RESUME_URL = "https://drive.google.com/file/d/1kdkcr4ii43_6OZDs39wJLYM2whZZ49td/view?usp=drivesdk";
 
@@ -17,7 +17,7 @@ const ResumeSection = () => {
     { icon: Mail, label: "Email", value: "dev.om@outlook.com", link: "mailto:dev.om@outlook.com" },
    
     { icon: MapPin, label: "Location", value: "Pune", link: "" },
-    { icon: Globe, label: "Website", value: "omn7.github.io", link: "https://omn7.github.io" },
+    { icon: TwitterIcon, label: "Twitter", value: "x.com/mr_codex", link: "https://x.com/mr_codex" },
     { icon: Linkedin, label: "LinkedIn", value: "linkedin.com/in/omnarkhede", link: "https://linkedin.com/in/omnarkhede" },
     { icon: Github, label: "GitHub", value: "github.com/omn7", link: "https://github.com/omn7" }
   ];
