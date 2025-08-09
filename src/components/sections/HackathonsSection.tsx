@@ -15,20 +15,20 @@ const HackathonsSection = () => {
       description: "Built an Unified digital education platform covering all levels of from kindergarten to postgraduate",
       technologies: ["React", "Typescript", "OpenAI API", "Tailwindcss"],
       teamSize: 4,
-      link: "https://github.com/omn7/hackathon/",
-      image: "/h1.png"
+  link: "https://github.com/omn7/hackathon/",
+  image: "/h1.png"
     },
     {
       id: 2,
-      name: "INNOHACK 2025",
-      date: "30 July to 31 July 2025",
-      position: "Finalist",
-      location: "VIT Pune, India",
-      description: "AI-powered debugging assistant that helps developers understand and fix code issues using AI. Get clear explanations of complex errors in simple English and receive practical solutions instantly.",
-      technologies: ["Reactjs", "Typescript", "ExpressJS", "Node.js","PostgreSQL", "OpenAI API", "TailwindCSS","Gemini APIs"],
-      teamSize: 4,
-      link: "https://deburger.omnarkhede.tech/",
-      image: "/debugger.png"
+  name: "INNOHACK 2025",
+  date: "30 July to 31 July 2025",
+  position: "Finalist",
+  location: "VIT Pune, India",
+  description: "AI-powered debugging assistant that helps developers understand and fix code issues using AI. Get clear explanations of complex errors in simple English and receive practical solutions instantly.",
+  technologies: ["Reactjs", "Typescript", "ExpressJS", "Node.js","PostgreSQL", "OpenAI API", "TailwindCSS","Gemini APIs"],
+  teamSize: 4,
+  link: "https://deburger.omnarkhede.tech/",
+  image: "/debugger.png"
     },
     // {
     //   id: 3,
