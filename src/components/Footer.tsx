@@ -25,13 +25,17 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer
-      className="border-t border-border py-8"
-      style={{
-        background: "#000000"
-      }}
-    >
-      <div className="container mx-auto flex flex-col items-center justify-center gap-3 text-center">
+    <footer className="border-t border-border py-8 relative overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/bg2.jpg"
+          alt="Footer background"
+          className="w-full h-full object-cover"
+          style={{ opacity: 0.15 }}
+        />
+      </div>
+      <div className="container mx-auto flex flex-col items-center justify-center gap-3 text-center relative z-10">
         <div className="flex gap-5 mb-2">
           <a
             href="https://github.com/omn7"
