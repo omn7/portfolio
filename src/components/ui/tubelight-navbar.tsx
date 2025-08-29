@@ -129,6 +129,7 @@ export function NavBar({ items, className }: NavBarProps) {
             </a>
           )
         })}
+  {/* social icons removed per user request */}
       </div>
     </div>
   )

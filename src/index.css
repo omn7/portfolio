@@ -129,3 +129,41 @@
   animation: thunder-border 2.5s linear infinite;
   border: 3px solid #ff1744;
 }
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.animate-bounce-slow {
+  animation: bounce-slow 2.5s ease-in-out infinite;
+}
+
+@keyframes float-subtle {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+.animate-float-subtle {
+  animation: float-subtle 6s ease-in-out infinite;
+}
+
+/* Typing effect */
+.typing-text {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.typing-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1.2em;
+  background: transparent;
+  border-left: 2px solid rgba(255,255,255,0.9);
+  margin-left: 6px;
+  animation: blink 900ms steps(1) infinite;
+}
+@keyframes blink {
+  0% { opacity: 1 }
+  50% { opacity: 0 }
+  100% { opacity: 1 }
+}

@@ -1,4 +1,6 @@
 import { Star, Download } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -37,6 +39,33 @@ const Hero = () => {
     },
   };
 
+  // Typing effect state
+  const [typed, setTyped] = useState("");
+
+  useEffect(() => {
+    const fullText = portfolioData.heading;
+    let idx = 0;
+    const baseSpeed = 90; // ms per char
+
+    const tick = () => {
+      const char = fullText[idx];
+      setTyped((prev) => prev + char);
+      idx++;
+      if (idx >= fullText.length) return;
+
+      // Slightly longer pause after spaces so the gap is noticeable
+      const delay = char === ' ' ? baseSpeed * 2 : baseSpeed;
+      setTimeout(tick, delay);
+    };
+
+    // start typing after a small initial delay
+    const startTimer = setTimeout(tick, 200);
+
+    return () => {
+      clearTimeout(startTimer);
+    };
+  }, []);
+
   return (
     <section
       id="hero"
@@ -60,9 +89,15 @@ const Hero = () => {
       />
   <div className="container text-center relative z-10" style={{ position: 'relative', zIndex: 2 }}>
         <div className="mx-auto flex max-w-screen-lg flex-col gap-6 mt-4">
-          <h1 className="text-3xl font-extrabold lg:text-6xl text-foreground">
-            {portfolioData.heading}
-          </h1>
+          <motion.h1
+            className="text-3xl font-extrabold lg:text-6xl text-foreground"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: 'easeOut' }}
+          >
+            <span className="typing-text">{typed}</span>
+            <span className="typing-cursor" aria-hidden="true"></span>
+          </motion.h1>
           <p className="text-balance text-muted-foreground lg:text-lg">
             {portfolioData.description}
           </p>

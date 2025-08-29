@@ -42,7 +42,7 @@ const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"
-            className="rounded-full p-2 bg-white/5 hover:bg-primary/20 transition-all duration-200 shadow-md"
+            className="rounded-full p-2 bg-white/5 hover:bg-primary/20 transition-all duration-200 shadow-md animate-bounce-slow"
           >
             <Github className="h-5 w-5 text-muted-foreground" />
           </a>
@@ -51,7 +51,7 @@ const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn"
-            className="rounded-full p-2 bg-white/5 hover:bg-primary/20 transition-all duration-200 shadow-md"
+            className="rounded-full p-2 bg-white/5 hover:bg-primary/20 transition-all duration-200 shadow-md animate-bounce-slow"
           >
             <Linkedin className="h-5 w-5 text-muted-foreground" />
           </a>
@@ -60,7 +60,7 @@ const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Twitter"
-            className="rounded-full p-2 bg-white/5 hover:bg-primary/20 transition-all duration-200 shadow-md"
+            className="rounded-full p-2 bg-white/5 hover:bg-primary/20 transition-all duration-200 shadow-md animate-bounce-slow"
           >
             <Twitter className="h-5 w-5 text-muted-foreground" />
           </a>
