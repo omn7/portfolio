@@ -105,10 +105,11 @@ const Hero = () => {
         <Button 
           onClick={handleResumeDownload}
           size="lg" 
-          className="mt-10 bg-primary hover:bg-primary/90 text-primary-foreground w-full max-w-xs mx-auto sm:w-auto sm:max-w-none"
+          className="mt-10 text-primary-foreground w-full max-w-xs mx-auto sm:w-auto sm:max-w-none relative overflow-hidden liquid-btn pulse"
         >
           <Download className="mr-2 h-5 w-5" />
           Download Resume
+          <span className="run-line" aria-hidden="true" />
         </Button>
         <div className="mx-auto mt-10 flex w-full max-w-xs sm:max-w-lg flex-col items-center gap-4 sm:flex-row sm:gap-8 flex-wrap">
           <span className="mx-4 inline-flex items-center -space-x-4 flex-wrap max-w-full overflow-x-auto">
