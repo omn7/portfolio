@@ -1,9 +1,7 @@
-// Requires: framer-motion, lucide-react
 "use client"
 
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Link, useLocation } from "react-router-dom"
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -19,93 +17,117 @@ interface NavBarProps {
 }
 
 export function NavBar({ items, className }: NavBarProps) {
-  const location = useLocation();
-  const [activeTab, setActiveTab] = useState(items[0].name)
+  // Set active tab based on current URL
+  const getCurrentTab = () => {
+    const path = window.location.pathname;
+    const hash = window.location.hash;
+    
+    // Check path first
+    const matchByPath = items.find(item => item.url === path);
+    if (matchByPath) return matchByPath.name;
+    
+    // Then check hash
+    if (hash) {
+      const matchByHash = items.find(item => item.url === hash);
+      if (matchByHash) return matchByHash.name;
+    }
+    
+    // Default to first item
+    return items[0].name;
+  };
+
+  const [activeTab, setActiveTab] = useState(getCurrentTab())
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768)
     }
+
     handleResize()
     window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
+    
+    // Update active tab when URL changes
+    const updateActiveTab = () => {
+      setActiveTab(getCurrentTab());
+    };
+    
+    // Run once on component mount
+    updateActiveTab();
+    
+    // Listen for URL changes
+    window.addEventListener('popstate', updateActiveTab);
+    
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('popstate', updateActiveTab);
+    }
   }, [])
-
-  useEffect(() => {
-    // Set active tab based on current route
-    const found = items.find(item => location.pathname === item.url)
-    if (found) setActiveTab(found.name)
-  }, [location.pathname, items])
 
   return (
     <div
       className={cn(
-        "fixed bottom-0 sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:pt-6",
+        "fixed bottom-0 sm:top-4 left-1/2 -translate-x-1/2 z-50 mb-6 w-auto",
         className,
       )}
     >
-      <nav
-        className="flex items-center gap-3 bg-white/20 dark:bg-zinc-900/40 border border-white/30 dark:border-zinc-800/60 backdrop-blur-2xl py-2 px-2 rounded-2xl shadow-2xl transition-all duration-300"
-        role="navigation"
-        aria-label="Main navigation"
-      >
+      <div className="flex items-center gap-2 sm:gap-3 bg-background/5 border border-border backdrop-blur-lg py-1 px-1 rounded-full shadow-lg justify-center">
         {items.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.name
 
           return (
-            <Link
+            <a
               key={item.name}
-              to={item.url}
-              onClick={() => setActiveTab(item.name)}
+              href={item.url}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveTab(item.name);
+                
+                // Handle hash navigation
+                if (item.url.startsWith('#')) {
+                  const targetId = item.url.substring(1);
+                  const targetElement = document.getElementById(targetId);
+                  if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                  }
+                } else {
+                  // For regular URLs, use navigation
+                  window.location.href = item.url;
+                }
+              }}
               className={cn(
-                "relative flex flex-col items-center justify-center cursor-pointer text-xs font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-xl transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                "relative cursor-pointer text-sm font-semibold px-4 py-2 sm:px-5 rounded-full transition-colors",
                 "text-foreground/80 hover:text-primary",
-                isActive && "bg-primary/10 text-primary shadow-lg",
-                !isMobile && "min-w-[64px]"
+                isActive && "bg-muted text-primary",
               )}
-              aria-current={isActive ? "page" : undefined}
-              tabIndex={0}
             >
-              <span className="flex flex-col items-center">
-                <Icon
-                  size={22}
-                  strokeWidth={2.2}
-                  className={cn(
-                    "mb-1 transition-transform duration-200",
-                    isActive ? "scale-110 text-primary" : "group-hover:scale-105"
-                  )}
-                />
-                <span className="hidden sm:block text-xs font-medium tracking-wide">
-                  {item.name}
-                </span>
-              </span>
-              {/* Tooltip for icon on desktop */}
-              <span className="sm:hidden absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1 rounded bg-black/80 text-white text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
-                {item.name}
+              <span className="hidden md:inline">{item.name}</span>
+              <span className="md:hidden">
+                <Icon size={18} strokeWidth={2.5} />
               </span>
               {isActive && (
                 <motion.div
                   layoutId="lamp"
-                  className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/30 to-primary/10 rounded-xl -z-10 shadow-[0_4px_32px_0_rgba(80,80,255,0.15)]"
+                  className="absolute inset-0 w-full bg-primary/5 rounded-full -z-10"
                   initial={false}
                   transition={{
                     type: "spring",
-                    stiffness: 350,
+                    stiffness: 300,
                     damping: 30,
                   }}
                 >
-                  <motion.div
-                    className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-2 bg-primary/70 rounded-t-full blur-md opacity-70"
-                    layoutId="lamp-glow"
-                  />
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-full">
+                    <div className="absolute w-12 h-6 bg-primary/20 rounded-full blur-md -top-2 -left-2" />
+                    <div className="absolute w-8 h-6 bg-primary/20 rounded-full blur-md -top-1" />
+                    <div className="absolute w-4 h-4 bg-primary/20 rounded-full blur-sm top-0 left-2" />
+                  </div>
                 </motion.div>
               )}
-            </Link>
+            </a>
           )
         })}
-      </nav>
+      </div>
     </div>
   )
 } 

@@ -1,7 +1,6 @@
 import { Star, Download } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-// import Navigation from "@/components/Navigation";
 
 const Hero = () => {
   const handleResumeDownload = () => {
@@ -39,11 +38,28 @@ const Hero = () => {
   };
 
   return (
-    <section className="pt-8 pb-32 bg-black relative overflow-hidden">
-      {/* <Navigation /> */}
-      {/* <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/5"></div> */}
-      <div className="container text-center relative z-10">
-        <div className="mx-auto flex max-w-screen-lg flex-col gap-6">
+    <section
+      id="hero"
+      className="pt-24 sm:pt-32 pb-32 bg-black relative overflow-hidden"
+      style={{
+        backgroundImage: "url('/bg.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Dark overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(0,0,0,0.7)',
+          zIndex: 1,
+        }}
+        aria-hidden="true"
+      />
+  <div className="container text-center relative z-10" style={{ position: 'relative', zIndex: 2 }}>
+        <div className="mx-auto flex max-w-screen-lg flex-col gap-6 mt-4">
           <h1 className="text-3xl font-extrabold lg:text-6xl text-foreground">
             {portfolioData.heading}
           </h1>

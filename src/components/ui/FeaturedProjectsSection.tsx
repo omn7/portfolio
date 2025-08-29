@@ -34,7 +34,7 @@ const projects = [
 
 export function FeaturedProjectsSection() {
   return (
-    <section className="relative min-h-[40vh] overflow-hidden py-16 md:py-20 bg-background">
+    <section id="projects" className="py-20 bg-gradient-to-b from-background to-background/90">
       <div className="mx-auto w-full max-w-6xl px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

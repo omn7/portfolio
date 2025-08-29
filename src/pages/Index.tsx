@@ -1,5 +1,4 @@
 import Hero from "@/components/Hero";
-import Navigation from "@/components/Navigation";
 import ProjectsSection from "@/components/sections/ProjectsSection";
 import { FeaturedProjectsSection } from "@/components/ui/FeaturedProjectsSection";
 import SkillsSection from "@/components/sections/SkillsSection";
@@ -22,10 +21,9 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-roboto">
-      <Navigation />
+    <>
       <Hero />
-      <section className="py-8 sm:py-12">
+      <section id="about" className="py-8 sm:py-12">
         <div className="container mx-auto px-4 sm:px-6 max-w-2xl text-center">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">About Me</h2>
           <p className={`text-base sm:text-lg text-muted-foreground mx-auto ${showFullAbout ? '' : 'line-clamp-3'}`} style={{ WebkitLineClamp: showFullAbout ? 'unset' : 3 }}>
@@ -79,7 +77,7 @@ const Index = () => {
 
       <SkillsSection />
       <Footer />
-    </div>
+    </>
   );
 };
 
