@@ -105,7 +105,7 @@ const Hero = () => {
         <Button 
           onClick={handleResumeDownload}
           size="lg" 
-          className="mt-10 text-primary-foreground w-full max-w-xs mx-auto sm:w-auto sm:max-w-none relative overflow-hidden liquid-btn pulse"
+          className="mt-10 text-primary-foreground w-full max-w-xs mx-auto sm:w-auto sm:max-w-none relative overflow-hidden liquid-btn pulse reddish"
         >
           <Download className="mr-2 h-5 w-5" />
           Download Resume

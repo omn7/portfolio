@@ -46,7 +46,18 @@ const SkillsSection = () => {
   ];
 
   return (
-    <section className="py-20" style={{ background: 'linear-gradient(120deg, #10151a 0%, #1a222b 100%)' }}>
+    <section
+      className="py-20"
+  style={{
+  background: "linear-gradient(120deg, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.96) 100%), url('/bg3.jpeg')",
+    backgroundBlendMode: 'multiply',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    /* add a strong inset vignette to deepen edges and overall darkness */
+    boxShadow: 'inset 0 0 160px rgba(0,0,0,0.9)'
+  }}
+    >
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-extrabold text-white mb-4 tracking-tight drop-shadow-lg">Skills & Technologies</h2>
@@ -79,11 +90,11 @@ const SkillsSection = () => {
                             className="w-10 h-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-md"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none';
-                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                              e.currentTarget.nextElementSibling?.classList.remove('invisible');
                             }}
                           />
                           {/* Fallback icon */}
-                          <div className="hidden w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary font-bold text-sm">
+                          <div className="invisible w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary font-bold text-sm">
                             {skill.name.slice(0, 2).toUpperCase()}
                           </div>
                         </div>

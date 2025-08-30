@@ -26,13 +26,18 @@ const Footer = () => {
 
   return (
     <footer className="border-t border-border py-8 relative overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image with dark overlay */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="/bg2.jpg"
-          alt="Footer background"
-          className="w-full h-full object-cover"
-          style={{ opacity: 0.15 }}
+        <div
+          className="w-full h-full"
+          style={{
+            background: "linear-gradient(180deg, rgba(0,0,0,0.92), rgba(0,0,0,0.88)), url('/bg2.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundBlendMode: 'multiply',
+            boxShadow: 'inset 0 0 160px rgba(0,0,0,0.9)'
+          }}
         />
       </div>
       <div className="container mx-auto flex flex-col items-center justify-center gap-3 text-center relative z-10">
