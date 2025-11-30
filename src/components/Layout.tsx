@@ -1,5 +1,5 @@
-import { Home, Trophy, BookOpen, FileText } from "lucide-react";
-import { NavBar } from "@/components/ui/tubelight-navbar";
+import { Home, Trophy, BookOpen, ScrollText } from "lucide-react";
+import { RetroNavbar } from "@/components/ui/retro-navbar";
 import { ReactNode } from "react";
 
 interface LayoutProps {
@@ -8,15 +8,15 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const navItems = [
-    { name: 'Home', url: '/', icon: Home },
-    { name: 'Hackathons', url: '/hackathons', icon: Trophy },
-    { name: 'Blogs', url: '/blogs', icon: BookOpen },
-    { name: 'Resume', url: '/resume', icon: FileText }
+    { name: 'BASE', url: '/', icon: Home },
+    { name: 'QUESTS', url: '/hackathons', icon: Trophy },
+    { name: 'LOGS', url: '/blogs', icon: BookOpen },
+    { name: 'SCROLL', url: '/resume', icon: ScrollText }
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-roboto">
-      <NavBar items={navItems} />
+    <div className="min-h-screen bg-retro-bg text-white font-sans selection:bg-retro-green selection:text-black">
+      <RetroNavbar items={navItems} />
       {children}
     </div>
   );

@@ -1,7 +1,6 @@
-import { Star, Download } from "lucide-react";
+import { Download, Play } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 const Hero = () => {
@@ -11,32 +10,13 @@ const Hero = () => {
 
   const portfolioData = {
     heading: "Om Narkhede",
-    description: "Computer Engineering student passionate about AI and software development. I love building innovative solutions that make technology simple and useful.",
-    reviews: {
-      count: 100,
-      avatars: [
-        {
-          src: "https://www.shadcnblocks.com/images/block/avatar-1.webp",
-          alt: "Client 1",
-        },
-        {
-          src: "https://www.shadcnblocks.com/images/block/avatar-2.webp", 
-          alt: "Client 2",
-        },
-        {
-          src: "https://www.shadcnblocks.com/images/block/avatar-3.webp",
-          alt: "Client 3",
-        },
-        {
-          src: "https://www.shadcnblocks.com/images/block/avatar-4.webp",
-          alt: "Client 4",
-        },
-        {
-          src: "https://www.shadcnblocks.com/images/block/avatar-5.webp",
-          alt: "Client 5",
-        },
-      ],
-    },
+    description: "Class: AI Engineer | Lvl 20 Developer",
+    stats: {
+      Logic: 95,
+      Backend: 85,
+      Frontend: 90,
+      "AI/ML": 80
+    }
   };
 
   // Typing effect state
@@ -45,93 +25,134 @@ const Hero = () => {
   useEffect(() => {
     const fullText = portfolioData.heading;
     let idx = 0;
-    const baseSpeed = 90; // ms per char
+    const baseSpeed = 150; // Slower for retro feel
 
     const tick = () => {
       const char = fullText[idx];
       setTyped((prev) => prev + char);
       idx++;
       if (idx >= fullText.length) return;
-
-      // Slightly longer pause after spaces so the gap is noticeable
-      const delay = char === ' ' ? baseSpeed * 2 : baseSpeed;
-      setTimeout(tick, delay);
+      setTimeout(tick, baseSpeed);
     };
 
-    // start typing after a small initial delay
-    const startTimer = setTimeout(tick, 200);
-
-    return () => {
-      clearTimeout(startTimer);
-    };
+    const startTimer = setTimeout(tick, 500);
+    return () => clearTimeout(startTimer);
   }, []);
 
   return (
     <section
       id="hero"
-      className="pt-24 sm:pt-32 pb-32 bg-black relative overflow-hidden"
-      style={{
-        backgroundImage: "url('/bg.jpg')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
+      className="pt-32 pb-20 relative overflow-hidden min-h-screen flex items-center justify-center"
     >
-      {/* Dark overlay */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'rgba(0,0,0,0.7)',
-          zIndex: 1,
-        }}
-        aria-hidden="true"
-      />
-  <div className="container text-center relative z-10" style={{ position: 'relative', zIndex: 2 }}>
-        <div className="mx-auto flex max-w-screen-lg flex-col gap-6 mt-4">
-          <motion.h1
-            className="text-3xl font-extrabold lg:text-6xl text-foreground"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
-          >
-            <span className="typing-text">{typed}</span>
-            <span className="typing-cursor" aria-hidden="true"></span>
-          </motion.h1>
-          <p className="text-balance text-muted-foreground lg:text-lg">
-            {portfolioData.description}
-          </p>
-        </div>
-        <Button 
-          onClick={handleResumeDownload}
-          size="lg" 
-          className="mt-10 text-primary-foreground w-full max-w-xs mx-auto sm:w-auto sm:max-w-none relative overflow-hidden liquid-btn pulse reddish"
-        >
-          <Download className="mr-2 h-5 w-5" />
-          Download Resume
-          <span className="run-line" aria-hidden="true" />
-        </Button>
-        <div className="mx-auto mt-10 flex w-full max-w-xs sm:max-w-lg flex-col items-center gap-4 sm:flex-row sm:gap-8 flex-wrap">
-          <span className="mx-4 inline-flex items-center -space-x-4 flex-wrap max-w-full overflow-x-auto">
-            {portfolioData.reviews.avatars.map((avatar, index) => (
-              <Avatar key={index} className="border flex-shrink-0 size-10 sm:size-14">
-                <AvatarImage src={avatar.src} alt={avatar.alt} className="w-8 h-8 sm:w-14 sm:h-14 object-cover rounded-full" />
-              </Avatar>
-            ))}
-          </span>
-          <div className="w-full sm:w-auto flex flex-col items-center sm:items-start">
-            <div className="flex flex-wrap items-center gap-1 justify-center sm:justify-start w-full">
-              {[...Array(5)].map((_, index) => (
-                <Star
-                  key={index}
-                  className="size-5 fill-yellow-400 text-yellow-400 flex-shrink-0"
-                />
-              ))}
+      {/* Parallax Background Layers */}
+      <div className="absolute inset-0 z-0">
+         {/* Background - Static Sky */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: 'url("/Futuristic City Parallax/background.png")' }}
+        />
+         {/* Sun - Static or very slow */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: 'url("/Futuristic City Parallax/sun.png")' }}
+        />
+         {/* City 4 (Furthest) - Slowest */}
+        <div 
+          className="parallax-layer"
+          style={{ 
+            backgroundImage: 'url("/Futuristic City Parallax/city4plan.png")',
+            animationDuration: '240s'
+          }}
+        />
+         {/* Smog 2 */}
+        <div 
+          className="parallax-layer opacity-60"
+          style={{ 
+            backgroundImage: 'url("/Futuristic City Parallax/smog2.png")',
+            animationDuration: '200s'
+          }}
+        />
+         {/* City 3 */}
+        <div 
+          className="parallax-layer"
+          style={{ 
+            backgroundImage: 'url("/Futuristic City Parallax/city3plan.png")',
+            animationDuration: '160s'
+          }}
+        />
+         {/* City 2 */}
+        <div 
+          className="parallax-layer"
+          style={{ 
+            backgroundImage: 'url("/Futuristic City Parallax/city2plan.png")',
+            animationDuration: '120s'
+          }}
+        />
+         {/* Smog 1 */}
+        <div 
+          className="parallax-layer opacity-60"
+          style={{ 
+            backgroundImage: 'url("/Futuristic City Parallax/smog1.png")',
+            animationDuration: '100s'
+          }}
+        />
+         {/* Lights - Overlay */}
+        <div 
+          className="parallax-layer mix-blend-screen"
+          style={{ 
+            backgroundImage: 'url("/Futuristic City Parallax/light.png")',
+            animationDuration: '60s'
+          }}
+        />
+         {/* City 1 (Closest) - Fastest */}
+        <div 
+          className="parallax-layer"
+          style={{ 
+            backgroundImage: 'url("/Futuristic City Parallax/city1plan.png")',
+            animationDuration: '60s'
+          }}
+        />
+        
+        {/* Overlay to darken for text readability */}
+        <div className="absolute inset-0 bg-black/50" />
+      </div>
+
+      <div className="container relative z-10">
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          
+          {/* Hero Content */}
+          <div className="max-w-3xl text-center space-y-6">
+            <div className="space-y-4">
+              <h2 className="text-[#00ff00] font-heading text-xs sm:text-sm animate-pulse bg-black/50 inline-block px-3 py-1 rounded-full border border-[#00ff00]/30">
+                SYSTEM INITIALIZED
+              </h2>
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-heading text-white mb-4 drop-shadow-[4px_4px_0_#000] leading-tight">
+                {typed}<span className="animate-pulse">_</span>
+              </h1>
+              <p className="text-lg sm:text-xl text-gray-200 font-sans tracking-wider bg-black/30 inline-block px-4 py-2 rounded-lg backdrop-blur-sm">
+                {portfolioData.description}
+              </p>
             </div>
-            <p className="text-center sm:text-left font-medium text-muted-foreground w-full break-words">
-              from {portfolioData.reviews.count}+ satisfied clients
-            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+              <Button 
+                onClick={handleResumeDownload}
+                className="bg-[#ff00ff] hover:bg-[#d100d1] text-white font-heading text-xs sm:text-sm py-6 px-8 border-b-4 border-[#800080] active:border-b-0 active:translate-y-1 rounded-none shadow-[0_0_15px_rgba(255,0,255,0.3)] hover:shadow-[0_0_25px_rgba(255,0,255,0.5)] transition-all"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                DOWNLOAD DATA
+              </Button>
+              <Button 
+                variant="outline"
+                className="bg-black/50 text-[#00ffff] border-2 border-[#00ffff] hover:bg-[#00ffff] hover:text-black font-heading text-xs sm:text-sm py-6 px-8 rounded-none backdrop-blur-sm shadow-[0_0_15px_rgba(0,255,255,0.3)] hover:shadow-[0_0_25px_rgba(0,255,255,0.5)] transition-all"
+                onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                <Play className="mr-2 h-4 w-4" />
+                START GAME
+              </Button>
+            </div>
           </div>
+
         </div>
       </div>
     </section>

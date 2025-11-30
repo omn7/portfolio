@@ -15,49 +15,49 @@
 
 @layer base {
   :root {
-    /* Dark Portfolio Theme - Always dark */
-    --background: 0 0% 3%;
+    /* Dark Portfolio Theme - Futuristic City */
+    --background: 240 38% 6%;
     --foreground: 0 0% 95%;
 
-    --card: 0 0% 5%;
+    --card: 240 28% 14%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 5%;
+    --popover: 240 38% 6%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 348 100% 54%;
-    --primary-foreground: 0 0% 5%;
+    --primary: 300 100% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 8%;
+    --secondary: 240 28% 14%;
     --secondary-foreground: 0 0% 85%;
 
-    --muted: 0 0% 8%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 240 28% 14%;
+    --muted-foreground: 240 10% 60%;
 
-    --accent: 210 100% 60%;
+    --accent: 180 100% 50%;
     --accent-foreground: 0 0% 5%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 12%;
-    --input: 0 0% 8%;
-    --ring: 210 100% 60%;
+    --border: 240 28% 20%;
+    --input: 240 28% 14%;
+    --ring: 300 100% 50%;
 
     --radius: 0.75rem;
 
     /* Portfolio specific tokens */
-    --hero-glow: 210 100% 60%;
-    --section-bg: 0 0% 5%;
-    --nav-hover: 0 0% 10%;
-    --skill-card: 0 0% 7%;
+    --hero-glow: 300 100% 50%;
+    --section-bg: 240 38% 6%;
+    --nav-hover: 240 28% 20%;
+    --skill-card: 240 28% 14%;
     
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(210 100% 60% / 0.1), hsl(270 100% 60% / 0.05));
-    --gradient-accent: linear-gradient(90deg, hsl(210 100% 60%), hsl(270 100% 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(300 100% 50% / 0.1), hsl(180 100% 50% / 0.05));
+    --gradient-accent: linear-gradient(90deg, hsl(300 100% 50%), hsl(180 100% 50%));
     
     /* Shadows */
-    --shadow-glow: 0 0 40px hsl(348 100% 54% / 0.5);
+    --shadow-glow: 0 0 40px hsl(300 100% 50% / 0.5);
     --shadow-card: 0 10px 30px hsl(0 0% 0% / 0.5);
     
     /* Transitions */
@@ -274,4 +274,20 @@
   0% { transform: translate(0, -50%) scaleY(0.6); opacity: 1 }
   50% { transform: translate(18px, -50%) scaleY(1.2); opacity: 0.9 }
   100% { transform: translate(36px, -50%) scaleY(0.6); opacity: 0 }
+}
+
+/* Parallax Scrolling Animation */
+@keyframes move-background {
+  from { background-position: 0 0; }
+  to { background-position: -10000px 0; }
+}
+
+.parallax-layer {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat-x;
+  background-position: bottom left;
+  background-size: auto 100%;
+  will-change: background-position;
+  animation: move-background linear infinite;
 }

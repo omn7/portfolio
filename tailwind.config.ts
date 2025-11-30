@@ -20,14 +20,15 @@ export default {
 		extend: {
 			fontFamily: {
 				roboto: ['Roboto', 'sans-serif'],
-				sans: ['Roboto', 'sans-serif'],
+				sans: ['"VT323"', 'monospace'],
+				heading: ['"Press Start 2P"', 'cursive'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
+				background: '#0a0a16', // Futuristic Dark Blue/Black
+				foreground: '#FFFFFF',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -61,6 +62,12 @@ export default {
 				'section-bg': 'hsl(var(--section-bg))',
 				'nav-hover': 'hsl(var(--nav-hover))',
 				'skill-card': 'hsl(var(--skill-card))',
+				// Retro / Futuristic Colors
+				'retro-bg': '#0a0a16',
+				'retro-yellow': '#FACC15',
+				'retro-green': '#00ff9d',
+				'retro-red': '#ff0055',
+				'retro-blue': '#00d9f9',
 			},
 			backgroundImage: {
 				'gradient-hero': 'var(--gradient-hero)',
@@ -69,6 +76,7 @@ export default {
 			boxShadow: {
 				'glow': 'var(--shadow-glow)',
 				'card-custom': 'var(--shadow-card)',
+				'retro': '4px 4px 0px 0px #000000',
 			},
 			transitionProperty: {
 				'smooth': 'var(--transition-smooth)',
