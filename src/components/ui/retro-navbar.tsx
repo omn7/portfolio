@@ -105,7 +105,7 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
 
       {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-[#0a0a16] border-b-4 border-black shadow-retro p-4 flex flex-col gap-2 border-t-2 border-[#00ffff]">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-[#0a0a16] border-b-4 border-b-black shadow-retro p-4 flex flex-col gap-2 border-t-2 border-t-[#00ffff]">
           {items.map((item) => {
             const isActive = location.pathname === item.url;
             const Icon = item.icon;
