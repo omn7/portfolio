@@ -140,7 +140,7 @@ const Index = () => {
         </div>
 
         {/* The Button (Target) */}
-        <div className="absolute top-28 left-1/2 -translate-x-1/2 z-30">
+        <div className="absolute top-24 left-1/2 -translate-x-1/2 z-30">
           <motion.div
             animate={{ y: [0, 0, -15, 0, 0] }}
             transition={{ 
@@ -153,20 +153,20 @@ const Index = () => {
             <InteractiveHoverButton
               text="VIEW HACKATHON LOGS"
               onClick={handleExploreHackathons}
-              className="font-heading text-sm bg-[#ff00ff] border-2 border-white text-white hover:bg-white hover:text-[#ff00ff] rounded-none min-w-[280px] px-8 py-1.5 shadow-[0_0_10px_#ff00ff]"
+              className="font-heading text-sm bg-[#ff00ff] border-2 border-white text-white hover:bg-white hover:text-[#ff00ff] rounded-none min-w-[280px] px-8 py-1 shadow-[0_0_10px_#ff00ff]"
             />
           </motion.div>
         </div>
 
         {/* Mario (The Player) */}
-        <div className="absolute bottom-16 left-0 z-30 pointer-events-none">
+        <div className="absolute bottom-0 left-0 z-30 pointer-events-none">
            <motion.div
-            className="w-24 h-20 md:w-32 md:h-24"
+          className="w-42 h-48 md:w-52 md:h-45"
             animate={{ 
               // Start farther left, hit center at 50vw, then exit right
               x: ["-25vw", "45vw", "50vw", "55vw", "125vw"], 
               // Jump arc: peak at the button timing
-              y: [0, 0, -145, 0, 0] 
+              y: [0, 0, -90, 0, 0] 
             }}
             transition={{ 
               duration: 5,
