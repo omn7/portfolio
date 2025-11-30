@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ScrollText, Map, Menu, X, Volume2, VolumeX, ChevronDown, User, Briefcase } from 'lucide-react';
+import { Home, Trophy, ScrollText, Map, Menu, X, Volume2, VolumeX, ChevronDown, User, Briefcase, HelpCircle } from 'lucide-react';
 
 interface NavItem {
   name: string;
@@ -23,6 +23,29 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
     try { return localStorage.getItem('guideMuted') === '1'; } catch { return false; }
   });
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showProCloud, setShowProCloud] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('proCloud') !== '0';
+    } catch { return true; }
+  });
+  const [cloudTextSize, setCloudTextSize] = useState<number>(() => {
+    try { return Number(localStorage.getItem('cloudTextSize')) || 9; } catch { return 9; }
+  });
+
+  const increaseCloudText = () => {
+    setCloudTextSize((s) => {
+      const next = Math.min(18, s + 1);
+      try { localStorage.setItem('cloudTextSize', String(next)); } catch {}
+      return next;
+    });
+  };
+  const decreaseCloudText = () => {
+    setCloudTextSize((s) => {
+      const next = Math.max(7, s - 1);
+      try { localStorage.setItem('cloudTextSize', String(next)); } catch {}
+      return next;
+    });
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,6 +71,11 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
     setMuted(next);
     try { localStorage.setItem('guideMuted', next ? '1' : '0'); } catch {}
     window.dispatchEvent(new CustomEvent('guide:mute', { detail: next }));
+  };
+
+  const closeProCloud = () => {
+    setShowProCloud(false);
+    try { localStorage.setItem('proCloud', '0'); } catch {}
   };
 
   return (
@@ -77,6 +105,14 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
                 "w-4 h-4 text-gray-400 transition-transform duration-200",
                 profileDropdown && "rotate-180"
               )} />
+            </button>
+            {/* Small help icon to reopen guide cloud if dismissed */}
+            <button
+              onClick={() => setShowProCloud(true)}
+              title="Show guide"
+              className="ml-2 text-gray-400 hover:text-white p-1 hidden sm:inline-flex"
+            >
+              <HelpCircle className="w-5 h-5" />
             </button>
             
             {/* Profile Dropdown */}
@@ -112,7 +148,41 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
                 </div>
               </div>
             )}
+            {/* Pro mode hint cloud using image (visible under Player 1 toggle) - image then caption below */}
+            {showProCloud && (
+              <div className="absolute left-0 top-full mt-2 z-50 pointer-events-auto">
+                <div className="flex flex-col items-center">
+                  <div className="relative w-44 md:w-56">
+                    {/* Rotated cloud image from public folder */}
+                    <img src="/guide/messageCloud.png" alt="guide cloud" className="w-full h-auto rotate-180" />
+
+                    {/* Close button placed above the cloud (top-right) */}
+                    <button onClick={closeProCloud} title="Close" className="absolute -top-3 -right-2 bg-black/60 hover:bg-black text-white rounded-full p-1 shadow-sm">
+                      <X className="w-4 h-4" />
+                    </button>
+
+                    {/* Caption block absolutely positioned relative to the cloud image so placement scales with image */}
+                    <div className="absolute left-1/2 top-[68%] md:top-[66%] transform -translate-x-1/2 -translate-y-1/2 w-[85%] text-center px-1">
+                      <div className="font-heading break-words" style={{ color: '#0b0202', fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial', maxWidth: '100%', whiteSpace: 'normal', overflowWrap: 'break-word' }}>
+                        <div style={{ fontSize: `${Math.max(9, cloudTextSize - 4)}px`, lineHeight: 1 }}>{'Want a'}</div>
+                        <div style={{ fontSize: `${Math.max(12, cloudTextSize + 2)}px`, lineHeight: 1.05, fontWeight: 800 }}>{'Professional'}</div>
+                        <div style={{ fontSize: `${Math.max(9, cloudTextSize - 4)}px`, lineHeight: 1 }}>{'look?'}</div>
+                      </div>
+
+                      <div className="mt-1 flex items-center justify-center gap-3">
+                        <a href="/prof" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center" style={{ color: '#0b0202', fontSize: `${Math.max(11, cloudTextSize - 1)}px` }}>
+                          <Briefcase className="w-4 h-4" />
+                          <span className="text-[10px] tracking-widest uppercase">Switch</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
+
+          
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-1">
