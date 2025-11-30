@@ -56,7 +56,7 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="pt-32 pb-20 relative overflow-hidden min-h-screen flex items-center justify-center"
+      className="pt-20 sm:pt-24 md:pt-32 pb-16 relative overflow-hidden min-h-screen flex items-center justify-center"
     >
       {/* Parallax Background Layers */}
       <div className="absolute inset-0 z-0">
