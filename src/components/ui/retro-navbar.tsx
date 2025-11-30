@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Trophy, ScrollText, Map, Menu, X, Volume2, VolumeX } from 'lucide-react';
+import { Home, Trophy, ScrollText, Map, Menu, X, Volume2, VolumeX, ChevronDown, User, Briefcase } from 'lucide-react';
 
 interface NavItem {
   name: string;
@@ -17,10 +17,12 @@ interface RetroNavbarProps {
 export function RetroNavbar({ items, className }: RetroNavbarProps) {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [profileDropdown, setProfileDropdown] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [muted, setMuted] = useState<boolean>(() => {
     try { return localStorage.getItem('guideMuted') === '1'; } catch { return false; }
   });
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,6 +30,17 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setProfileDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const toggleMute = () => {
@@ -48,15 +61,58 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
         "container mx-auto px-4"
       )}>
         <div className="flex items-center justify-between h-16">
-          {/* Logo / Brand */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-[#ff00ff] border-2 border-white flex items-center justify-center group-hover:animate-bounce shadow-[0_0_10px_#ff00ff]">
-              <span className="font-heading text-white text-[10px]">OM</span>
-            </div>
-            <span className="font-heading text-white text-xs sm:text-sm tracking-widest group-hover:text-[#00ffff] transition-colors drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]">
-              PLAYER 1
-            </span>
-          </Link>
+          {/* Logo / Brand with Profile Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button 
+              onClick={() => setProfileDropdown(!profileDropdown)}
+              className="flex items-center gap-2 group"
+            >
+              <div className="w-8 h-8 bg-[#ff00ff] border-2 border-white flex items-center justify-center group-hover:animate-bounce shadow-[0_0_10px_#ff00ff]">
+                <span className="font-heading text-white text-[10px]">OM</span>
+              </div>
+              <span className="font-heading text-white text-xs sm:text-sm tracking-widest group-hover:text-[#00ffff] transition-colors drop-shadow-[0_0_5px_rgba(0,255,255,0.5)]">
+                PLAYER 1
+              </span>
+              <ChevronDown className={cn(
+                "w-4 h-4 text-gray-400 transition-transform duration-200",
+                profileDropdown && "rotate-180"
+              )} />
+            </button>
+            
+            {/* Profile Dropdown */}
+            {profileDropdown && (
+              <div className="absolute top-full left-0 mt-2 bg-[#0a0a16] border-2 border-[#00ffff] shadow-[0_0_15px_rgba(0,255,255,0.3)] min-w-[180px] z-50">
+                <div className="p-1">
+                  <div className="px-3 py-2 text-[10px] text-gray-500 font-heading tracking-widest border-b border-gray-800">
+                    SELECT PROFILE
+                  </div>
+                  <button
+                    onClick={() => setProfileDropdown(false)}
+                    className="w-full flex items-center gap-3 px-3 py-2 text-xs font-heading text-[#00ffff] bg-[#00ffff]/10 border-l-2 border-[#00ffff]"
+                  >
+                    <User className="w-4 h-4" />
+                    <div className="text-left">
+                      <div>PLAYER 1</div>
+                      <div className="text-[8px] text-gray-500">RETRO GAMER</div>
+                    </div>
+                  </button>
+                  <a
+                    href="/prof"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setProfileDropdown(false)}
+                    className="w-full flex items-center gap-3 px-3 py-2 text-xs font-heading text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <Briefcase className="w-4 h-4" />
+                    <div className="text-left">
+                      <div>PROFILE 2</div>
+                      <div className="text-[8px] text-gray-500">PROFESSIONAL</div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-1">

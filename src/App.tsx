@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import HackathonsSection from "@/components/sections/HackathonsSection";
 import BlogsSection from "@/components/sections/BlogsSection";
 import Resume from "./pages/Resume";
+import Professional from "./pages/Professional";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/hackathons" element={<Layout><HackathonsSection /></Layout>} />
           <Route path="/blogs" element={<Layout><BlogsSection /></Layout>} />
           <Route path="/resume" element={<Layout><Resume /></Layout>} />
+          <Route path="/prof" element={<Professional />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<Layout><NotFound /></Layout>} />
         </Routes>
