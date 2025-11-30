@@ -234,7 +234,7 @@ const Index = () => {
                     ? parseFloat(rawY)
                     : NaN;
                 if (Number.isNaN(yPos)) return;
-                if (yPos <= -40 && !coinSoundGate.current) {
+                if (yPos <= -30 && !coinSoundGate.current) {
                   coinSoundGate.current = true;
                   playCoinSound();
                 } else if (yPos >= -2 && coinSoundGate.current) {
