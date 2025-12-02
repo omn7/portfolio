@@ -11,7 +11,7 @@ const Layout = ({ children }: LayoutProps) => {
     { name: 'BASE', url: '/', icon: Home },
     { name: 'QUESTS', url: '/hackathons', icon: Trophy },
     { name: 'LOGS', url: '/blogs', icon: BookOpen },
-    { name: 'SCROLL', url: '/resume', icon: ScrollText }
+    { name: 'DSA Practice', url: 'https://omn7.github.io/DSA/', icon: ScrollText }
   ];
 
   return (
