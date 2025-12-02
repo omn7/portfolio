@@ -24,7 +24,7 @@ const Hero = () => {
 
   const portfolioData = {
     heading: "Om Narkhede",
-    description: "Class: AI Engineer | Lvl 20 Developer",
+    description: "Class: Full Stack Developer | Open for Collaboration",
     stats: {
       Logic: 95,
       Backend: 85,

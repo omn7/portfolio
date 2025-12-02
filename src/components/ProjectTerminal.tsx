@@ -36,7 +36,7 @@ const ProjectTerminal = ({ project }: ProjectTerminalProps) => {
       `[${timeString}] > CONNECTING TO DATABASE...`,
       `[${timeString}] > ACCESSING PROJECT FILE: ${project.id.toUpperCase()}`,
       `[${timeString}] > TITLE: ${project.title}`,
-      `[${timeString}] > STATUS: COMPLETED`,
+      `[${timeString}] > STATUS: ${project.status ? project.status : 'COMPLETED'}`,
       `[${timeString}] > DESCRIPTION: ${project.description}`,
       `[${timeString}] > TECH_STACK: [${project.technologies.join(', ')}]`,
       `[${timeString}] > END_OF_FILE`

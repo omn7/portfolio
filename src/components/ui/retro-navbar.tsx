@@ -78,6 +78,21 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
     try { localStorage.setItem('proCloud', '0'); } catch {}
   };
 
+  // Ensure the pro-cloud popup shows automatically on initial page load
+  // unless the user explicitly dismissed it (localStorage 'proCloud' === '0').
+  useEffect(() => {
+    try {
+      const dismissed = localStorage.getItem('proCloud') === '0';
+      if (!dismissed) {
+        // small delay so it doesn't feel abrupt when the page loads
+        const t = setTimeout(() => setShowProCloud(true), 250);
+        return () => clearTimeout(t);
+      }
+    } catch {
+      setShowProCloud(true);
+    }
+  }, []);
+
   return (
     <nav
       className={cn(

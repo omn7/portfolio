@@ -12,9 +12,22 @@ export type Project = {
   image: string;
   githubUrl: string;
   liveUrl: string;
+  status?: string;
 };
 
 const initialProjects: Project[] = [
+  {
+    id: "boop",
+    title: "Boop",
+    description: "Boop is a modern social media platform for pets and their humans. It lets users share adorable moments, connect with furry friends, and join a vibrant community of pet lovers. With fun features and an engaging environment, Boop brings together people and their pets to celebrate companionship, creativity, and everyday joy.",
+    technologies: ["MongoDB Atlas", "AWS S3", "React.js", "Node.js", "Express.js", "Tailwind CSS", "JavaScript"],
+    githubUrl: "https://github.com/omn7/Boop",
+    liveUrl: "https://boopsocial.vercel.app",
+    stars: 4,
+    xp: 1080,
+    status: "WORKING",
+    image: "/p5.png"
+  },
   {
     id: "deburger",
     title: "DeBurger",
