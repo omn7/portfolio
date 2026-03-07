@@ -289,83 +289,87 @@ function extractFirstImage(html: string): string {
   return match ? match[1] : "";
 }
 
-const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
-
 // In-memory cache to survive HMR and avoid re-fetching on every code save
 const articleCache: { key: string; articles: NewsArticle[]; ts: number } = { key: "", articles: [], ts: 0 };
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-async function fetchSingleFeed(feed: { url: string; source: string }): Promise<NewsArticle[]> {
-  const maxRetries = 2;
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const res = await fetch(`${RSS2JSON}${encodeURIComponent(feed.url)}`);
-      if (res.status === 429) {
-        // rate limited — wait & retry
-        if (attempt < maxRetries) { await delay(3000 * (attempt + 1)); continue; }
-        return [];
-      }
-      if (!res.ok) return [];
-      const data = await res.json();
-      if (data.status !== "ok" || !data.items) return [];
-      return data.items.slice(0, 8).map((item: any) => {
-        const contentHtml = item.content || item.description || "";
-        const descriptionText = stripHtml(item.description || item.content || "");
-        const thumb = item.thumbnail || item.enclosure?.link || extractFirstImage(contentHtml) || "";
-        return {
-          title: item.title || "",
-          link: item.link || "",
-          pubDate: item.pubDate || "",
-          thumbnail: thumb,
-          description: descriptionText.slice(0, 300) + (descriptionText.length > 300 ? "..." : ""),
-          content: descriptionText,
-          author: item.author || "",
-          source: feed.source,
-        };
-      });
-    } catch {
-      return [];
-    }
-  }
-  return [];
+function parseFeedItems(data: any, source: string): NewsArticle[] {
+  if (data.status !== "ok" || !data.items) return [];
+  return data.items.slice(0, 8).map((item: any) => {
+    const contentHtml = item.content || item.description || "";
+    const descriptionText = stripHtml(item.description || item.content || "");
+    const thumb = item.thumbnail || item.enclosure?.link || extractFirstImage(contentHtml) || "";
+    return {
+      title: item.title || "",
+      link: item.link || "",
+      pubDate: item.pubDate || "",
+      thumbnail: thumb,
+      description: descriptionText.slice(0, 300) + (descriptionText.length > 300 ? "..." : ""),
+      content: descriptionText,
+      author: item.author || "",
+      source,
+    };
+  });
 }
 
+/**
+ * Streams articles to the UI as each feed resolves.
+ * Uses a concurrency limiter (max 4 in-flight) to avoid 429s.
+ */
 async function fetchAllArticles(
   feeds: { url: string; source: string }[],
-  onBatch?: (articlesSoFar: NewsArticle[]) => void,
+  onUpdate?: (articlesSoFar: NewsArticle[]) => void,
 ): Promise<NewsArticle[]> {
-  // Check cache
   const cacheKey = feeds.map(f => f.url).sort().join("|");
   if (articleCache.key === cacheKey && articleCache.articles.length > 0 && Date.now() - articleCache.ts < CACHE_TTL) {
     return articleCache.articles;
   }
 
   const all: NewsArticle[] = [];
-  const BATCH = 3;
-  const GAP = 1500;
+  const MAX_CONCURRENT = 4;
+  let running = 0;
+  let idx = 0;
 
-  for (let i = 0; i < feeds.length; i += BATCH) {
-    const batch = feeds.slice(i, i + BATCH);
-    const results = await Promise.allSettled(batch.map(fetchSingleFeed));
-    for (const r of results) {
-      if (r.status === "fulfilled") all.push(...r.value);
+  await new Promise<void>((resolve) => {
+    function next() {
+      // All done
+      if (idx >= feeds.length && running === 0) { resolve(); return; }
+
+      // Launch up to MAX_CONCURRENT
+      while (running < MAX_CONCURRENT && idx < feeds.length) {
+        const feed = feeds[idx++];
+        running++;
+        fetch(`${RSS2JSON}${encodeURIComponent(feed.url)}`)
+          .then(res => {
+            if (!res.ok) return null;
+            return res.json();
+          })
+          .then(data => {
+            if (data) {
+              const items = parseFeedItems(data, feed.source);
+              if (items.length > 0) {
+                all.push(...items);
+                onUpdate?.(interleaveArticles(all));
+              }
+            }
+          })
+          .catch(() => {})
+          .finally(() => {
+            running--;
+            // Tiny stagger to be kind to rss2json
+            setTimeout(next, 300);
+          });
+      }
     }
-    // Stream interleaved results to UI after each batch
-    if (all.length > 0 && onBatch) {
-      onBatch(interleaveArticles(all));
-    }
-    if (i + BATCH < feeds.length) await delay(GAP);
-  }
+    next();
+  });
 
   const final = interleaveArticles(all);
-
-  // Save to cache
   if (final.length > 0) {
     articleCache.key = cacheKey;
     articleCache.articles = final;
     articleCache.ts = Date.now();
   }
-
   return final;
 }
 
@@ -726,6 +730,8 @@ export default function News() {
   const [sidebarTab, setSidebarTab] = useState<"categories" | "saved">("categories");
   const [expandedArticle, setExpandedArticle] = useState<NewsArticle | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [showAllSources, setShowAllSources] = useState(false);
 
   const loadArticles = useCallback(async () => {
     const feeds = CATEGORIES
@@ -775,18 +781,21 @@ export default function News() {
       return next;
     });
     setFilter("All");
+    setPage(1);
   }
 
   function selectAllCategories() {
     setSelectedCats(ALL_CATEGORY_IDS);
     persistCategories(ALL_CATEGORY_IDS);
     setFilter("All");
+    setPage(1);
   }
 
   function clearAllCategories() {
     setSelectedCats([]);
     persistCategories([]);
     setFilter("All");
+    setPage(1);
   }
 
   function confirmOnboarding() {
@@ -847,6 +856,11 @@ export default function News() {
     .flatMap(c => c.feeds.map(f => f.source));
   const sources = ["All", ...activeSources];
   const filtered = filter === "All" ? articles : articles.filter(a => a.source === filter);
+
+  // Pagination
+  const PER_PAGE = 10;
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
+  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   // All unique tags across saved articles
   const allSavedTags = [...new Set(saved.flatMap(s => s.tags))];
@@ -1006,10 +1020,10 @@ export default function News() {
 
           {/* Source filter tabs */}
           <div className="flex flex-wrap gap-2 mb-8">
-            {sources.map((s) => (
+            {(showAllSources ? sources : sources.slice(0, 5)).map((s) => (
               <button
                 key={s}
-                onClick={() => setFilter(s)}
+                onClick={() => { setFilter(s); setPage(1); }}
                 className={`text-xs font-mono px-3 py-1.5 border transition-all no-underline ${
                   filter === s
                     ? "border-[var(--text)] text-[var(--text)] font-bold"
@@ -1019,6 +1033,14 @@ export default function News() {
                 {s}
               </button>
             ))}
+            {sources.length > 5 && (
+              <button
+                onClick={() => setShowAllSources(p => !p)}
+                className="text-xs font-mono px-3 py-1.5 border border-dashed border-[var(--text)] border-opacity-20 text-[var(--text-alt)] hover:text-[var(--text)] hover:border-opacity-50 transition-all no-underline"
+              >
+                {showAllSources ? `− show less` : `+ ${sources.length - 5} more`}
+              </button>
+            )}
           </div>
 
           {/* Loading */}
@@ -1118,8 +1140,8 @@ export default function News() {
 
           {/* Articles */}
           {!loading && !error && filtered.length > 0 && (
-            <div className="space-y-0 mb-16">
-              {filtered.map((article, i) => (
+            <div className="space-y-0">
+              {paginated.map((article, i) => (
                 <div
                   key={`${article.source}-${i}`}
                   className={`border-b border-[var(--text)] border-opacity-10 hover:bg-[var(--text)] hover:bg-opacity-[0.03] transition-all group relative cursor-pointer ${
@@ -1198,6 +1220,69 @@ export default function News() {
                 <div className="flex items-center gap-2 py-6 px-2 text-[var(--text-alt)]">
                   <div className="w-4 h-4 border-2 border-[var(--text-alt)] border-t-[var(--text)] rounded-full animate-spin" />
                   <span className="text-xs font-mono">Loading more sources...</span>
+                </div>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <nav className="flex items-center justify-center gap-1 py-6 font-mono text-sm select-none">
+                  {/* Prev */}
+                  <button
+                    onClick={() => { setPage(p => Math.max(1, p - 1)); setExpandedArticle(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    disabled={page === 1}
+                    className="px-3 py-1.5 text-xs border border-[var(--text)] border-opacity-20 text-[var(--text-alt)] hover:text-[var(--text)] hover:border-opacity-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all no-underline"
+                  >
+                    ← Prev
+                  </button>
+
+                  {/* Page numbers */}
+                  {(() => {
+                    const pages: (number | string)[] = [];
+                    if (totalPages <= 10) {
+                      for (let i = 1; i <= totalPages; i++) pages.push(i);
+                    } else {
+                      pages.push(1);
+                      if (page > 4) pages.push("...");
+                      const start = Math.max(2, page - 2);
+                      const end = Math.min(totalPages - 1, page + 2);
+                      for (let i = start; i <= end; i++) pages.push(i);
+                      if (page < totalPages - 3) pages.push("...");
+                      pages.push(totalPages);
+                    }
+                    return pages.map((p, idx) =>
+                      typeof p === "string" ? (
+                        <span key={`ellipsis-${idx}`} className="px-2 py-1.5 text-[var(--text-alt)] opacity-50">…</span>
+                      ) : (
+                        <button
+                          key={p}
+                          onClick={() => { setPage(p); setExpandedArticle(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                          className={`min-w-[36px] px-2 py-1.5 text-xs border transition-all no-underline ${
+                            p === page
+                              ? "border-[var(--text)] bg-[var(--text)] text-[var(--bg)] font-bold"
+                              : "border-[var(--text)] border-opacity-20 text-[var(--text-alt)] hover:text-[var(--text)] hover:border-opacity-50"
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      )
+                    );
+                  })()}
+
+                  {/* Next */}
+                  <button
+                    onClick={() => { setPage(p => Math.min(totalPages, p + 1)); setExpandedArticle(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    disabled={page === totalPages}
+                    className="px-3 py-1.5 text-xs border border-[var(--text)] border-opacity-20 text-[var(--text-alt)] hover:text-[var(--text)] hover:border-opacity-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all no-underline"
+                  >
+                    Next →
+                  </button>
+                </nav>
+              )}
+
+              {/* Page info */}
+              {totalPages > 1 && (
+                <div className="text-center text-[11px] font-mono text-[var(--text-alt)] opacity-60 pb-6">
+                  Page {page} of {totalPages} · {filtered.length} articles
                 </div>
               )}
             </div>
