@@ -15,6 +15,7 @@ import BlogsSection from "@/components/sections/BlogsSection";
 import Resume from "./pages/Resume";
 import ProjectDetail from "./pages/ProjectDetail";
 import Professional from "./pages/Professional";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/project/:id" element={<Layout><ProjectDetail /></Layout>} />
           <Route path="/experience" element={<Layout><Experience /></Layout>} />
           <Route path="/education" element={<Layout><Education /></Layout>} />
+          <Route path="/about" element={<Layout><About /></Layout>} />
 
           <Route path="/hackathons" element={<Layout><HackathonsSection /></Layout>} />
           <Route path="/blogs" element={<Layout><BlogsSection /></Layout>} />

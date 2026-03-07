@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
 import { useDark } from "@/components/Layout";
+import SiteFooter from "@/components/SiteFooter";
 import { projects } from "@/data/projects";
 
 export default function Projects() {
@@ -66,6 +67,8 @@ export default function Projects() {
                     ))}
                 </div>
             </div>
+
+            <SiteFooter />
         </main>
     );
 }

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
 import { useDark } from "@/components/Layout";
+import SiteFooter from "@/components/SiteFooter";
 
 export default function Education() {
     const [dark, setDark] = useDark();
@@ -39,6 +40,8 @@ export default function Education() {
                     </div>
                 </div>
             </div>
+
+            <SiteFooter />
         </main>
     );
 }

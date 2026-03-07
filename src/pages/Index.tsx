@@ -2,30 +2,19 @@ import { Link } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
 import { useDark } from "@/components/Layout";
 import { useState, useEffect } from "react";
+import SiteFooter from "@/components/SiteFooter";
 
 export default function Index() {
   const RESUME_URL = "/OmResume.pdf";
   const [dark, setDark] = useDark();
 
   const greetings = ["Hello,", "नमस्ते,", "Hola,", "Bonjour,", "Hallo,", "こんにちは,"];
-  const quotes = [
-    "The only way to do great work is to love what you do.",
-    "Code is like humor. When you have to explain it, it’s bad.",
-    "First, solve the problem. Then, write the code.",
-    "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
-    "Experience is the name everyone gives to their mistakes.",
-    "Simplicity is the soul of efficiency.",
-    "Make it work, make it right, make it fast."
-  ];
 
   const [greetingIndex, setGreetingIndex] = useState(0);
-  const [quote, setQuote] = useState("");
   const [displayText, setDisplayText] = useState("");
   const fullText = "I am Om Narkhede";
 
   useEffect(() => {
-    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-
     let currentIndex = 0;
     const typingInterval = setInterval(() => {
       if (currentIndex <= fullText.length) {
@@ -74,7 +63,8 @@ export default function Index() {
             </p>
             <p>
               My areas of interest are computer vision, machine learning, cloud and devops.
-              I like building systems that scale and automate processes.
+              I like building systems that scale and automate processes.{" "}
+              <Link to="/about" className="text-[var(--text)] font-medium hover:underline underline-offset-4">read more →</Link>
             </p>
           </div>
 
@@ -120,13 +110,14 @@ export default function Index() {
             <span>6. Blogs</span>
             <span className="opacity-50">→</span>
           </Link>
+          <Link to="/about" className="flex items-center justify-between h-14 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-5 font-bold text-[0.95rem] tracking-normal">
+            <span>7. About Me</span>
+            <span className="opacity-50">→</span>
+          </Link>
         </div>
       </div>
 
-      <footer className="w-full flex flex-col md:flex-row justify-between items-center gap-2 text-sm text-[var(--text)] mt-auto pb-6 pt-4">
-        <div className="italic text-center md:text-left max-w-sm">"{quote}"</div>
-        <div className="text-center md:text-right">© {new Date().getFullYear()} Om Narkhede. All rights reserved.</div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

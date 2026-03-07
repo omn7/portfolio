@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
 import { useDark } from "@/components/Layout";
+import SiteFooter from "@/components/SiteFooter";
 
 const HackathonsSection = () => {
   const [dark, setDark] = useDark();
@@ -86,6 +87,8 @@ const HackathonsSection = () => {
           ))}
         </div>
       </div>
+
+      <SiteFooter />
     </main>
   );
 };
