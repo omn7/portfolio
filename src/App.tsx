@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Projects from "./pages/Projects";
 import Experience from "./pages/Experience";
 import Education from "./pages/Education";
+import ExperienceEducation from "./pages/ExperienceEducation";
 // Other imports kept in case they are needed later
 import HackathonsSection from "@/components/sections/HackathonsSection";
 import BlogsSection from "@/components/sections/BlogsSection";
@@ -16,6 +17,7 @@ import Resume from "./pages/Resume";
 import ProjectDetail from "./pages/ProjectDetail";
 import Professional from "./pages/Professional";
 import About from "./pages/About";
+import News from "./pages/News";
 
 const queryClient = new QueryClient();
 
@@ -29,9 +31,11 @@ const App = () => (
           <Route path="/" element={<Layout><Index /></Layout>} />
           <Route path="/projects" element={<Layout><Projects /></Layout>} />
           <Route path="/project/:id" element={<Layout><ProjectDetail /></Layout>} />
+          <Route path="/experience-education" element={<Layout><ExperienceEducation /></Layout>} />
           <Route path="/experience" element={<Layout><Experience /></Layout>} />
           <Route path="/education" element={<Layout><Education /></Layout>} />
           <Route path="/about" element={<Layout><About /></Layout>} />
+          <Route path="/news" element={<Layout><News /></Layout>} />
 
           <Route path="/hackathons" element={<Layout><HackathonsSection /></Layout>} />
           <Route path="/blogs" element={<Layout><BlogsSection /></Layout>} />

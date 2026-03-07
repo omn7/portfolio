@@ -68,7 +68,7 @@ export default function Index() {
             </p>
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-6">
+          <div className="mt-10 flex flex-wrap items-center gap-6">
             <a href="https://github.com/omn7" target="_blank" rel="noopener noreferrer" className="text-[var(--text)] hover:underline underline-offset-4 font-semibold text-lg">github</a>
             <a href="https://linkedin.com/in/omnarkhede" target="_blank" rel="noopener noreferrer" className="text-[var(--text)] hover:underline underline-offset-4 font-semibold text-lg">linkedin</a>
             <a href="mailto:dev.om@outlook.com" className="text-[var(--text)] hover:underline underline-offset-4 font-semibold text-lg">email</a>
@@ -94,24 +94,24 @@ export default function Index() {
             <span>2. Resume / CV (PDF)</span>
             <span className="opacity-50">↗</span>
           </a>
-          <Link to="/experience" className="flex items-center justify-between h-14 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-5 font-bold text-[0.95rem] tracking-normal">
-            <span>3. Experience</span>
-            <span className="opacity-50">→</span>
-          </Link>
-          <Link to="/education" className="flex items-center justify-between h-14 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-5 font-bold text-[0.95rem] tracking-normal">
-            <span>4. Education</span>
+          <Link to="/experience-education" className="flex items-center justify-between h-14 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-5 font-bold text-[0.95rem] tracking-normal">
+            <span>3. Experience & Education</span>
             <span className="opacity-50">→</span>
           </Link>
           <Link to="/hackathons" className="flex items-center justify-between h-14 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-5 font-bold text-[0.95rem] tracking-normal">
-            <span>5. Hackathon Projects</span>
+            <span>4. Hackathon Projects</span>
             <span className="opacity-50">→</span>
           </Link>
           <Link to="/blogs" className="flex items-center justify-between h-14 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-5 font-bold text-[0.95rem] tracking-normal">
-            <span>6. Blogs</span>
+            <span>5. Blogs</span>
             <span className="opacity-50">→</span>
           </Link>
           <Link to="/about" className="flex items-center justify-between h-14 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-5 font-bold text-[0.95rem] tracking-normal">
-            <span>7. About Me</span>
+            <span>6. About Me</span>
+            <span className="opacity-50">→</span>
+          </Link>
+          <Link to="/news" className="flex items-center justify-between h-14 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-5 font-bold text-[0.95rem] tracking-normal">
+            <span>7. News in Tech</span>
             <span className="opacity-50">→</span>
           </Link>
         </div>
