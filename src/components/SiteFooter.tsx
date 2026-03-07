@@ -86,7 +86,7 @@ export default function SiteFooter() {
     return (
         <footer className="w-full flex flex-col md:flex-row justify-between items-center gap-2 text-sm text-[var(--text)] mt-auto pb-6 pt-4">
             <div className="italic text-center md:text-left max-w-sm">"{quote}"</div>
-            <div className="text-[var(--text-alt)] text-xs">{timeStr}</div>
+            <div className="text-[var(--text-alt)] text-xs">time spent: {timeStr}</div>
             <div className="text-center md:text-right">© {new Date().getFullYear()} Om Narkhede. All rights reserved.</div>
         </footer>
     );
