@@ -330,7 +330,10 @@ async function fetchSingleFeed(feed: { url: string; source: string }): Promise<N
   return [];
 }
 
-async function fetchAllArticles(feeds: { url: string; source: string }[]): Promise<NewsArticle[]> {
+async function fetchAllArticles(
+  feeds: { url: string; source: string }[],
+  onBatch?: (articlesSoFar: NewsArticle[]) => void,
+): Promise<NewsArticle[]> {
   // Check cache
   const cacheKey = feeds.map(f => f.url).sort().join("|");
   if (articleCache.key === cacheKey && articleCache.articles.length > 0 && Date.now() - articleCache.ts < CACHE_TTL) {
@@ -338,8 +341,8 @@ async function fetchAllArticles(feeds: { url: string; source: string }[]): Promi
   }
 
   const all: NewsArticle[] = [];
-  const BATCH = 2; // max concurrent requests per batch
-  const GAP = 2000; // ms between batches
+  const BATCH = 3;
+  const GAP = 1500;
 
   for (let i = 0; i < feeds.length; i += BATCH) {
     const batch = feeds.slice(i, i + BATCH);
@@ -347,19 +350,60 @@ async function fetchAllArticles(feeds: { url: string; source: string }[]): Promi
     for (const r of results) {
       if (r.status === "fulfilled") all.push(...r.value);
     }
+    // Stream interleaved results to UI after each batch
+    if (all.length > 0 && onBatch) {
+      onBatch(interleaveArticles(all));
+    }
     if (i + BATCH < feeds.length) await delay(GAP);
   }
 
-  all.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+  const final = interleaveArticles(all);
 
   // Save to cache
-  if (all.length > 0) {
+  if (final.length > 0) {
     articleCache.key = cacheKey;
-    articleCache.articles = all;
+    articleCache.articles = final;
     articleCache.ts = Date.now();
   }
 
-  return all;
+  return final;
+}
+
+/** Interleave articles so the same source doesn't appear back-to-back */
+function interleaveArticles(articles: NewsArticle[]): NewsArticle[] {
+  const sorted = [...articles].sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+  const interleaved: NewsArticle[] = [];
+  const bySource: Record<string, NewsArticle[]> = {};
+  for (const a of sorted) {
+    (bySource[a.source] ??= []).push(a);
+  }
+  const queues = Object.values(bySource);
+  queues.sort((a, b) => b.length - a.length);
+  let lastSource = "";
+  while (queues.some(q => q.length > 0)) {
+    let picked = false;
+    for (const q of queues) {
+      if (q.length > 0 && q[0].source !== lastSource) {
+        const item = q.shift()!;
+        interleaved.push(item);
+        lastSource = item.source;
+        picked = true;
+        break;
+      }
+    }
+    if (!picked) {
+      for (const q of queues) {
+        if (q.length > 0) {
+          const item = q.shift()!;
+          interleaved.push(item);
+          lastSource = item.source;
+          break;
+        }
+      }
+    }
+    queues.sort((a, b) => b.length - a.length);
+  }
+  return interleaved;
 }
 
 // ════════════════════════════════════════════════════════
@@ -681,6 +725,7 @@ export default function News() {
   const [onboarding, setOnboarding] = useState(!hasStoredPreferences());
   const [sidebarTab, setSidebarTab] = useState<"categories" | "saved">("categories");
   const [expandedArticle, setExpandedArticle] = useState<NewsArticle | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const loadArticles = useCallback(async () => {
     const feeds = CATEGORIES
@@ -693,9 +738,15 @@ export default function News() {
       return;
     }
     setLoading(true);
+    setLoadingMore(false);
     setError("");
     try {
-      const items = await fetchAllArticles(feeds);
+      const items = await fetchAllArticles(feeds, (partial) => {
+        // Show articles as they stream in
+        setArticles(partial);
+        setLoading(false);
+        setLoadingMore(true);
+      });
       if (items.length === 0) {
         setError("No articles found. Try again later.");
       } else {
@@ -705,6 +756,7 @@ export default function News() {
       setError("Failed to fetch news. Check your connection.");
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, [selectedCats]);
 
@@ -883,7 +935,7 @@ export default function News() {
             Home
           </Link>
           <span className="text-[var(--text-alt)] opacity-30">/</span>
-          <h1 className="text-xl font-bold tracking-tight">The Feed</h1>
+          <h1 className="text-xl font-bold tracking-tight">World Radar</h1>
           <button
             onClick={loadArticles}
             disabled={loading}
@@ -1140,6 +1192,14 @@ export default function News() {
                   </button>
                 </div>
               ))}
+
+              {/* Still loading more feeds */}
+              {loadingMore && (
+                <div className="flex items-center gap-2 py-6 px-2 text-[var(--text-alt)]">
+                  <div className="w-4 h-4 border-2 border-[var(--text-alt)] border-t-[var(--text)] rounded-full animate-spin" />
+                  <span className="text-xs font-mono">Loading more sources...</span>
+                </div>
+              )}
             </div>
           )}
 

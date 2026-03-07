@@ -111,7 +111,7 @@ export default function Index() {
             <span className="opacity-50">→</span>
           </Link>
           <Link to="/news" className="flex items-center justify-between h-14 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-5 font-bold text-[0.95rem] tracking-normal">
-            <span>7. The Feed</span>
+            <span>7. World Radar</span>
             <span className="opacity-50">→</span>
           </Link>
         </div>
