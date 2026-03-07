@@ -88,6 +88,26 @@ export default function Projects() {
                         </div>
                     </div>
                 </a>
+
+                <h2 className="text-xl font-bold tracking-tight mt-16 mb-4">Projects Made for Me</h2>
+                <div className="h-px bg-[var(--text)] opacity-20 w-full mb-6" />
+
+                <Link
+                    to="/todoist"
+                    className="block border border-[var(--text)] border-opacity-15 hover:border-opacity-50 transition-all no-underline group"
+                >
+                    <div className="p-5">
+                        <div className="flex items-start justify-between gap-4 mb-3">
+                            <h3 className="text-lg font-bold text-[var(--text)] group-hover:underline underline-offset-4">Workspace</h3>
+                        </div>
+                        <p className="text-[var(--text-alt)] text-sm leading-relaxed mb-4">
+                            A personal productivity suite with todos, calendar, finance tracker, birthday reminders, rich-text notes with AI rewrite, and public note sharing — built with React &amp; Supabase.
+                        </p>
+                        <div className="flex items-center justify-end">
+                            <span className="text-sm text-[var(--text-alt)] group-hover:text-[var(--text)] transition-colors">open →</span>
+                        </div>
+                    </div>
+                </Link>
             </div>
 
             <SiteFooter />

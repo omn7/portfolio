@@ -18,11 +18,16 @@ import ProjectDetail from "./pages/ProjectDetail";
 import Professional from "./pages/Professional";
 import About from "./pages/About";
 import News from "./pages/News";
+import { AuthProvider } from "@/hooks/useAuth";
+import Auth from "./pages/Auth";
+import Todoist from "./pages/Todoist";
+import PublicNote from "./pages/PublicNote";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <AuthProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -41,10 +46,14 @@ const App = () => (
           <Route path="/blogs" element={<Layout><BlogsSection /></Layout>} />
           <Route path="/resume" element={<Layout><Resume /></Layout>} />
           <Route path="/prof" element={<Professional />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/todoist" element={<Todoist />} />
+          <Route path="/notes/:userId/:noteId" element={<PublicNote />} />
           <Route path="*" element={<Layout><NotFound /></Layout>} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

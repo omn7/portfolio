@@ -31,6 +31,13 @@
     color: #000000;
   }
 
+  [data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-alt);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
   body {
     background-color: var(--bg);
     color: var(--text);
