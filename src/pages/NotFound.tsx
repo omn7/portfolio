@@ -1,46 +1,79 @@
 import { Link } from "react-router-dom";
-import ReloadButton from "@/components/ui/reload-button";
+import { useEffect } from "react";
 
 const NotFound = () => {
-  // Update document title for better UX
-  if (typeof document !== 'undefined') {
-    document.title = '404 — Lost (but still adorable)';
-  }
+  useEffect(() => {
+    document.title = "404 — Page Not Found | Om Narkhede";
+    return () => { document.title = "Om Narkhede | AI Engineer & Developer Portfolio"; };
+  }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4">
-      <div className="text-center max-w-xl">
-        <h1 className="text-7xl font-extrabold text-primary mb-2 drop-shadow-glow">404</h1>
+    <main className="min-h-[100dvh] flex items-center justify-center px-4 font-mono" style={{ background: "var(--bg)", color: "var(--text)" }}>
+      <div className="text-center max-w-lg">
+        {/* Big 404 */}
+        <h1 className="text-[7rem] sm:text-[9rem] font-black leading-none tracking-tighter mb-2 select-none" style={{ color: "var(--text)" }}>
+          404
+        </h1>
 
-        <div className="mb-6 flex items-center justify-center">
-          <div className="text-6xl sm:text-7xl animate-float-subtle">🤖</div>
-        </div>
+        {/* Divider */}
+        <div className="w-16 h-px mx-auto mb-6 opacity-20" style={{ background: "var(--text)" }} />
 
-        <p className="text-2xl sm:text-3xl font-semibold mb-3">Whoa — this page vanished into the void.</p>
+        {/* Message */}
+        <p className="text-sm sm:text-base mb-2" style={{ color: "var(--text-alt)" }}>
+          This page doesn't exist — or maybe it never did.
+        </p>
+        <p className="text-sm sm:text-base mb-6" style={{ color: "var(--text-alt)" }}>
+          Either way, there's nothing here.
+        </p>
 
-        <p className="text-lg text-muted-foreground mb-6">We dispatched a tiny search robot (it brought snacks). Try one of the options below — or bribe the robot with cookies.</p>
+        {/* Terminal hint */}
+        <p className="text-[11px] mb-8 opacity-40" style={{ color: "var(--text-alt)" }}>
+          $ curl -I /this-page → HTTP/1.1 404 Not Found
+        </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+        {/* Action buttons */}
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/"
-            className="inline-block px-6 py-2 rounded-full bg-primary text-primary-foreground font-medium shadow hover:bg-primary/90 transition-all duration-200"
+            className="text-xs font-mono font-bold px-5 py-2.5 border transition-all no-underline"
+            style={{
+              border: "1px solid var(--text)",
+              background: "var(--text)",
+              color: "var(--bg)",
+            }}
           >
-            Teleport Home
+            ← Home
           </Link>
-
           <Link
-            to="/resume"
-            className="inline-block px-6 py-2 rounded-full border border-border text-foreground/90 bg-transparent font-medium shadow-sm hover:bg-secondary/60 transition-all duration-200"
+            to="/projects"
+            className="text-xs font-mono font-bold px-5 py-2.5 border transition-all no-underline hover:opacity-70"
+            style={{
+              border: "1px solid var(--text)",
+              borderOpacity: 0.3,
+              color: "var(--text)",
+            }}
           >
-            View Resume
+            Projects
           </Link>
-
-          <ReloadButton />
+          <Link
+            to="/news"
+            className="text-xs font-mono font-bold px-5 py-2.5 border transition-all no-underline hover:opacity-70"
+            style={{
+              border: "1px solid var(--text)",
+              borderOpacity: 0.3,
+              color: "var(--text)",
+            }}
+          >
+            World Radar
+          </Link>
         </div>
 
-        <p className="text-sm text-muted-foreground mt-6">Tip: If your browser is acting possessed, try a hard refresh (Ctrl+F5) or open this page in an incognito window.</p>
+        {/* Footer */}
+        <p className="mt-12 text-[10px] opacity-30" style={{ color: "var(--text-alt)" }}>
+          omnarkhede.tech
+        </p>
       </div>
-    </div>
+    </main>
   );
 };
 

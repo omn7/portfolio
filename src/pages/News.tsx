@@ -768,6 +768,53 @@ export default function News() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // SEO: dynamic meta tags for /news
+    const SITE = "https://omnarkhede.tech";
+    const title = "World Radar — News From Every Corner | Om Narkhede";
+    const description = "Stay updated with curated tech news, AI, web dev, science, Indian & global markets, crypto, and more — all in one feed. World Radar by Om Narkhede.";
+    const url = `${SITE}/news`;
+    const image = `${SITE}/worldradar.png`;
+
+    document.title = title;
+
+    const metaTags: Record<string, string> = {
+      description,
+      "og:title": title,
+      "og:description": description,
+      "og:url": url,
+      "og:image": image,
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:type": "website",
+      "og:site_name": "Om Narkhede",
+      "twitter:card": "summary_large_image",
+      "twitter:title": title,
+      "twitter:description": description,
+      "twitter:image": image,
+    };
+
+    const cleanup: (() => void)[] = [];
+    for (const [key, value] of Object.entries(metaTags)) {
+      const isOg = key.startsWith("og:");
+      const isTwitter = key.startsWith("twitter:");
+      const attr = isOg ? "property" : "name";
+      let el = document.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+      const existed = !!el;
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      const prev = el.getAttribute("content");
+      el.setAttribute("content", value);
+      cleanup.push(() => {
+        if (existed && prev !== null) el!.setAttribute("content", prev);
+        else if (!existed) el!.remove();
+      });
+    }
+
+    return () => { cleanup.forEach(fn => fn()); };
   }, []);
 
   useEffect(() => {

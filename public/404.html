@@ -3,16 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redirecting...</title>
+  <title>404 — Page Not Found | Om Narkhede</title>
+  <meta name="description" content="This page doesn't exist. Navigate back to Om Narkhede's portfolio.">
+  <link rel="icon" type="image/jpeg" href="/logo.jpg">
+  <style>
+    :root { --bg: #121212; --text: #ffffff; --text-alt: #a0a0a0; --accent: #facc15; }
+    @media (prefers-color-scheme: light) {
+      :root { --bg: #ffffff; --text: #000000; --text-alt: #666666; --accent: #facc15; }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: var(--accent); color: #000; }
+    .container { text-align: center; max-width: 520px; padding: 2rem; }
+    .code { font-size: 7rem; font-weight: 900; line-height: 1; letter-spacing: -0.04em; margin-bottom: 0.5rem; }
+    .code span { display: inline-block; animation: glitch 2.5s infinite; }
+    .code span:nth-child(2) { animation-delay: 0.15s; }
+    .code span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes glitch {
+      0%, 90%, 100% { opacity: 1; transform: none; }
+      92% { opacity: 0.8; transform: translateX(-2px) skewX(-1deg); }
+      94% { opacity: 1; transform: translateX(2px); }
+      96% { opacity: 0.6; transform: translateX(-1px) skewX(1deg); }
+    }
+    .divider { width: 60px; height: 1px; background: var(--text); opacity: 0.2; margin: 1.5rem auto; }
+    .msg { font-size: 0.95rem; color: var(--text-alt); line-height: 1.6; margin-bottom: 1.5rem; }
+    .hint { font-size: 0.75rem; color: var(--text-alt); opacity: 0.5; margin-bottom: 2rem; }
+    .actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      font-family: inherit; font-size: 0.8rem; font-weight: 600;
+      padding: 0.6rem 1.5rem; border: 1px solid var(--text); text-decoration: none;
+      transition: all 0.15s ease; cursor: pointer; background: transparent; color: var(--text);
+    }
+    .btn:hover { background: var(--text); color: var(--bg); }
+    .btn-primary { background: var(--text); color: var(--bg); }
+    .btn-primary:hover { opacity: 0.85; }
+    .footer-note { margin-top: 3rem; font-size: 0.65rem; color: var(--text-alt); opacity: 0.4; }
+  </style>
   <script>
-    // Single Page Apps for GitHub Pages
-    // MIT License
-    // https://github.com/rafgraph/spa-github-pages
-    // This script takes the current URL and converts the path and query
-    // string into just a query string, and then redirects the browser
-    // to the new URL with only a query string and hash fragment.
+    // SPA redirect for GitHub Pages (runs before body renders)
     var pathSegmentsToKeep = 0;
     var l = window.location;
+
+    // Inject route-specific OG tags for social crawlers
+    if (l.pathname === '/news' || l.pathname === '/news/') {
+      document.title = 'World Radar — News From Every Corner | Om Narkhede';
+      var metas = [
+        ['property', 'og:title', 'World Radar — News From Every Corner | Om Narkhede'],
+        ['property', 'og:description', 'Stay updated with curated tech news, AI, web dev, science, Indian & global markets, crypto, and more — all in one feed.'],
+        ['property', 'og:image', 'https://omnarkhede.tech/worldradar.png'],
+        ['property', 'og:url', 'https://omnarkhede.tech/news'],
+        ['property', 'og:type', 'website'],
+        ['name', 'twitter:card', 'summary_large_image'],
+        ['name', 'twitter:title', 'World Radar — News From Every Corner | Om Narkhede'],
+        ['name', 'twitter:description', 'Stay updated with curated tech news, AI, web dev, science, Indian & global markets, crypto, and more — all in one feed.'],
+        ['name', 'twitter:image', 'https://omnarkhede.tech/worldradar.png']
+      ];
+      for (var i = 0; i < metas.length; i++) {
+        var m = document.createElement('meta');
+        m.setAttribute(metas[i][0], metas[i][1]);
+        m.setAttribute('content', metas[i][2]);
+        document.head.appendChild(m);
+      }
+    }
+
     l.replace(
       l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
       l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
@@ -23,6 +81,17 @@
   </script>
 </head>
 <body>
-  <p>Redirecting to the main page...</p>
+  <div class="container">
+    <div class="code"><span>4</span><span>0</span><span>4</span></div>
+    <div class="divider"></div>
+    <p class="msg">This page doesn't exist — or maybe it never did.<br>Either way, there's nothing here.</p>
+    <p class="hint">$ curl -I /this-page → HTTP/1.1 404 Not Found</p>
+    <div class="actions">
+      <a href="/" class="btn btn-primary">← Home</a>
+      <a href="/projects" class="btn">Projects</a>
+      <a href="/news" class="btn">World Radar</a>
+    </div>
+    <p class="footer-note">omnarkhede.tech</p>
+  </div>
 </body>
 </html>
