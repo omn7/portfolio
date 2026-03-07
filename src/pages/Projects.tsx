@@ -66,6 +66,28 @@ export default function Projects() {
                         </div>
                     ))}
                 </div>
+
+                <h2 className="text-xl font-bold tracking-tight mt-16 mb-4">Contributed Projects</h2>
+                <div className="h-px bg-[var(--text)] opacity-20 w-full mb-6" />
+
+                <a
+                    href="https://acesbvcoel.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block border border-[var(--text)] border-opacity-15 hover:border-opacity-50 transition-all no-underline group"
+                >
+                    <div className="p-5">
+                        <div className="flex items-start justify-between gap-4 mb-3">
+                            <h3 className="text-lg font-bold text-[var(--text)] group-hover:underline underline-offset-4">ACES — Association of Computer Engineering Students</h3>
+                        </div>
+                        <p className="text-[var(--text-alt)] text-sm leading-relaxed mb-4">
+                            Official website for the Association of Computer Engineering Students at Bharati Vidyapeeth College of Engineering, Pune. Features event listings, team directory, photo gallery, and a feedback system for students.
+                        </p>
+                        <div className="flex items-center justify-end">
+                            <span className="text-sm text-[var(--text-alt)] group-hover:text-[var(--text)] transition-colors">visit ↗</span>
+                        </div>
+                    </div>
+                </a>
             </div>
 
             <SiteFooter />

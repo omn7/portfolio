@@ -26,6 +26,11 @@
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpolygon points='0,0 0,14 4,10 8,16 10,15 6,9 12,9' fill='white' stroke='black' stroke-width='1'/%3E%3C/svg%3E") 0 0, auto;
   }
 
+  ::selection {
+    background-color: #facc15;
+    color: #000000;
+  }
+
   body {
     background-color: var(--bg);
     color: var(--text);

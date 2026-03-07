@@ -4,7 +4,7 @@ interface LayoutProps { children: ReactNode; }
 
 export const useDark = () => {
   const [dark, setDark] = useState(() => {
-    try { return localStorage.getItem("theme") === "dark"; } catch { return false; }
+    try { const saved = localStorage.getItem("theme"); return saved ? saved === "dark" : true; } catch { return true; }
   });
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
