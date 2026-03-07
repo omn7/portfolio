@@ -1,136 +1,103 @@
-import { Button } from "@/components/ui/button";
-import { RetroCard } from "@/components/ui/retro-card";
-import { Download, Eye, Mail, MapPin, Linkedin, Github, TwitterIcon, ScrollText } from "lucide-react";
+import { Download, Eye, FileText, Briefcase, GraduationCap, MapPin, Mail, Linkedin, Github } from "lucide-react";
 
 const RESUME_URL = "https://drive.google.com/file/d/1kdkcr4ii43_6OZDs39wJLYM2whZZ49td/view?usp=drivesdk";
 
-const ResumeSection = () => {
-  const handleDownload = () => {
-    window.open(RESUME_URL, '_blank');
-  };
+const education = [
+  {
+    degree: "B.E. Computer Science",
+    institution: "Bharati Vidyapeeth College of Engineering",
+    period: "2024 – 2028",
+    score: "GPA: 8.4 / 10.0",
+  },
+  {
+    degree: "Higher Secondary (12th)",
+    institution: "Kothari High School & Jr College",
+    period: "2022 – 2024",
+    score: "Score: 77.5%",
+  },
+];
 
-  const handlePreview = () => {
-    window.open(RESUME_URL, '_blank');
-  };
+const contact = [
+  { icon: Mail, label: "Email", value: "dev.om@outlook.com", href: "mailto:dev.om@outlook.com" },
+  { icon: MapPin, label: "Location", value: "Pune, India", href: "" },
+  { icon: Linkedin, label: "LinkedIn", value: "in/omnarkhede", href: "https://linkedin.com/in/omnarkhede" },
+  { icon: Github, label: "GitHub", value: "github.com/omn7", href: "https://github.com/omn7" },
+];
 
-  const contactInfo = [
-    { icon: Mail, label: "Email", value: "dev.om@outlook.com", link: "mailto:dev.om@outlook.com" },
-    { icon: MapPin, label: "Base", value: "Pune, India", link: "" },
-    { icon: TwitterIcon, label: "Twitter", value: "@mr_codex", link: "https://x.com/mr_codex" },
-    { icon: Linkedin, label: "LinkedIn", value: "in/omnarkhede", link: "https://linkedin.com/in/omnarkhede" },
-    { icon: Github, label: "GitHub", value: "github.com/omn7", link: "https://github.com/omn7" }
-  ];
+const ResumeSection = () => (
+  <section id="resume" className="scroll-mt-24 border-t border-[var(--border)] pt-12 pb-24">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-12">
+      <div className="flex items-center gap-2">
+        <FileText className="text-[var(--text-muted)]" size={24} />
+        <h2 className="notion-h2">Resume & Info</h2>
+      </div>
 
-  const education = [
-    {
-      degree: "B.E. Computer Science",
-      institution: "Bharati Vidyapeeth College of Engineering",
-      period: "2024 - 2028",
-      gpa: "GPA: 8.4/10.0",
-      type: "Main Quest"
-    },
-    {
-      degree: "Higher Secondary (12th)",
-      institution: "Kothari High School & Jr College",
-      period: "2022 - 2024",
-      gpa: "Score: 7.75/10.0",
-      type: "Side Quest"
-    }
-  ];
+      <div className="flex items-center gap-3">
+        <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" className="notion-btn-primary">
+          <Download size={16} /> Download
+        </a>
+        <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" className="notion-btn-ghost">
+          <Eye size={16} /> Preview
+        </a>
+      </div>
+    </div>
 
-  return (
-    <section id="resume" className="py-20 bg-[#0a0a16]">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-heading text-[#00ff00] mb-4 animate-pulse drop-shadow-[0_0_5px_#00ff00]">GUILD HISTORY</h2>
-          <p className="text-lg font-sans text-gray-400 max-w-2xl mx-auto">
-            Records of training arcs, guild memberships, and contact crystals.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            <Button 
-              onClick={handleDownload}
-              className="bg-[#00ffff] hover:bg-[#00cccc] text-black font-heading text-xs px-8 py-6 border-b-4 border-[#008b8b] active:border-b-0 active:translate-y-1 rounded-none shadow-[0_0_10px_rgba(0,255,255,0.5)]"
-            >
-              <Download className="mr-2 h-4 w-4" />
-              DOWNLOAD SCROLL
-            </Button>
-            <Button 
-              onClick={handlePreview}
-              variant="outline"
-              className="bg-transparent text-[#00ffff] border-2 border-[#00ffff] hover:bg-[#00ffff] hover:text-black font-heading text-xs px-8 py-6 rounded-none shadow-[0_0_5px_rgba(0,255,255,0.3)]"
-            >
-              <Eye className="mr-2 h-4 w-4" />
-              PREVIEW SCROLL
-            </Button>
-          </div>
+    <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-12">
+
+      {/* Education List */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-2 text-[var(--text-secondary)] mb-6 border-b border-[var(--border)] pb-2">
+          <GraduationCap size={18} />
+          <h3 className="text-[16px] font-semibold">Education</h3>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* Contact Information */}
-          <div className="lg:col-span-1">
-            <RetroCard className="p-6 bg-[#13132b] h-full border-[#00ffff]/30">
-              <h3 className="text-xl font-heading text-[#00ffff] mb-6 flex items-center gap-2">
-                <ScrollText className="h-5 w-5" />
-                CONTACT CARD
-              </h3>
-              <div className="space-y-6">
-                {contactInfo.map((contact, index) => (
-                  <div key={index} className="flex items-center gap-4 group">
-                    <div className="p-2 bg-black border border-gray-700 rounded-sm group-hover:border-[#00ffff] transition-colors">
-                      <contact.icon className="h-4 w-4 text-[#00ffff]" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-heading text-gray-500 mb-1">{contact.label}</p>
-                      {contact.link ? (
-                        <a 
-                          href={contact.link} 
-                          className="text-sm font-sans text-white hover:text-[#00ffff] transition-colors break-all"
-                          target={contact.link.startsWith('http') ? '_blank' : '_self'}
-                          rel={contact.link.startsWith('http') ? 'noopener noreferrer' : ''}
-                        >
-                          {contact.value}
-                        </a>
-                      ) : (
-                        <p className="text-sm font-sans text-white">{contact.value}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </RetroCard>
-          </div>
+        <div className="space-y-8 pl-6 border-l-2 border-[var(--border)] relative">
+          {education.map((edu, i) => (
+            <div key={i} className="relative">
+              {/* Timeline dot */}
+              <div className="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-[var(--accent)] border-2 border-[var(--bg)]" />
 
-          {/* Education / Guild History */}
-          <div className="lg:col-span-2">
-            <RetroCard className="p-6 bg-[#13132b] h-full border-[#ff00ff]/30">
-              <h3 className="text-xl font-heading text-[#ff00ff] mb-6">TRAINING LOGS</h3>
-              <div className="space-y-8">
-                {education.map((edu, index) => (
-                  <div key={index} className="relative pl-8 border-l-4 border-dashed border-gray-700 hover:border-[#ff00ff] transition-colors group">
-                    <div className="absolute -left-[10px] top-0 w-4 h-4 bg-black border-2 border-[#ff00ff] rounded-full group-hover:bg-[#ff00ff] transition-colors" />
-                    
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
-                      <h4 className="text-lg font-heading text-white">{edu.degree}</h4>
-                      <span className="px-2 py-1 bg-black border border-gray-700 text-xs font-heading text-gray-400 rounded-sm">
-                        {edu.type}
-                      </span>
-                    </div>
-                    
-                    <p className="text-[#00ffff] font-sans text-xl mb-1">{edu.institution}</p>
-                    <div className="flex gap-4 text-sm font-sans text-gray-400">
-                      <span>{edu.period}</span>
-                      <span className="text-[#00ff00]">{edu.gpa}</span>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
+                <h4 className="font-semibold text-[var(--text)] text-[16px]">{edu.degree}</h4>
+                <span className="notion-label">{edu.period}</span>
               </div>
-            </RetroCard>
+              <p className="notion-body text-[14px] mb-2">{edu.institution}</p>
+              <div className="notion-tag">{edu.score}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Contact Panel */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-2 text-[var(--text-secondary)] mb-6 border-b border-[var(--border)] pb-2">
+          <Briefcase size={18} />
+          <h3 className="text-[16px] font-semibold">Contact</h3>
+        </div>
+
+        <div className="notion-card p-5">
+          <div className="space-y-5">
+            {contact.map(({ icon: Icon, label, value, href }) => (
+              <div key={label} className="flex flex-col gap-1">
+                <div className="flex items-center gap-1.5 text-[var(--text-muted)]">
+                  <Icon size={14} />
+                  <span className="notion-label !text-[10px]">{label}</span>
+                </div>
+                {href ? (
+                  <a href={href} target={href.startsWith("http") ? "_blank" : "_self"} rel="noopener noreferrer" className="text-[14px] font-medium text-[var(--text)] hover:text-[var(--accent)] transition-colors break-words">
+                    {value}
+                  </a>
+                ) : (
+                  <span className="text-[14px] font-medium text-[var(--text)] break-words">{value}</span>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    </section>
-  );
-};
+
+    </div>
+  </section>
+);
 
 export default ResumeSection;

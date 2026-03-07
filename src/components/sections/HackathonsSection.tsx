@@ -1,9 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, Trophy, Users, ExternalLink } from "lucide-react";
-import Footer from "@/components/Footer";
+import { Link } from "react-router-dom";
+import { Moon, Sun } from "lucide-react";
+import { useDark } from "@/components/Layout";
 
 const HackathonsSection = () => {
+  const [dark, setDark] = useDark();
+
   const hackathons = [
     {
       id: 1,
@@ -13,113 +14,79 @@ const HackathonsSection = () => {
       location: "AISSMS College of Engineering, Pune, India",
       description: "Built an Unified digital education platform covering all levels of from kindergarten to postgraduate",
       technologies: ["React", "Typescript", "OpenAI API", "Tailwindcss"],
-      teamSize: 4,
-  link: "https://github.com/omn7/hackathon/",
-  image: "/h1.png"
+      link: "https://github.com/omn7/hackathon/",
+      image: "/h1.png"
     },
     {
       id: 2,
-  name: "INNOHACK 2025",
-  date: "30 July to 31 July 2025",
-  position: "Finalist",
-  location: "VIT Pune, India",
-  description: "AI-powered debugging assistant that helps developers understand and fix code issues using AI. Get clear explanations of complex errors in simple English and receive practical solutions instantly.",
-  technologies: ["Reactjs", "Typescript", "ExpressJS", "Node.js","PostgreSQL", "OpenAI API", "TailwindCSS","Gemini APIs"],
-  teamSize: 4,
-  link: "https://deburger.omnarkhede.tech/",
-  image: "/debugger.png"
-    },
-    // {
-    //   id: 3,
-    //   name: "DevPost Climate Hackathon",
-    //   date: "June 2023",
-    //   position: "Top 10 Finalist",
-    //   description: "Created a mobile app that gamifies sustainable living by tracking carbon footprint and suggesting eco-friendly alternatives.",
-    //   technologies: ["React Native", "Firebase", "GraphQL", "TypeScript"],
-    //   teamSize: 2,
-    //   link: "https://example.com"
-    // },
-    // {
-    //   id: 4,
-    //   name: "MLH Local Hack Day",
-    //   date: "December 2022",
-    //   position: "Best Beginner Hack",
-    //   description: "Built my first full-stack web application - a study buddy matching platform for university students.",
-    //   technologies: ["HTML/CSS", "JavaScript", "MongoDB", "Express.js"],
-    //   teamSize: 1,
-    //   link: "https://example.com"
-    // }
+      name: "INNOHACK 2025",
+      date: "July 2025",
+      position: "Finalist",
+      location: "VIT Pune, India",
+      description: "AI-powered debugging assistant that helps developers understand and fix code issues using AI. Get clear explanations of complex errors in simple English and receive practical solutions instantly.",
+      technologies: ["Reactjs", "ExpressJS", "PostgreSQL", "OpenAI API", "Gemini APIs"],
+      link: "https://deburger.omnarkhede.tech/",
+      image: "/debugger.png"
+    }
   ];
 
   return (
-    <>
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-foreground mb-4">Hackathons</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Competitive programming events where I've collaborated with teams to build innovative solutions under tight deadlines.
-            </p>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-2">
-            {hackathons.map((hackathon) => (
-              <Card key={hackathon.id} className="bg-card border-border hover:shadow-card-custom transition-all duration-300 group">
-                <img
-                  src={hackathon.image}
-                  alt={hackathon.name + ' image'}
-                  className="w-full max-h-48 min-h-32 object-contain bg-white rounded-t-2xl border-b border-white/10 mb-2 p-2"
-                  style={{ background: '#fff', objectFit: 'contain' }}
-                />
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <CardTitle className="text-xl text-card-foreground group-hover:text-primary transition-colors">
-                        {hackathon.name}
-                      </CardTitle>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      {hackathon.date}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      Team of {hackathon.teamSize}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span role="img" aria-label="location" className="inline-block">📍</span>
-                      {hackathon.location}
-                    </div>
-                  </div>
-                    </div>
-                    <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors cursor-pointer" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Trophy className="h-4 w-4 text-primary" />
-                    <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                      {hackathon.position}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <CardDescription className="text-card-foreground/80 leading-relaxed">
-                    {hackathon.description}
-                  </CardDescription>
-                  <div className="flex flex-wrap gap-2">
-                    {hackathon.technologies.map((tech) => (
-                      <Badge key={tech} variant="outline" className="text-xs border-border">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+    <main className="max-w-4xl mx-auto px-6 py-6 flex flex-col min-h-[100dvh] font-mono">
+      <div className="mb-4 mt-2 sm:mt-6">
+        <div className="flex items-center justify-between mb-8">
+          <Link to="/" className="text-[var(--text-alt)] hover:text-[var(--text)] hover:underline inline-block">
+            ← back to index
+          </Link>
+          <button
+            onClick={() => setDark(d => !d)}
+            aria-label="Toggle theme"
+            className="p-2 -mr-2 text-[var(--text-alt)] hover:text-[var(--text)] transition-colors shrink-0"
+          >
+            {dark ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
         </div>
-      </section>
-      <Footer />
-    </>
+      </div>
+
+      <div className="mb-16">
+        <h1 className="text-3xl font-bold tracking-tight mb-6">Hackathon Projects</h1>
+        <div className="h-px bg-[var(--text)] opacity-20 w-full mb-10" />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          {hackathons.map((h) => (
+            <div key={h.id} className="group flex flex-col gap-3">
+              <a href={h.link} target="_blank" rel="noopener noreferrer" className="block relative overflow-hidden rounded-md border border-[var(--text)] border-opacity-10 bg-[var(--bg)] aspect-video">
+                <img
+                  src={h.image}
+                  alt={h.name}
+                  className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 scale-[1.01] group-hover:scale-105"
+                />
+              </a>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <a href={h.link} target="_blank" rel="noopener noreferrer" className="text-lg font-bold hover:underline underline-offset-4">
+                    {h.name}
+                  </a>
+                  <span className="text-sm font-medium px-2 py-0.5 border border-[var(--text)] border-opacity-20 text-[var(--text-alt)] rounded-sm whitespace-nowrap ml-2">
+                    {h.position}
+                  </span>
+                </div>
+                <p className="text-[var(--text-alt)] text-sm mb-2">{h.date} — {h.location}</p>
+                <p className="text-[var(--text-alt)] text-sm leading-relaxed mb-3">
+                  {h.description}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {h.technologies.map(tech => (
+                    <span key={tech} className="text-xs font-medium text-[var(--text-alt)] px-1.5 py-0.5 border border-[var(--text)] border-opacity-20 rounded-sm">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
   );
 };
 

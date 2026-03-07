@@ -2,292 +2,87 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Portfolio Design System - Dark Theme */
-
-/* Custom Classes */
-.footer-bg {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/bg2.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #000; /* Fallback color */
-}
-
 @layer base {
   :root {
-    /* Dark Portfolio Theme - Futuristic City */
-    --background: 240 38% 6%;
-    --foreground: 0 0% 95%;
-
-    --card: 240 28% 14%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 240 38% 6%;
-    --popover-foreground: 0 0% 95%;
-
-    --primary: 300 100% 50%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 240 28% 14%;
-    --secondary-foreground: 0 0% 85%;
-
-    --muted: 240 28% 14%;
-    --muted-foreground: 240 10% 60%;
-
-    --accent: 180 100% 50%;
-    --accent-foreground: 0 0% 5%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 28% 20%;
-    --input: 240 28% 14%;
-    --ring: 300 100% 50%;
-
-    --radius: 0.75rem;
-
-    /* Portfolio specific tokens */
-    --hero-glow: 300 100% 50%;
-    --section-bg: 240 38% 6%;
-    --nav-hover: 240 28% 20%;
-    --skill-card: 240 28% 14%;
-    
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(300 100% 50% / 0.1), hsl(180 100% 50% / 0.05));
-    --gradient-accent: linear-gradient(90deg, hsl(300 100% 50%), hsl(180 100% 50%));
-    
-    /* Shadows */
-    --shadow-glow: 0 0 40px hsl(300 100% 50% / 0.5);
-    --shadow-card: 0 10px 30px hsl(0 0% 0% / 0.5);
-    
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --bg: #ffffff;
+    --text: #000000;
+    --text-alt: #666666;
+    --link: #000000;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
+  /* Optional simple dark mode if preferred, but user wanted it adimail style */
+  .dark {
+    --bg: #121212;
+    --text: #ffffff;
+    --text-alt: #a0a0a0;
+    --link: #ffffff;
+  }
+
+  html {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
   }
-}
 
-@keyframes shine {
-  0% {
-    transform: translateX(-100%);
+  a {
+    color: var(--link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
   }
-  50% {
-    transform: translateX(100%);
+
+  a:hover {
+    text-decoration: underline;
   }
-  100% {
-    transform: translateX(-100%);
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--text);
+    font-weight: bold;
+    margin: 0;
   }
-}
 
-@keyframes glowline {
-  0% { transform: translateX(-50%) scaleX(0.2); opacity: 0.5; }
-  20% { opacity: 1; }
-  50% { transform: translateX(0%) scaleX(1); opacity: 1; }
-  80% { opacity: 1; }
-  100% { transform: translateX(50%) scaleX(0.2); opacity: 0.5; }
-}
-.animate-glowline {
-  animation: glowline 3s linear infinite;
-}
-
-@keyframes thunder-border {
-  0% {
-    clip-path: inset(0 75% 99% 0 round 12px);
-    box-shadow: 0 0 24px 6px #ff1744;
-    border-color: #ff1744;
+  h1 {
+    font-size: 2em;
+    margin-top: 40px;
+    margin-bottom: 20px;
   }
-  25% {
-    clip-path: inset(0 0 75% 0 round 12px);
-    box-shadow: 0 0 24px 6px #ff1744;
-    border-color: #ff1744;
+
+  h2 {
+    font-size: 21px;
+    margin-top: 40px;
+    margin-bottom: 12px;
   }
-  50% {
-    clip-path: inset(99% 0 0 0 round 12px);
-    box-shadow: 0 0 24px 6px #ff1744;
-    border-color: #ff1744;
+
+  hr.separator {
+    height: 1px;
+    width: 100%;
+    background-color: var(--text);
+    border: none;
+    margin: 20px 0;
   }
-  75% {
-    clip-path: inset(0 0 0 75% round 12px);
-    box-shadow: 0 0 24px 6px #ff1744;
-    border-color: #ff1744;
+
+  ul {
+    padding-left: 20px;
+    margin-top: 0;
   }
-  100% {
-    clip-path: inset(0 75% 99% 0 round 12px);
-    box-shadow: 0 0 24px 6px #ff1744;
-    border-color: #ff1744;
+
+  li {
+    margin-bottom: 2px;
   }
-}
-.animate-thunder-border {
-  animation: thunder-border 2.5s linear infinite;
-  border: 3px solid #ff1744;
-}
-
-@keyframes bounce-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-.animate-bounce-slow {
-  animation: bounce-slow 2.5s ease-in-out infinite;
-}
-
-@keyframes float-subtle {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-  100% { transform: translateY(0); }
-}
-.animate-float-subtle {
-  animation: float-subtle 6s ease-in-out infinite;
-}
-
-/* Typing effect */
-.typing-text {
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.typing-cursor {
-  display: inline-block;
-  width: 8px;
-  height: 1.2em;
-  background: transparent;
-  border-left: 2px solid rgba(255,255,255,0.9);
-  margin-left: 6px;
-  animation: blink 900ms steps(1) infinite;
-}
-@keyframes blink {
-  0% { opacity: 1 }
-  50% { opacity: 0 }
-  100% { opacity: 1 }
-}
-
-/* Liquid translucent button effect */
-.liquid-btn {
-  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-  border: 1px solid rgba(255,255,255,0.06);
-  backdrop-filter: blur(6px) saturate(120%);
-  /* make this a positioned container for its absolutely-positioned children */
-  position: relative;
-  overflow: visible;
-}
-.liquid-btn::after {
-  content: '';
-  position: absolute;
-  left: -40%;
-  top: -30%;
-  width: 80%;
-  height: 160%;
-  background: radial-gradient(closest-side, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
-  transform: rotate(20deg) translateX(0%);
-  filter: blur(12px);
-  opacity: 0.9;
-  transition: transform 0.9s ease, opacity 0.9s ease;
-  pointer-events: none;
-}
-.liquid-btn:hover::after {
-  transform: translateX(120%) rotate(20deg);
-  opacity: 1;
-}
-.liquid-btn:active::after {
-  transform: translateX(140%) rotate(20deg) scale(1.05);
-}
-
-/* small red accent/glow for the button */
-.liquid-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow: 0 0 0 rgba(255, 20, 60, 0);
-  transition: box-shadow 420ms ease, opacity 420ms ease, transform 420ms ease;
-  opacity: 0;
-}
-.liquid-btn:hover::before {
-  opacity: 1;
-  box-shadow: 0 8px 22px rgba(255, 20, 60, 0.12), inset 0 0 12px rgba(255, 20, 60, 0.03);
-}
-
-@keyframes red-pulse {
-  0% { box-shadow: 0 6px 18px rgba(255, 20, 60, 0.08), inset 0 0 8px rgba(255,20,60,0.02); }
-  50% { box-shadow: 0 14px 34px rgba(255, 20, 60, 0.22), inset 0 0 16px rgba(255,20,60,0.05); }
-  100% { box-shadow: 0 6px 18px rgba(255, 20, 60, 0.08), inset 0 0 8px rgba(255,20,60,0.02); }
-}
-.liquid-btn.pulse::before {
-  opacity: 1;
-  animation: red-pulse 3.2s ease-in-out infinite;
-}
-
-/* Stronger reddish variant for hero CTA */
-.liquid-btn.reddish::before {
-  opacity: 1;
-  box-shadow: 0 16px 48px rgba(255, 20, 60, 0.28), inset 0 0 20px rgba(255,20,60,0.06);
-  border: 1px solid rgba(255,20,60,0.12);
-  transition: box-shadow 320ms ease, transform 320ms ease, opacity 320ms ease;
-}
-.liquid-btn.reddish:hover::before {
-  box-shadow: 0 28px 80px rgba(255, 20, 60, 0.42), inset 0 0 24px rgba(255,20,60,0.08);
-}
-.liquid-btn.reddish.pulse::before {
-  animation: red-pulse 2.6s ease-in-out infinite;
-}
-
-.liquid-btn.reddish::after {
-  /* subtle warm sweep tint */
-  background: radial-gradient(closest-side, rgba(255,80,100,0.14), rgba(255,20,60,0.02));
-  filter: blur(10px);
-}
-
-.liquid-btn.reddish .run-line {
-  right: -10px;
-  width: 6px;
-  height: 10px;
-  background: linear-gradient(180deg, rgba(255,20,60,1), rgba(255,130,140,0.8));
-  box-shadow: 0 0 18px rgba(255,20,60,0.32);
-  animation: run-line 0.9s linear infinite;
-}
-
-/* Running red line from button */
-.liquid-btn .run-line {
-  position: absolute;
-  right: -16px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 6px;
-  background: linear-gradient(180deg, rgba(255,20,60,0.95), rgba(255,20,60,0.6));
-  border-radius: 2px;
-  box-shadow: 0 0 10px rgba(255,20,60,0.2);
-  opacity: 0.9;
-  animation: run-line 1.2s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes run-line {
-  0% { transform: translate(0, -50%) scaleY(0.6); opacity: 1 }
-  50% { transform: translate(18px, -50%) scaleY(1.2); opacity: 0.9 }
-  100% { transform: translate(36px, -50%) scaleY(0.6); opacity: 0 }
-}
-
-/* Parallax Scrolling Animation */
-@keyframes move-background {
-  from { background-position: 0 0; }
-  to { background-position: -10000px 0; }
-}
-
-.parallax-layer {
-  position: absolute;
-  inset: 0;
-  background-repeat: repeat-x;
-  background-position: bottom left;
-  background-size: auto 100%;
-  will-change: background-position;
-  animation: move-background linear infinite;
 }

@@ -1,22 +1,23 @@
-import { Home, Trophy, BookOpen, ScrollText } from "lucide-react";
-import { RetroNavbar } from "@/components/ui/retro-navbar";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
-interface LayoutProps {
-  children: ReactNode;
-}
+interface LayoutProps { children: ReactNode; }
+
+export const useDark = () => {
+  const [dark, setDark] = useState(() => {
+    try { return localStorage.getItem("theme") === "dark"; } catch { return false; }
+  });
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch { }
+  }, [dark]);
+  return [dark, setDark] as const;
+};
 
 const Layout = ({ children }: LayoutProps) => {
-  const navItems = [
-    { name: 'BASE', url: '/', icon: Home },
-    { name: 'QUESTS', url: '/hackathons', icon: Trophy },
-    { name: 'LOGS', url: '/blogs', icon: BookOpen },
-    { name: 'DSA Practice', url: 'https://omn7.github.io/DSA/', icon: ScrollText }
-  ];
+  useDark(); // Ensure theme is initialized
 
   return (
-    <div className="min-h-screen bg-retro-bg text-white font-sans selection:bg-retro-green selection:text-black">
-      <RetroNavbar items={navItems} />
+    <div style={{ background: "var(--bg)", minHeight: "100vh", color: "var(--text)" }}>
       {children}
     </div>
   );
