@@ -55,18 +55,38 @@ const quotes = [
 
 export default function SiteFooter() {
     const [quote, setQuote] = useState("");
+    const [elapsed, setElapsed] = useState(() => {
+        try { return parseInt(localStorage.getItem("timeSpent") || "0", 10); } catch { return 0; }
+    });
 
     useEffect(() => {
         setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-        const interval = setInterval(() => {
+        const quoteInterval = setInterval(() => {
             setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
         }, 10000);
-        return () => clearInterval(interval);
+
+        const timerInterval = setInterval(() => {
+            setElapsed(prev => {
+                const next = prev + 1;
+                try { localStorage.setItem("timeSpent", String(next)); } catch {}
+                return next;
+            });
+        }, 1000);
+
+        return () => {
+            clearInterval(quoteInterval);
+            clearInterval(timerInterval);
+        };
     }, []);
+
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    const timeStr = mins > 0 ? `${mins}m ${secs.toString().padStart(2, "0")}s` : `${secs}s`;
 
     return (
         <footer className="w-full flex flex-col md:flex-row justify-between items-center gap-2 text-sm text-[var(--text)] mt-auto pb-6 pt-4">
             <div className="italic text-center md:text-left max-w-sm">"{quote}"</div>
+            <div className="text-[var(--text-alt)] text-xs">{timeStr}</div>
             <div className="text-center md:text-right">© {new Date().getFullYear()} Om Narkhede. All rights reserved.</div>
         </footer>
     );
