@@ -15,6 +15,10 @@ export default function SiteFooter() {
 
     useEffect(() => {
         setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+        const interval = setInterval(() => {
+            setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+        }, 10000);
+        return () => clearInterval(interval);
     }, []);
 
     return (

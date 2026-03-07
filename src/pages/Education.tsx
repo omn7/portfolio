@@ -27,16 +27,35 @@ export default function Education() {
                 <h1 className="text-3xl font-bold tracking-tight mb-6">Education</h1>
                 <div className="h-px bg-[var(--text)] opacity-20 w-full mb-10" />
 
-                <div className="space-y-6">
-                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 sm:gap-4 group">
-                        <h3 className="font-semibold text-lg text-[var(--text)]">B.E. Computer Science</h3>
-                        <div className="flex items-center gap-3 text-[var(--text-alt)] border-b border-dashed border-[var(--text-alt)] border-opacity-30 flex-1 opacity-0 sm:opacity-100 hidden sm:block"></div>
-                        <p className="text-[var(--text-alt)]">Bharati Vidyapeeth College of Engineering <span className="text-sm ml-2 px-2 py-0.5 rounded-full bg-[var(--text)] text-[var(--bg)] font-medium">2024–2028</span></p>
+                <div className="space-y-12">
+                    {/* BVCOE */}
+                    <div className="border border-[var(--text)] border-opacity-20 p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-1">
+                            <h2 className="text-xl font-bold text-[var(--text)]">Bharati Vidyapeeth College of Engineering</h2>
+                            <span className="text-sm text-[var(--text-alt)]">2024 — 2028</span>
+                        </div>
+                        <p className="text-sm text-[var(--text-alt)] mb-4">B.E. Computer Engineering · Pune, Maharashtra</p>
+                        <ul className="space-y-2 text-[var(--text-alt)] text-[0.95rem] leading-relaxed list-disc list-inside">
+                            <li>Currently in second year, pursuing a Bachelor of Engineering in Computer Engineering.</li>
+                            <li>Serving as President of <span className="text-[var(--text)]">BV Codeverse</span>, the official coding club of the college — organizing hackathons, workshops, and coding events.</li>
+                            <li>Active in full-stack web development projects, building real-world applications alongside academics.</li>
+                            <li>Strengthening problem-solving foundations through Data Structures and Algorithms (DSA) with Java.</li>
+                            <li>Coursework includes Object-Oriented Programming, Database Management, Computer Networks, Operating Systems, and Data Structures.</li>
+                        </ul>
                     </div>
-                    <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 sm:gap-4 group">
-                        <h3 className="font-semibold text-lg text-[var(--text)]">Higher Secondary (12th)</h3>
-                        <div className="flex items-center gap-3 text-[var(--text-alt)] border-b border-dashed border-[var(--text-alt)] border-opacity-30 flex-1 opacity-0 sm:opacity-100 hidden sm:block"></div>
-                        <p className="text-[var(--text-alt)]">Kothari High School & Jr College <span className="text-sm ml-2 px-2 py-0.5 rounded-full bg-[var(--text)] text-[var(--bg)] font-medium">2022–2024</span></p>
+
+                    {/* Kothari */}
+                    <div className="border border-[var(--text)] border-opacity-20 p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-1">
+                            <h2 className="text-xl font-bold text-[var(--text)]">Kothari High School & Jr College</h2>
+                            <span className="text-sm text-[var(--text-alt)]">2022 — 2024</span>
+                        </div>
+                        <p className="text-sm text-[var(--text-alt)] mb-4">Higher Secondary Certificate (HSC) · Science Stream</p>
+                        <ul className="space-y-2 text-[var(--text-alt)] text-[0.95rem] leading-relaxed list-disc list-inside">
+                            <li>Completed 12th standard in Science stream with a focus on Physics, Chemistry, and Mathematics.</li>
+                            <li>Developed early interest in programming and computer science during this period.</li>
+                            <li>Built foundational knowledge in mathematics and logical thinking that laid the groundwork for engineering studies.</li>
+                        </ul>
                     </div>
                 </div>
             </div>

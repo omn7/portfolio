@@ -62,6 +62,17 @@ export default function About() {
                     <a href="https://linkedin.com/in/omnarkhede" target="_blank" rel="noopener noreferrer" className="text-[var(--text)] hover:underline underline-offset-4 font-semibold text-lg">linkedin</a>
                     <a href="mailto:dev.om@outlook.com" className="text-[var(--text)] hover:underline underline-offset-4 font-semibold text-lg">email</a>
                 </div>
+
+                <div className="mt-10 border border-[var(--text)] border-opacity-20 p-6">
+                    <h3 className="text-sm uppercase tracking-wider text-[var(--text-alt)] mb-4">contact</h3>
+                    <div className="space-y-2 text-[0.95rem]">
+                        <p className="text-[var(--text-alt)]">Email: <a href="mailto:dev.om@outlook.com" className="text-[var(--text)] underline underline-offset-4 hover:opacity-80 transition-opacity">dev.om@outlook.com</a></p>
+                        <p className="text-[var(--text-alt)]">GitHub: <a href="https://github.com/omn7" target="_blank" rel="noopener noreferrer" className="text-[var(--text)] underline underline-offset-4 hover:opacity-80 transition-opacity">github.com/omn7</a></p>
+                        <p className="text-[var(--text-alt)]">LinkedIn: <a href="https://linkedin.com/in/omnarkhede" target="_blank" rel="noopener noreferrer" className="text-[var(--text)] underline underline-offset-4 hover:opacity-80 transition-opacity">in/omnarkhede</a></p>
+                        <p className="text-[var(--text-alt)]">Twitter: <a href="https://twitter.com/mr_codex" target="_blank" rel="noopener noreferrer" className="text-[var(--text)] underline underline-offset-4 hover:opacity-80 transition-opacity">@mr_codex</a></p>
+                        <p className="text-[var(--text-alt)]">Location: Pune, Maharashtra, India</p>
+                    </div>
+                </div>
             </div>
 
             {/* Skills Section */}
@@ -69,36 +80,34 @@ export default function About() {
                 <h2 className="text-2xl font-bold tracking-tight mb-6">Skills</h2>
                 <div className="h-px bg-[var(--text)] opacity-20 w-full mb-10" />
 
-                <div className="space-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Frontend */}
-                    <div>
+                    <div className="border border-[var(--text)] border-opacity-20 p-5">
                         <h3 className="text-xs uppercase tracking-wider text-[var(--text-alt)] mb-5">frontend</h3>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                        <div className="space-y-3">
                             {[
                                 { name: "React", icon: "/skillsicon/reactjs.png" },
                                 { name: "TypeScript", icon: "/skillsicon/typescript.png" },
                                 { name: "JavaScript", icon: "/skillsicon/javascript.png" },
                                 { name: "Next.js", icon: "/skillsicon/nextjs.png" },
-                                { name: "Tailwind", icon: "/skillsicon/tailwind.png" },
+                                { name: "Tailwind CSS", icon: "/skillsicon/tailwind.png" },
                                 { name: "Vite", icon: "/skillsicon/vite.png" },
                             ].map((skill) => (
-                                <div key={skill.name} className="flex flex-col items-center gap-2 group">
-                                    <div className="w-10 h-10 flex items-center justify-center">
-                                        <img src={skill.icon} alt={skill.name} className="w-8 h-8 object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" />
-                                    </div>
-                                    <span className="text-xs text-[var(--text-alt)] group-hover:text-[var(--text)] transition-colors">{skill.name}</span>
+                                <div key={skill.name} className="flex items-center gap-3 group">
+                                    <img src={skill.icon} alt={skill.name} className="w-5 h-5 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" />
+                                    <span className="text-sm text-[var(--text-alt)] group-hover:text-[var(--text)] transition-colors">{skill.name}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Backend */}
-                    <div>
+                    <div className="border border-[var(--text)] border-opacity-20 p-5">
                         <h3 className="text-xs uppercase tracking-wider text-[var(--text-alt)] mb-5">backend</h3>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                        <div className="space-y-3">
                             {[
                                 { name: "Node.js", icon: "/skillsicon/Nodejs.png" },
-                                { name: "Express", icon: "/skillsicon/expressjs.png" },
+                                { name: "Express.js", icon: "/skillsicon/expressjs.png" },
                                 { name: "Python", icon: "/skillsicon/python.png" },
                                 { name: "Java", icon: "/skillsicon/java.png" },
                                 { name: "PostgreSQL", icon: "/skillsicon/postgress.png" },
@@ -107,20 +116,18 @@ export default function About() {
                                 { name: "Firebase", icon: "/skillsicon/firebase.png" },
                                 { name: "Django", icon: "/skillsicon/django.png" },
                             ].map((skill) => (
-                                <div key={skill.name} className="flex flex-col items-center gap-2 group">
-                                    <div className="w-10 h-10 flex items-center justify-center">
-                                        <img src={skill.icon} alt={skill.name} className="w-8 h-8 object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" />
-                                    </div>
-                                    <span className="text-xs text-[var(--text-alt)] group-hover:text-[var(--text)] transition-colors">{skill.name}</span>
+                                <div key={skill.name} className="flex items-center gap-3 group">
+                                    <img src={skill.icon} alt={skill.name} className="w-5 h-5 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" />
+                                    <span className="text-sm text-[var(--text-alt)] group-hover:text-[var(--text)] transition-colors">{skill.name}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Tools */}
-                    <div>
+                    <div className="border border-[var(--text)] border-opacity-20 p-5">
                         <h3 className="text-xs uppercase tracking-wider text-[var(--text-alt)] mb-5">tools</h3>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                        <div className="space-y-3">
                             {[
                                 { name: "Git", icon: "/skillsicon/git.png" },
                                 { name: "GitHub", icon: "/skillsicon/github.png" },
@@ -129,11 +136,9 @@ export default function About() {
                                 { name: "Postman", icon: "/skillsicon/postman.png" },
                                 { name: "VS Code", icon: "/skillsicon/vscode.png" },
                             ].map((skill) => (
-                                <div key={skill.name} className="flex flex-col items-center gap-2 group">
-                                    <div className="w-10 h-10 flex items-center justify-center">
-                                        <img src={skill.icon} alt={skill.name} className="w-8 h-8 object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" />
-                                    </div>
-                                    <span className="text-xs text-[var(--text-alt)] group-hover:text-[var(--text)] transition-colors">{skill.name}</span>
+                                <div key={skill.name} className="flex items-center gap-3 group">
+                                    <img src={skill.icon} alt={skill.name} className="w-5 h-5 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" />
+                                    <span className="text-sm text-[var(--text-alt)] group-hover:text-[var(--text)] transition-colors">{skill.name}</span>
                                 </div>
                             ))}
                         </div>

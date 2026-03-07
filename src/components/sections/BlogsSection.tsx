@@ -11,7 +11,8 @@ const BlogsSection = () => {
       title: "Improving LangChain Knowledge Graph Extraction with BAML Fuzzy Parsing",
       url: "https://omn.notion.site/Improving-LangChain-Knowledge-Graph-Extraction-with-BAML-Fuzzy-Parsing-24ab1c3aa29480fbbc72cde3baf6d494",
       date: "August 9, 2025",
-      description: "A deep dive into enhancing LangChain's knowledge graph extraction using BAML and fuzzy parsing techniques.",
+      description: "A deep dive into enhancing LangChain's knowledge graph extraction using BAML and fuzzy parsing techniques. Explores how fuzzy parsing improves structured data extraction from LLM outputs.",
+      tags: ["AI/ML", "LangChain", "NLP"],
       image: "https://omn.notion.site/image/attachment%3A8c320dbf-c738-434d-b5a0-ddfd01a28af9%3A1000010678.webp?table=block&id=24ab1c3a-a294-80b7-82f2-cfaaab928e56&spaceId=74c72ac2-df7b-4267-b93c-8e96d28c4e18&width=2000&userId=&cache=v2"
     }
   ];
@@ -35,29 +36,54 @@ const BlogsSection = () => {
 
       <div className="mb-16">
         <h1 className="text-3xl font-bold tracking-tight mb-6">Blogs</h1>
-        <div className="h-px bg-[var(--text)] opacity-20 w-full mb-10" />
+        <div className="h-px bg-[var(--text)] opacity-20 w-full mb-8" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="space-y-6">
           {blogs.map((b) => (
-            <div key={b.title} className="group flex flex-col gap-3">
-              <a href={b.url} target="_blank" rel="noopener noreferrer" className="block relative overflow-hidden rounded-md border border-[var(--text)] border-opacity-10 bg-[var(--bg)] aspect-video">
-                <img
-                  src={b.image}
-                  alt={b.title}
-                  className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 scale-[1.01] group-hover:scale-105"
-                />
-              </a>
-              <div>
-                <a href={b.url} target="_blank" rel="noopener noreferrer" className="text-lg font-bold hover:underline underline-offset-4 block mb-1">
-                  {b.title}
-                </a>
-                <p className="text-[var(--text-alt)] text-sm mb-2">{b.date}</p>
-                <p className="text-[var(--text-alt)] text-sm leading-relaxed mb-3">
-                  {b.description}
-                </p>
+            <a
+              key={b.title}
+              href={b.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block no-underline border border-[var(--text)] border-opacity-20 hover:border-opacity-50 transition-all group"
+            >
+              <div className="flex flex-col md:flex-row">
+                {/* Image */}
+                <div className="md:w-72 md:shrink-0 overflow-hidden">
+                  <img
+                    src={b.image}
+                    alt={b.title}
+                    className="w-full h-48 md:h-full object-cover"
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="p-5 flex flex-col justify-between flex-1">
+                  <div>
+                    <p className="text-xs text-[var(--text-alt)] mb-1">{b.date}</p>
+                    <h2 className="text-lg font-bold text-[var(--text)] mb-2 group-hover:underline underline-offset-4">
+                      {b.title}
+                    </h2>
+                    <p className="text-[var(--text-alt)] text-sm leading-relaxed mb-3">
+                      {b.description}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {b.tags.map((tag) => (
+                      <span key={tag} className="text-xs text-[var(--text-alt)] px-2 py-0.5 border border-[var(--text)] border-opacity-20">
+                        {tag}
+                      </span>
+                    ))}
+                    <span className="text-xs text-[var(--text-alt)] ml-auto">read ↗</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            </a>
           ))}
+        </div>
+
+        <div className="mt-8 border border-dashed border-[var(--text)] border-opacity-20 p-4 text-center">
+          <p className="text-[var(--text-alt)] text-sm">More posts coming soon.</p>
         </div>
       </div>
 
