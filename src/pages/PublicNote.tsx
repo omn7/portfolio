@@ -39,6 +39,12 @@ export default function PublicNote() {
         return;
       }
 
+      if (!supabase) {
+        setError("Service unavailable.");
+        setLoading(false);
+        return;
+      }
+
       const { data, error: dbError } = await supabase
         .from("notes")
         .select("id, title, content, tag, author_name, created_at, updated_at, public")

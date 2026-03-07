@@ -272,7 +272,7 @@ export default function Todoist() {
   // ─── Data Loading ───────────────────────────────────────────
 
   const loadTodos = useCallback(async () => {
-    if (!user) return;
+    if (!user || !supabase) return;
     const { data } = await supabase
       .from("todos")
       .select("*")
@@ -282,7 +282,7 @@ export default function Todoist() {
   }, [user]);
 
   const loadTransactions = useCallback(async () => {
-    if (!user) return;
+    if (!user || !supabase) return;
     const { data } = await supabase
       .from("transactions")
       .select("*")
@@ -292,7 +292,7 @@ export default function Todoist() {
   }, [user]);
 
   const loadBirthdays = useCallback(async () => {
-    if (!user) return;
+    if (!user || !supabase) return;
     const { data } = await supabase
       .from("birthdays")
       .select("*")
@@ -302,7 +302,7 @@ export default function Todoist() {
   }, [user]);
 
   const loadNotes = useCallback(async () => {
-    if (!user) return;
+    if (!user || !supabase) return;
     const { data } = await supabase
       .from("notes")
       .select("*")
@@ -326,7 +326,7 @@ export default function Todoist() {
   // ─── Todo CRUD ──────────────────────────────────────────────
 
   const addTodo = async () => {
-    if (!newTodo.trim() || !user) return;
+    if (!newTodo.trim() || !user || !supabase) return;
     const todo: Todo & { user_id: string } = {
       id: uuidv4(),
       text: newTodo.trim(),
@@ -343,27 +343,27 @@ export default function Todoist() {
 
   const toggleTodo = async (id: string) => {
     const todo = todos.find((t) => t.id === id);
-    if (!todo) return;
+    if (!todo || !supabase) return;
     setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
     await supabase.from("todos").update({ completed: !todo.completed }).eq("id", id);
   };
 
   const deleteTodo = async (id: string) => {
     setTodos((prev) => prev.filter((t) => t.id !== id));
-    await supabase.from("todos").delete().eq("id", id);
+    if (supabase) await supabase.from("todos").delete().eq("id", id);
   };
 
   const saveEdit = async (id: string) => {
     if (!editText.trim()) return;
     setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, text: editText.trim() } : t)));
     setEditingId(null);
-    await supabase.from("todos").update({ text: editText.trim() }).eq("id", id);
+    if (supabase) await supabase.from("todos").update({ text: editText.trim() }).eq("id", id);
   };
 
   // ─── Transaction CRUD ──────────────────────────────────────
 
   const addTransaction = async () => {
-    if (!financeDesc.trim() || !financeAmount || !user) return;
+    if (!financeDesc.trim() || !financeAmount || !user || !supabase) return;
     const tx: Transaction & { user_id: string } = {
       id: uuidv4(),
       description: financeDesc.trim(),
@@ -383,13 +383,13 @@ export default function Todoist() {
 
   const deleteTransaction = async (id: string) => {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
-    await supabase.from("transactions").delete().eq("id", id);
+    if (supabase) await supabase.from("transactions").delete().eq("id", id);
   };
 
   // ─── Birthday CRUD ─────────────────────────────────────────
 
   const addBirthday = async () => {
-    if (!bdayName.trim() || !bdayDate || !user) return;
+    if (!bdayName.trim() || !bdayDate || !user || !supabase) return;
     const bday: Birthday & { user_id: string } = {
       id: uuidv4(),
       name: bdayName.trim(),
@@ -408,7 +408,7 @@ export default function Todoist() {
 
   const deleteBirthday = async (id: string) => {
     setBirthdays((prev) => prev.filter((b) => b.id !== id));
-    await supabase.from("birthdays").delete().eq("id", id);
+    if (supabase) await supabase.from("birthdays").delete().eq("id", id);
   };
 
   const getDaysUntilBirthday = (dob: string) => {
@@ -435,7 +435,7 @@ export default function Todoist() {
   // ─── Notes CRUD ────────────────────────────────────────────
 
   const addNote = async () => {
-    if (!user) return;
+    if (!user || !supabase) return;
     const note: Note & { user_id: string } = {
       id: uuidv4(),
       title: "Untitled Note",
@@ -456,13 +456,13 @@ export default function Todoist() {
   const updateNote = async (id: string, updates: Partial<Note>) => {
     const updated_at = new Date().toISOString();
     setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, ...updates, updated_at } : n)));
-    await supabase.from("notes").update({ ...updates, updated_at }).eq("id", id);
+    if (supabase) await supabase.from("notes").update({ ...updates, updated_at }).eq("id", id);
   };
 
   const deleteNote = async (id: string) => {
     setNotes((prev) => prev.filter((n) => n.id !== id));
     if (activeNoteId === id) setActiveNoteId(null);
-    await supabase.from("notes").delete().eq("id", id);
+    if (supabase) await supabase.from("notes").delete().eq("id", id);
   };
 
   const togglePinNote = async (id: string) => {
@@ -1500,8 +1500,8 @@ export default function Todoist() {
           {/* ──────────────── NOTES VIEW ──────────────── */}
           {sidebarView === "notes" && (
             <div className="flex gap-0" style={{ height: "calc(100vh - 57px)" }}>
-              {/* Notes sidebar list */}
-              <div className="w-80 border-r border-[var(--text)] border-opacity-10 flex flex-col flex-shrink-0" style={{ background: "var(--bg)" }}>
+              {/* Notes sidebar list — hidden on mobile when a note is active */}
+              <div className={`${activeNoteId ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-[var(--text)] border-opacity-10 flex-col flex-shrink-0`} style={{ background: "var(--bg)" }}>
                 {/* Search + New */}
                 <div className="p-3 border-b border-[var(--text)] border-opacity-10">
                   <div className="flex items-center gap-2 mb-2">
@@ -1673,21 +1673,29 @@ export default function Todoist() {
                 </div>
               </div>
 
-              {/* Note editor */}
-              <div className="flex-1 flex flex-col" style={{ background: "var(--bg)" }}>
+              {/* Note editor — hidden on mobile when no note is active */}
+              <div className={`${activeNoteId ? 'flex' : 'hidden md:flex'} flex-1 flex-col w-full`} style={{ background: "var(--bg)" }}>
                 {activeNote ? (() => {
                   const activeTagInfo = getTagInfo(activeNote.tag || "none");
                   return (
                     <>
                       {/* Editor toolbar */}
                       <div
-                        className="flex items-center justify-between px-4 py-2 border-b border-[var(--text)] border-opacity-10"
+                        className="flex items-center justify-between px-2 sm:px-4 py-2 border-b border-[var(--text)] border-opacity-10"
                         style={{
                           background: activeTagInfo.key !== "none" ? activeTagInfo.bg : "transparent",
                           borderBottomColor: activeTagInfo.key !== "none" ? activeTagInfo.border : undefined,
                         }}
                       >
                         <div className="flex items-center gap-1">
+                          {/* Back button — mobile only */}
+                          <button
+                            onClick={() => setActiveNoteId(null)}
+                            className="p-1.5 md:hidden text-[var(--text-alt)] hover:text-[var(--text)] transition-colors"
+                            title="Back to notes"
+                          >
+                            <ArrowLeft size={16} />
+                          </button>
                           {/* Pin */}
                           <button
                             onClick={() => togglePinNote(activeNote.id)}
@@ -1778,7 +1786,7 @@ export default function Todoist() {
                         </div>
 
                         <div className="flex items-center gap-1">
-                          <span className="text-[10px] text-[var(--text-alt)] mr-2">
+                          <span className="text-[10px] text-[var(--text-alt)] mr-2 hidden sm:inline">
                             {format(new Date(activeNote.updated_at), "MMM d, yyyy h:mm a")}
                           </span>
                           {/* AI Rewrite button */}
@@ -1844,7 +1852,7 @@ export default function Todoist() {
 
                       {/* Formatting toolbar */}
                       <div
-                        className="flex items-center gap-0.5 px-5 py-2 border-b border-[var(--text)] border-opacity-5"
+                        className="flex items-center gap-0.5 px-3 sm:px-5 py-2 border-b border-[var(--text)] border-opacity-5 overflow-x-auto"
                         style={{ flexShrink: 0 }}
                       >
                         <button onClick={() => execFormat("bold")} className="p-1.5 hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors" style={{ color: "var(--text-alt)", border: "none", background: "transparent" }} title="Bold (Ctrl+B)"><Bold size={14} /></button>
@@ -1894,7 +1902,7 @@ export default function Todoist() {
                         type="text"
                         value={activeNote.title}
                         onChange={(e) => updateNote(activeNote.id, { title: e.target.value })}
-                        className="px-5 pt-5 pb-2 text-2xl font-bold bg-transparent text-[var(--text)] outline-none border-none w-full"
+                        className="px-3 sm:px-5 pt-4 sm:pt-5 pb-2 text-xl sm:text-2xl font-bold bg-transparent text-[var(--text)] outline-none border-none w-full"
                         placeholder="Title"
                         style={{ fontFamily: "inherit" }}
                       />
@@ -1913,7 +1921,7 @@ export default function Todoist() {
                           const text = e.clipboardData.getData("text/html") || e.clipboardData.getData("text/plain");
                           document.execCommand("insertHTML", false, text);
                         }}
-                        className={`px-5 py-3 text-sm bg-transparent text-[var(--text)] outline-none border-none w-full overflow-y-auto ${aiRewriteResult ? '' : 'flex-1'}`}
+                        className={`px-3 sm:px-5 py-3 text-sm bg-transparent text-[var(--text)] outline-none border-none w-full overflow-y-auto ${aiRewriteResult ? '' : 'flex-1'}`}
                         style={{
                           fontFamily: "inherit", lineHeight: 1.8, letterSpacing: "0.01em",
                           minHeight: aiRewriteResult ? "120px" : "200px",
