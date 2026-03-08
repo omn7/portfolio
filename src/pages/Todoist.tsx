@@ -78,6 +78,17 @@ const NOTE_TAGS: { key: NoteTag; label: string; color: string; bg: string; borde
 
 const getTagInfo = (tag: NoteTag) => NOTE_TAGS.find((t) => t.key === tag) || NOTE_TAGS[0];
 
+const CARD_COLORS: Record<NoteTag, { bg: string; text: string; sub: string }> = {
+  none:   { bg: "rgba(128,128,128,0.08)", text: "var(--text)",   sub: "var(--text-alt)" },
+  red:    { bg: "#ef4444",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
+  orange: { bg: "#f97316",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
+  yellow: { bg: "#eab308",                text: "#1a1a1a",       sub: "rgba(0,0,0,0.5)" },
+  green:  { bg: "#22c55e",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
+  blue:   { bg: "#3b82f6",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
+  purple: { bg: "#a855f7",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
+  pink:   { bg: "#ec4899",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
+};
+
 type SidebarView = "dashboard" | "daily" | "weekly" | "monthly" | "finance" | "birthdays" | "notes";
 
 // ─── Finance Categories ──────────────────────────────────────────
@@ -745,11 +756,7 @@ export default function Todoist() {
         </nav>
 
         {/* Mini Calendar in sidebar */}
-        {!sidebarCollapsed && (
-          <div className="p-3 border-t border-[var(--text)] border-opacity-10">
-            {renderCalendar()}
-          </div>
-        )}
+
 
         {/* Sign Out */}
         <div className={`border-t border-[var(--text)] border-opacity-10 ${sidebarCollapsed ? "p-1.5" : "p-3"}`}>
@@ -1165,60 +1172,91 @@ export default function Todoist() {
                   </div>
                 ) : (
                   filteredTodos.map((todo) => (
-                    <div
-                      key={todo.id}
-                      className={`flex items-center gap-3 px-3 py-2.5 border border-[var(--text)] border-opacity-10 hover:border-opacity-20 transition-all group ${
-                        todo.completed ? "opacity-50" : ""
-                      }`}
-                    >
-                      <button
-                        onClick={() => toggleTodo(todo.id)}
-                        className={`w-5 h-5 border flex-shrink-0 flex items-center justify-center transition-all ${
-                          todo.completed
-                            ? "bg-green-500 border-green-500 text-white"
-                            : "border-[var(--text)] border-opacity-30 bg-transparent hover:border-opacity-60"
-                        }`}
-                      >
-                        {todo.completed && <Check size={12} />}
-                      </button>
-
-                      {editingId === todo.id ? (
-                        <div className="flex-1 flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={editText}
-                            onChange={(e) => setEditText(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && saveEdit(todo.id)}
-                            className="flex-1 h-7 px-2 border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] text-sm font-mono outline-none"
-                            autoFocus
-                          />
-                          <button onClick={() => saveEdit(todo.id)} className="text-green-500 hover:text-green-400 p-0.5">
-                            <Save size={14} />
-                          </button>
-                          <button onClick={() => setEditingId(null)} className="text-[var(--text-alt)] hover:text-[var(--text)] p-0.5">
-                            <X size={14} />
-                          </button>
+                    <div key={todo.id}>
+                      {/* Mobile card style */}
+                      <div className="sm:hidden flex items-center rounded-xl bg-[var(--bg)] border border-[var(--text)] border-opacity-10 shadow-sm px-3 py-3 mb-2 gap-3 group transition-all">
+                        <button
+                          onClick={() => toggleTodo(todo.id)}
+                          className={`w-6 h-6 border flex-shrink-0 flex items-center justify-center rounded-full transition-all ${
+                            todo.completed
+                              ? "bg-green-500 border-green-500 text-white"
+                              : "border-[var(--text)] border-opacity-30 bg-transparent hover:border-opacity-60"
+                          }`}
+                        >
+                          {todo.completed && <Check size={14} />}
+                        </button>
+                        <div className="flex-1 min-w-0">
+                          <div className={`font-bold text-[15px] truncate ${todo.completed ? "line-through" : ""}`}>{todo.text}</div>
+                          <div className="text-xs text-[var(--text-alt)] truncate mt-0.5">
+                            {/* Show a short desc if available, else first 40 chars */}
+                            {todo.desc ? todo.desc.slice(0, 60) : todo.text.slice(0, 40)}
+                          </div>
                         </div>
-                      ) : (
-                        <>
-                          <span className={`flex-1 text-sm ${todo.completed ? "line-through" : ""}`}>{todo.text}</span>
-                          <span className="text-xs text-[var(--text-alt)] opacity-0 group-hover:opacity-100 transition-opacity">
-                            {format(new Date(todo.date), "MMM d")}
-                          </span>
-                          <button
-                            onClick={() => { setEditingId(todo.id); setEditText(todo.text); }}
-                            className="opacity-0 group-hover:opacity-100 text-[var(--text-alt)] hover:text-[var(--text)] transition-all p-0.5"
-                          >
-                            <Edit2 size={13} />
-                          </button>
-                          <button
-                            onClick={() => deleteTodo(todo.id)}
-                            className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all p-0.5"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </>
-                      )}
+                        <button
+                          onClick={() => { setEditingId(todo.id); setEditText(todo.text); }}
+                          className="text-[var(--text-alt)] hover:text-[var(--text)] transition-all p-1"
+                          title="Edit"
+                        >
+                          <Edit2 size={15} />
+                        </button>
+                        <button
+                          onClick={() => deleteTodo(todo.id)}
+                          className="text-red-500 hover:text-red-400 transition-all p-1"
+                          title="Delete"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                      {/* Desktop style (unchanged) */}
+                      <div className="hidden sm:flex items-center gap-3 px-3 py-2.5 border border-[var(--text)] border-opacity-10 hover:border-opacity-20 transition-all group rounded-lg ${todo.completed ? 'opacity-50' : ''}">
+                        <button
+                          onClick={() => toggleTodo(todo.id)}
+                          className={`w-5 h-5 border flex-shrink-0 flex items-center justify-center transition-all ${
+                            todo.completed
+                              ? "bg-green-500 border-green-500 text-white"
+                              : "border-[var(--text)] border-opacity-30 bg-transparent hover:border-opacity-60"
+                          }`}
+                        >
+                          {todo.completed && <Check size={12} />}
+                        </button>
+                        {editingId === todo.id ? (
+                          <div className="flex-1 flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={editText}
+                              onChange={(e) => setEditText(e.target.value)}
+                              onKeyDown={(e) => e.key === "Enter" && saveEdit(todo.id)}
+                              className="flex-1 h-7 px-2 border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] text-sm font-mono outline-none"
+                              autoFocus
+                            />
+                            <button onClick={() => saveEdit(todo.id)} className="text-green-500 hover:text-green-400 p-0.5">
+                              <Save size={14} />
+                            </button>
+                            <button onClick={() => setEditingId(null)} className="text-[var(--text-alt)] hover:text-[var(--text)] p-0.5">
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <span className={`flex-1 text-sm ${todo.completed ? "line-through" : ""}`}>{todo.text}</span>
+                            <span className="text-xs text-[var(--text-alt)] opacity-0 group-hover:opacity-100 transition-opacity">
+                              {format(new Date(todo.date), "MMM d")}
+                            </span>
+                            <button
+                              onClick={() => { setEditingId(todo.id); setEditText(todo.text); }}
+                              className="opacity-0 group-hover:opacity-100 text-[var(--text-alt)] hover:text-[var(--text)] transition-all p-0.5"
+                            >
+                              <Edit2 size={13} />
+                            </button>
+                            <button
+                              onClick={() => deleteTodo(todo.id)}
+                              className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all p-0.5"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   ))
                 )}
@@ -1499,186 +1537,11 @@ export default function Todoist() {
 
           {/* ──────────────── NOTES VIEW ──────────────── */}
           {sidebarView === "notes" && (
-            <div className="flex gap-0" style={{ height: "calc(100vh - 57px)" }}>
-              {/* Notes sidebar list — hidden on mobile when a note is active */}
-              <div className={`${activeNoteId ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-[var(--text)] border-opacity-10 flex-col flex-shrink-0`} style={{ background: "var(--bg)" }}>
-                {/* Search + New */}
-                <div className="p-3 border-b border-[var(--text)] border-opacity-10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex-1 relative">
-                      <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-alt)]" />
-                      <input
-                        type="text"
-                        value={noteSearch}
-                        onChange={(e) => setNoteSearch(e.target.value)}
-                        placeholder="Search notes..."
-                        className="w-full h-8 pl-8 pr-3 border border-[var(--text)] border-opacity-10 bg-[var(--text)] bg-opacity-5 text-[var(--text)] text-xs font-mono outline-none focus:border-opacity-30 rounded-sm"
-                      />
-                    </div>
-                    <button
-                      onClick={addNote}
-                      className="h-8 w-8 flex items-center justify-center border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all flex-shrink-0"
-                      title="New note"
-                    >
-                      <Plus size={14} />
-                    </button>
-                  </div>
-                  {/* Tag filter chips */}
-                  <div className="flex items-center gap-1 flex-wrap">
-                    <button
-                      onClick={() => setNoteTagFilter("all")}
-                      style={{
-                        fontSize: "10px",
-                        padding: "2px 8px",
-                        border: "1px solid",
-                        borderColor: noteTagFilter === "all" ? "var(--text)" : "rgba(128,128,128,0.2)",
-                        background: noteTagFilter === "all" ? "var(--text)" : "transparent",
-                        color: noteTagFilter === "all" ? "var(--bg)" : "var(--text-alt)",
-                        fontWeight: noteTagFilter === "all" ? 700 : 400,
-                        fontFamily: "inherit",
-                        cursor: "pointer",
-                        borderRadius: "2px",
-                      }}
-                    >
-                      All
-                    </button>
-                    {NOTE_TAGS.filter(t => t.key !== "none").map((t) => (
-                      <button
-                        key={t.key}
-                        onClick={() => setNoteTagFilter(t.key)}
-                        title={t.label}
-                        style={{
-                          width: "18px",
-                          height: "18px",
-                          border: "2px solid",
-                          borderColor: noteTagFilter === t.key ? t.color : "rgba(128,128,128,0.15)",
-                          background: noteTagFilter === t.key ? t.bg : "transparent",
-                          cursor: "pointer",
-                          borderRadius: "50%",
-                          padding: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: t.color, display: "block" }} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Note list */}
-                <div className="flex-1 overflow-y-auto">
-                  {pinnedNotes.length > 0 && (
-                    <div className="px-3 pt-3 pb-1">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-alt)] opacity-60">Pinned</span>
-                    </div>
-                  )}
-                  {pinnedNotes.map((note) => {
-                    const tagInfo = getTagInfo(note.tag || "none");
-                    const isActive = activeNoteId === note.id;
-                    return (
-                      <button
-                        key={note.id}
-                        onClick={() => { setActiveNoteId(note.id); setAiRewriteResult(null); }}
-                        style={{
-                          width: "100%",
-                          textAlign: "left",
-                          padding: "10px 12px",
-                          border: "none",
-                          borderLeft: `3px solid ${tagInfo.key !== "none" ? tagInfo.color : "transparent"}`,
-                          borderBottom: "1px solid rgba(128,128,128,0.08)",
-                          background: isActive ? (tagInfo.key !== "none" ? tagInfo.bg : "rgba(128,128,128,0.1)") : "transparent",
-                          cursor: "pointer",
-                          fontFamily: "inherit",
-                          color: "var(--text)",
-                          transition: "all 0.15s",
-                        }}
-                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(128,128,128,0.05)"; }}
-                        onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
-                      >
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <Pin size={10} className="text-yellow-500 flex-shrink-0" />
-                          <span style={{ fontSize: "13px", fontWeight: 700, display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{note.title || "Untitled"}</span>
-                          {note.public && <Globe size={9} style={{ color: "#22c55e", flexShrink: 0 }} />}
-                          {tagInfo.key !== "none" && (
-                            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: tagInfo.color, flexShrink: 0, marginLeft: "auto" }} />
-                          )}
-                        </div>
-                        <span style={{ fontSize: "11px", color: "var(--text-alt)", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {stripHtml(note.content).slice(0, 80) || "No content"}
-                        </span>
-                        <span style={{ fontSize: "10px", color: "var(--text-alt)", opacity: 0.5, marginTop: "2px", display: "block" }}>
-                          {format(new Date(note.updated_at), "MMM d, h:mm a")}
-                        </span>
-                      </button>
-                    );
-                  })}
-                  {unpinnedNotes.length > 0 && pinnedNotes.length > 0 && (
-                    <div className="px-3 pt-3 pb-1">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-alt)] opacity-60">Notes</span>
-                    </div>
-                  )}
-                  {unpinnedNotes.map((note) => {
-                    const tagInfo = getTagInfo(note.tag || "none");
-                    const isActive = activeNoteId === note.id;
-                    return (
-                      <button
-                        key={note.id}
-                        onClick={() => { setActiveNoteId(note.id); setAiRewriteResult(null); }}
-                        style={{
-                          width: "100%",
-                          textAlign: "left",
-                          padding: "10px 12px",
-                          border: "none",
-                          borderLeft: `3px solid ${tagInfo.key !== "none" ? tagInfo.color : "transparent"}`,
-                          borderBottom: "1px solid rgba(128,128,128,0.08)",
-                          background: isActive ? (tagInfo.key !== "none" ? tagInfo.bg : "rgba(128,128,128,0.1)") : "transparent",
-                          cursor: "pointer",
-                          fontFamily: "inherit",
-                          color: "var(--text)",
-                          transition: "all 0.15s",
-                        }}
-                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(128,128,128,0.05)"; }}
-                        onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
-                      >
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <span style={{ fontSize: "13px", fontWeight: 700, display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{note.title || "Untitled"}</span>
-                          {note.public && <Globe size={9} style={{ color: "#22c55e", flexShrink: 0 }} />}
-                          {tagInfo.key !== "none" && (
-                            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: tagInfo.color, flexShrink: 0 }} />
-                          )}
-                        </div>
-                        <span style={{ fontSize: "11px", color: "var(--text-alt)", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {stripHtml(note.content).slice(0, 80) || "No content"}
-                        </span>
-                        <span style={{ fontSize: "10px", color: "var(--text-alt)", opacity: 0.5, marginTop: "2px", display: "block" }}>
-                          {format(new Date(note.updated_at), "MMM d, h:mm a")}
-                        </span>
-                      </button>
-                    );
-                  })}
-                  {filteredNotes.length === 0 && (
-                    <div className="text-center py-16 text-[var(--text-alt)]">
-                      <StickyNote size={28} className="mx-auto mb-3 opacity-20" />
-                      <p className="text-xs">{noteSearch || noteTagFilter !== "all" ? "No matching notes" : "No notes yet"}</p>
-                      <p className="text-[10px] mt-1 opacity-50">Click + to create one</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Note count */}
-                <div style={{ padding: "8px 12px", borderTop: "1px solid rgba(128,128,128,0.1)", fontSize: "10px", color: "var(--text-alt)", opacity: 0.6 }}>
-                  {notes.length} note{notes.length !== 1 ? "s" : ""}
-                </div>
-              </div>
-
-              {/* Note editor — hidden on mobile when no note is active */}
-              <div className={`${activeNoteId ? 'flex' : 'hidden md:flex'} flex-1 flex-col w-full`} style={{ background: "var(--bg)" }}>
-                {activeNote ? (() => {
+            <div className="flex flex-col" style={{ height: "calc(100vh - 57px)" }}>
+              {activeNote ? (() => {
                   const activeTagInfo = getTagInfo(activeNote.tag || "none");
                   return (
-                    <>
+                    <div className="flex flex-col flex-1 overflow-hidden">
                       {/* Editor toolbar */}
                       <div
                         className="flex items-center justify-between px-2 sm:px-4 py-2 border-b border-[var(--text)] border-opacity-10"
@@ -2005,18 +1868,179 @@ export default function Todoist() {
                           </div>
                         </div>
                       )}
-                    </>
+                    </div>
                   );
                 })() : (
-                  <div className="flex-1 flex items-center justify-center text-[var(--text-alt)]">
-                    <div className="text-center">
-                      <StickyNote size={40} className="mx-auto mb-3 opacity-15" />
-                      <p className="text-sm font-medium">Select a note or create a new one</p>
-                      <p className="text-xs mt-1 opacity-50">Press + in the sidebar to get started</p>
+                  /* ── Card Grid View ── */
+                  <div className="flex flex-col flex-1 overflow-hidden">
+                    {/* Search bar + Add button */}
+                    <div className="p-4 pb-2">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="flex-1 relative">
+                          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-alt)] opacity-60" />
+                          <input
+                            type="text"
+                            value={noteSearch}
+                            onChange={(e) => setNoteSearch(e.target.value)}
+                            placeholder="Search your notes"
+                            className="w-full h-10 pl-10 pr-3 border border-[var(--text)] border-opacity-10 bg-[var(--text)] bg-opacity-5 text-[var(--text)] text-sm outline-none focus:border-opacity-30 rounded-xl"
+                            style={{ fontFamily: "inherit" }}
+                          />
+                        </div>
+                        <button
+                          onClick={addNote}
+                          className="h-10 w-10 flex items-center justify-center rounded-xl border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all flex-shrink-0"
+                          title="New note"
+                        >
+                          <Plus size={18} />
+                        </button>
+                      </div>
+                      {/* Tag filter chips */}
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <button
+                          onClick={() => setNoteTagFilter("all")}
+                          style={{
+                            fontSize: "11px",
+                            padding: "4px 12px",
+                            border: "1px solid",
+                            borderColor: noteTagFilter === "all" ? "var(--text)" : "rgba(128,128,128,0.2)",
+                            background: noteTagFilter === "all" ? "var(--text)" : "transparent",
+                            color: noteTagFilter === "all" ? "var(--bg)" : "var(--text-alt)",
+                            fontWeight: noteTagFilter === "all" ? 700 : 400,
+                            fontFamily: "inherit",
+                            cursor: "pointer",
+                            borderRadius: "999px",
+                          }}
+                        >
+                          All
+                        </button>
+                        {NOTE_TAGS.filter(t => t.key !== "none").map((t) => (
+                          <button
+                            key={t.key}
+                            onClick={() => setNoteTagFilter(noteTagFilter === t.key ? "all" : t.key)}
+                            title={t.label}
+                            style={{
+                              width: "22px",
+                              height: "22px",
+                              border: "2px solid",
+                              borderColor: noteTagFilter === t.key ? t.color : "rgba(128,128,128,0.15)",
+                              background: noteTagFilter === t.key ? t.bg : "transparent",
+                              cursor: "pointer",
+                              borderRadius: "50%",
+                              padding: 0,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: t.color, display: "block" }} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Card grid */}
+                    <div className="flex-1 overflow-y-auto px-4 pb-4">
+                      {pinnedNotes.length > 0 && (
+                        <div className="mb-2 mt-1">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-alt)] opacity-50">Pinned</span>
+                        </div>
+                      )}
+                      {pinnedNotes.length > 0 && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
+                          {pinnedNotes.map((note) => {
+                            const card = CARD_COLORS[note.tag || "none"];
+                            return (
+                              <button
+                                key={note.id}
+                                onClick={() => { setActiveNoteId(note.id); setAiRewriteResult(null); }}
+                                className="text-left rounded-2xl p-4 transition-all hover:scale-[1.02] hover:shadow-lg"
+                                style={{
+                                  background: card.bg,
+                                  color: card.text,
+                                  border: (note.tag || "none") === "none" ? "1px solid rgba(128,128,128,0.15)" : "none",
+                                  minHeight: "140px",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  fontFamily: "inherit",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <div className="flex items-center gap-1 mb-2">
+                                  <Pin size={11} style={{ color: card.text, opacity: 0.7, flexShrink: 0 }} />
+                                  <span className="font-bold text-sm truncate">{note.title || "Untitled"}</span>
+                                  {note.public && <Globe size={10} style={{ opacity: 0.7, flexShrink: 0 }} />}
+                                </div>
+                                <div
+                                  className="text-xs flex-1 overflow-hidden"
+                                  style={{ color: card.sub, lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical" }}
+                                >
+                                  {stripHtml(note.content).slice(0, 200) || "No content"}
+                                </div>
+                                <div className="mt-3 text-[10px]" style={{ color: card.sub, opacity: 0.7 }}>
+                                  {format(new Date(note.updated_at), "MMM d, h:mm a")}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {unpinnedNotes.length > 0 && pinnedNotes.length > 0 && (
+                        <div className="mb-2">
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-alt)] opacity-50">Notes</span>
+                        </div>
+                      )}
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                        {unpinnedNotes.map((note) => {
+                          const card = CARD_COLORS[note.tag || "none"];
+                          return (
+                            <button
+                              key={note.id}
+                              onClick={() => { setActiveNoteId(note.id); setAiRewriteResult(null); }}
+                              className="text-left rounded-2xl p-4 transition-all hover:scale-[1.02] hover:shadow-lg"
+                              style={{
+                                background: card.bg,
+                                color: card.text,
+                                border: (note.tag || "none") === "none" ? "1px solid rgba(128,128,128,0.15)" : "none",
+                                minHeight: "140px",
+                                display: "flex",
+                                flexDirection: "column",
+                                fontFamily: "inherit",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <span className="font-bold text-sm truncate mb-2 flex items-center gap-1">
+                                {note.title || "Untitled"}
+                                {note.public && <Globe size={10} style={{ opacity: 0.7, flexShrink: 0 }} />}
+                              </span>
+                              <div
+                                className="text-xs flex-1 overflow-hidden"
+                                style={{ color: card.sub, lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical" }}
+                              >
+                                {stripHtml(note.content).slice(0, 200) || "No content"}
+                              </div>
+                              <div className="mt-3 text-[10px]" style={{ color: card.sub, opacity: 0.7 }}>
+                                {format(new Date(note.updated_at), "MMM d, h:mm a")}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {filteredNotes.length === 0 && (
+                        <div className="text-center py-20 text-[var(--text-alt)]">
+                          <StickyNote size={36} className="mx-auto mb-3 opacity-20" />
+                          <p className="text-sm">{noteSearch || noteTagFilter !== "all" ? "No matching notes" : "No notes yet"}</p>
+                          <p className="text-xs mt-1 opacity-50">Click + to create one</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Note count */}
+                    <div style={{ padding: "8px 16px", borderTop: "1px solid rgba(128,128,128,0.1)", fontSize: "11px", color: "var(--text-alt)", opacity: 0.6 }}>
+                      {notes.length} note{notes.length !== 1 ? "s" : ""}
                     </div>
                   </div>
                 )}
-              </div>
             </div>
           )}
         </div>
