@@ -6,7 +6,9 @@ export const config = {
 
 export default async function handler(request: Request) {
     const url = new URL(request.url);
-    const noteId = url.pathname.split("/").pop(); // usually /note/ID here
+    const parts = url.pathname.split("/").filter(Boolean); // e.g. ['notes', 'userId', 'noteId']
+    const noteId = parts.pop();
+    const userId = parts.pop();
 
     // We load standard env vars (Vercel exposes these automatically if set up in dashboard)
     const supabaseUrl = process.env.VITE_SUPABASE_URL || "";
@@ -46,6 +48,8 @@ export default async function handler(request: Request) {
     const domain = `${protocol}://${host}`;
     const ogImageUrl = `${domain}/api/og?title=${encodeURIComponent(noteTitle)}&author=${encodeURIComponent(authorName)}&tag=${encodeURIComponent(tag)}`;
 
+    const frontendUrl = `/notes/${userId}/${noteId}`;
+
     // The base HTML that Vercel serves for index.html
     // Here we explicitly insert OG tags and Title and return it
     const html = `
@@ -71,12 +75,12 @@ export default async function handler(request: Request) {
         <meta name="twitter:image" content="${ogImageUrl}" />
         <meta name="author" content="${authorName}" />
         
-        <meta http-equiv="refresh" content="0; url=/#/note/${noteId}" />
+        <meta http-equiv="refresh" content="0; url=${frontendUrl}" />
       </head>
       <body>
         <p>Redirecting to Note...</p>
         <script>
-            window.location.href = "/#/note/${noteId}";
+            window.location.href = "${frontendUrl}";
         </script>
       </body>
     </html>
