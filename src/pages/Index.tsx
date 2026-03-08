@@ -12,6 +12,7 @@ export default function Index() {
 
   const [greetingIndex, setGreetingIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
+  const [toolsOpen, setToolsOpen] = useState(false);
   const fullText = "I am Om Narkhede";
 
   useEffect(() => {
@@ -110,10 +111,28 @@ export default function Index() {
             <span>6. About Me</span>
             <span className="opacity-50">→</span>
           </Link>
-          <Link to="/news" className="flex items-center justify-between h-14 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-5 font-bold text-[0.95rem] tracking-normal">
-            <span>7. World Radar</span>
-            <span className="opacity-50">→</span>
-          </Link>
+
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => setToolsOpen(!toolsOpen)}
+              className={`flex items-center justify-between h-14 border border-[var(--text)] ${toolsOpen ? 'border-opacity-100 bg-[var(--text)] text-[var(--bg)]' : 'border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)]'} transition-all px-5 font-bold text-[0.95rem] tracking-normal w-full`}
+            >
+              <span>7. Tools</span>
+              <span className={`opacity-50 transition-transform duration-300 ${toolsOpen ? 'rotate-90' : ''}`}>→</span>
+            </button>
+            <div
+              className={`flex flex-col gap-2 overflow-hidden transition-all duration-300 ${toolsOpen ? 'max-h-[200px] opacity-100' : 'max-h-0 opacity-0'}`}
+            >
+              <Link to="/news" className="flex items-center justify-between h-12 ml-6 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-4 font-bold text-[0.85rem]">
+                <span>World Radar</span>
+                <span className="opacity-50">→</span>
+              </Link>
+              <Link to="/workspace" className="flex items-center justify-between h-12 ml-6 border border-[var(--text)] border-opacity-20 hover:border-opacity-100 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all px-4 font-bold text-[0.85rem]">
+                <span>Workspace / Workflow</span>
+                <span className="opacity-50">→</span>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
