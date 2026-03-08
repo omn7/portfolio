@@ -57,6 +57,47 @@ export default function PublicNote() {
     fetchNote();
   }, [userId, noteId]);
 
+  useEffect(() => {
+    if (note) {
+      const originalTitle = document.title;
+      const newTitle = `${note.title || "Untitled Note"} | Workspace`;
+      document.title = newTitle;
+
+      const updateMeta = (selector: string, content: string) => {
+        const meta = document.querySelector(selector);
+        if (meta) {
+          meta.setAttribute("content", content);
+        }
+      };
+
+      // Strip HTML tags for the description
+      const plainTextContent = note.content
+        ? note.content.replace(/<[^>]+>/g, "").trim().slice(0, 150) + "..."
+        : "Read this article on Workspace.";
+
+      // Get original meta tags to restore later
+      const ogTitle = document.querySelector('meta[property="og:title"]')?.getAttribute("content");
+      const ogDesc = document.querySelector('meta[property="og:description"]')?.getAttribute("content");
+      const twTitle = document.querySelector('meta[name="twitter:title"]')?.getAttribute("content");
+      const twDesc = document.querySelector('meta[name="twitter:description"]')?.getAttribute("content");
+
+      // Set new meta tags
+      updateMeta('meta[property="og:title"]', newTitle);
+      updateMeta('meta[property="og:description"]', plainTextContent);
+      updateMeta('meta[name="twitter:title"]', newTitle);
+      updateMeta('meta[name="twitter:description"]', plainTextContent);
+
+      return () => {
+        // Restore meta tags when unmounting the component
+        document.title = originalTitle;
+        if (ogTitle) updateMeta('meta[property="og:title"]', ogTitle);
+        if (ogDesc) updateMeta('meta[property="og:description"]', ogDesc);
+        if (twTitle) updateMeta('meta[name="twitter:title"]', twTitle);
+        if (twDesc) updateMeta('meta[name="twitter:description"]', twDesc);
+      };
+    }
+  }, [note]);
+
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
@@ -157,6 +198,7 @@ export default function PublicNote() {
         {/* Content */}
         <div
           className="prose prose-lg sm:prose-xl max-w-none font-serif text-[var(--text)] prose-p:leading-[1.8] prose-p:text-[var(--text)] prose-p:tracking-[0.01em] prose-headings:font-sans prose-headings:font-bold prose-headings:text-[var(--text)] prose-headings:tracking-tight prose-a:text-[var(--link)] prose-strong:text-[var(--text)] prose-blockquote:border-l-[4px] prose-blockquote:border-black/80 dark:prose-blockquote:border-white/80 prose-blockquote:text-[var(--text)] prose-blockquote:bg-black/5 dark:prose-blockquote:bg-white/5 prose-blockquote:px-5 prose-blockquote:py-2 prose-blockquote:rounded-r-lg prose-blockquote:font-style-italic prose-li:text-[var(--text)]"
+          style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
           dangerouslySetInnerHTML={{ __html: note.content || "<p class='italic text-[var(--text-alt)] font-sans'>This note is empty.</p>" }}
         />
       </article>

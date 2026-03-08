@@ -11,7 +11,7 @@ import {
   Sparkles, RotateCcw, Copy, CheckCheck,
   PanelLeftClose, PanelLeftOpen, LayoutDashboard, Clock,
   Share2, Globe, Link as LinkIcon, ExternalLink,
-  Bold, Italic, Underline, Link2, Type, Undo, Redo
+  Bold, Italic, Underline, Link2, Type, Undo, Redo, BookOpen
 } from "lucide-react";
 import { differenceInDays, setYear, isPast } from "date-fns";
 import { useDark } from "@/components/Layout";
@@ -48,6 +48,13 @@ interface Birthday {
   name: string;
   dob: string; // yyyy-MM-dd
   note: string;
+  created_at: string;
+}
+
+interface VocabularyWord {
+  id: string;
+  word: string;
+  meaning: string;
   created_at: string;
 }
 
@@ -89,7 +96,7 @@ const CARD_COLORS: Record<NoteTag, { bg: string; text: string; sub: string }> = 
   pink: { bg: "#ec4899", text: "#fff", sub: "rgba(255,255,255,0.7)" },
 };
 
-type SidebarView = "dashboard" | "daily" | "weekly" | "monthly" | "finance" | "birthdays" | "notes";
+type SidebarView = "dashboard" | "daily" | "weekly" | "monthly" | "finance" | "birthdays" | "notes" | "vocabulary";
 
 // ─── Finance Categories ──────────────────────────────────────────
 
@@ -106,6 +113,7 @@ export default function Workspace() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [birthdays, setBirthdays] = useState<Birthday[]>([]);
+  const [vocabularyWords, setVocabularyWords] = useState<VocabularyWord[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
   const [newTodo, setNewTodo] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -130,6 +138,11 @@ export default function Workspace() {
   const [bdayName, setBdayName] = useState("");
   const [bdayDate, setBdayDate] = useState("");
   const [bdayNote, setBdayNote] = useState("");
+
+  // Vocabulary form state
+  const [showVocabForm, setShowVocabForm] = useState(false);
+  const [vocabWord, setVocabWord] = useState("");
+  const [vocabMeaning, setVocabMeaning] = useState("");
 
   // Notes state
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
@@ -331,11 +344,21 @@ export default function Workspace() {
     if (data) setNotes(data);
   }, [user]);
 
+  const loadVocabulary = useCallback(async () => {
+    if (!user || !supabase) return;
+    const { data } = await supabase
+      .from("vocabulary")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+    if (data) setVocabularyWords(data);
+  }, [user]);
+
   useEffect(() => {
     if (user) {
-      Promise.all([loadTodos(), loadTransactions(), loadBirthdays(), loadNotes()]).then(() => setLoadingData(false));
+      Promise.all([loadTodos(), loadTransactions(), loadBirthdays(), loadNotes(), loadVocabulary()]).then(() => setLoadingData(false));
     }
-  }, [user, loadTodos, loadTransactions, loadBirthdays, loadNotes]);
+  }, [user, loadTodos, loadTransactions, loadBirthdays, loadNotes, loadVocabulary]);
 
   // ─── Live Clock ─────────────────────────────────────────────
   useEffect(() => {
@@ -451,6 +474,29 @@ export default function Workspace() {
   };
 
   const sortedBirthdays = [...birthdays].sort((a, b) => getDaysUntilBirthday(a.dob) - getDaysUntilBirthday(b.dob));
+
+  // ─── Vocabulary CRUD ───────────────────────────────────────
+
+  const addVocab = async () => {
+    if (!vocabWord.trim() || !vocabMeaning.trim() || !user || !supabase) return;
+    const vocab: VocabularyWord & { user_id: string } = {
+      id: uuidv4(),
+      word: vocabWord.trim(),
+      meaning: vocabMeaning.trim(),
+      created_at: new Date().toISOString(),
+      user_id: user.id,
+    };
+    setVocabularyWords((prev) => [vocab, ...prev]);
+    setVocabWord("");
+    setVocabMeaning("");
+    setShowVocabForm(false);
+    await supabase.from("vocabulary").insert(vocab);
+  };
+
+  const deleteVocab = async (id: string) => {
+    setVocabularyWords((prev) => prev.filter((v) => v.id !== id));
+    if (supabase) await supabase.from("vocabulary").delete().eq("id", id);
+  };
 
   // ─── Notes CRUD ────────────────────────────────────────────
 
@@ -701,6 +747,7 @@ export default function Workspace() {
     { key: "monthly", label: "Monthly", icon: CalendarRange },
     { key: "finance", label: "Finance", icon: Wallet },
     { key: "birthdays", label: "Birthdays", icon: Cake },
+    { key: "vocabulary", label: "Vocabulary", icon: BookOpen },
     { key: "notes", label: "Notes", icon: StickyNote },
   ];
 
@@ -1271,156 +1318,199 @@ export default function Workspace() {
           )}
 
           {/* ──────────────── FINANCE VIEW ──────────────── */}
-          {sidebarView === "finance" && (
-            <>
-              {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-                <div className="border border-[var(--text)] border-opacity-10 p-4">
-                  <div className="flex items-center gap-2 text-xs text-[var(--text-alt)] mb-1">
-                    <TrendingUp size={14} className="text-green-500" /> Income
+          {sidebarView === "finance" && (() => {
+            // Calculate balances by person
+            const balancesByPerson: Record<string, number> = {};
+            transactions.forEach(tx => {
+              const person = tx.category || "Unknown";
+              if (!balancesByPerson[person]) balancesByPerson[person] = 0;
+              // income = they owe me (+), expense = I owe them (-)
+              balancesByPerson[person] += tx.type === "income" ? tx.amount : -tx.amount;
+            });
+
+            return (
+              <>
+                {/* Summary Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                  <div className="border border-[var(--text)] border-opacity-10 p-4">
+                    <div className="flex items-center gap-2 text-xs text-[var(--text-alt)] mb-1">
+                      <TrendingUp size={14} className="text-green-500" /> To Receive
+                    </div>
+                    <div className="text-xl font-bold text-green-500">
+                      ₹{Object.values(balancesByPerson).filter(b => b > 0).reduce((a, b) => a + b, 0).toLocaleString()}
+                    </div>
                   </div>
-                  <div className="text-xl font-bold text-green-500">₹{totalIncome.toLocaleString()}</div>
+                  <div className="border border-[var(--text)] border-opacity-10 p-4">
+                    <div className="flex items-center gap-2 text-xs text-[var(--text-alt)] mb-1">
+                      <TrendingDown size={14} className="text-red-500" /> To Pay
+                    </div>
+                    <div className="text-xl font-bold text-red-500">
+                      ₹{Math.abs(Object.values(balancesByPerson).filter(b => b < 0).reduce((a, b) => a + b, 0)).toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="border border-[var(--text)] border-opacity-10 p-4">
+                    <div className="flex items-center gap-2 text-xs text-[var(--text-alt)] mb-1">
+                      <DollarSign size={14} /> Net Balance
+                    </div>
+                    <div className={`text-xl font-bold ${totalIncome - totalExpense >= 0 ? "text-green-500" : "text-red-500"}`}>
+                      ₹{(totalIncome - totalExpense).toLocaleString()}
+                    </div>
+                  </div>
                 </div>
-                <div className="border border-[var(--text)] border-opacity-10 p-4">
-                  <div className="flex items-center gap-2 text-xs text-[var(--text-alt)] mb-1">
-                    <TrendingDown size={14} className="text-red-500" /> Expenses
+
+                {/* Balances By Person */}
+                {Object.keys(balancesByPerson).length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-sm font-bold mb-3">Balances by Person</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {Object.entries(balancesByPerson)
+                        .filter(([_, balance]) => balance !== 0)
+                        .sort((a, b) => b[1] - a[1]) // highest owing to me first
+                        .map(([person, balance]) => (
+                          <div key={person} className="flex items-center justify-between p-3 border border-[var(--text)] border-opacity-10 rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-[var(--text)] bg-opacity-5 flex items-center justify-center font-bold text-sm">
+                                {person.charAt(0).toUpperCase()}
+                              </div>
+                              <span className="font-semibold text-sm">{person}</span>
+                            </div>
+                            <div className={`text-sm font-bold ${balance > 0 ? "text-green-500" : "text-red-500"}`}>
+                              {balance > 0 ? "Owes you" : "You owe"} ₹{Math.abs(balance).toLocaleString()}
+                            </div>
+                          </div>
+                        ))}
+                      {Object.entries(balancesByPerson).filter(([_, balance]) => balance !== 0).length === 0 && (
+                        <div className="text-sm text-[var(--text-alt)] col-span-2">All settled up!</div>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-xl font-bold text-red-500">₹{totalExpense.toLocaleString()}</div>
-                </div>
-                <div className="border border-[var(--text)] border-opacity-10 p-4">
-                  <div className="flex items-center gap-2 text-xs text-[var(--text-alt)] mb-1">
-                    <DollarSign size={14} /> Balance
-                  </div>
-                  <div className={`text-xl font-bold ${totalIncome - totalExpense >= 0 ? "text-green-500" : "text-red-500"}`}>
-                    ₹{(totalIncome - totalExpense).toLocaleString()}
-                  </div>
-                </div>
-              </div>
+                )}
 
-              {/* Month Navigation */}
-              <div className="flex items-center justify-between mb-4">
-                <button onClick={() => setSelectedDate(subMonths(selectedDate, 1))} className="p-1 hover:bg-[var(--text)] hover:bg-opacity-10">
-                  <ChevronLeft size={16} />
-                </button>
-                <span className="text-xs font-bold">{format(selectedDate, "MMMM yyyy")}</span>
-                <button onClick={() => setSelectedDate(addMonths(selectedDate, 1))} className="p-1 hover:bg-[var(--text)] hover:bg-opacity-10">
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-
-              {/* Add Transaction */}
-              {!showFinanceForm ? (
-                <button
-                  onClick={() => setShowFinanceForm(true)}
-                  className="w-full h-11 border border-dashed border-[var(--text)] border-opacity-20 hover:border-opacity-40 bg-transparent text-[var(--text-alt)] hover:text-[var(--text)] text-sm flex items-center justify-center gap-2 transition-all mb-4"
-                >
-                  <Plus size={16} /> Add Transaction
-                </button>
-              ) : (
-                <div className="border border-[var(--text)] border-opacity-20 p-4 mb-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold">New Transaction</span>
-                    <button onClick={() => setShowFinanceForm(false)} className="text-[var(--text-alt)] hover:text-[var(--text)]">
-                      <X size={16} />
-                    </button>
-                  </div>
-
-                  {/* Type toggle */}
-                  <div className="flex gap-0">
-                    <button
-                      onClick={() => { setFinanceType("expense"); setFinanceCategory("Other"); }}
-                      className={`flex-1 h-9 text-xs font-bold border transition-all ${financeType === "expense"
-                        ? "bg-red-500 border-red-500 text-white"
-                        : "border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text-alt)]"
-                        }`}
-                    >
-                      Expense
-                    </button>
-                    <button
-                      onClick={() => { setFinanceType("income"); setFinanceCategory("Other"); }}
-                      className={`flex-1 h-9 text-xs font-bold border border-l-0 transition-all ${financeType === "income"
-                        ? "bg-green-500 border-green-500 text-white"
-                        : "border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text-alt)]"
-                        }`}
-                    >
-                      Income
-                    </button>
-                  </div>
-
-                  <input
-                    type="text"
-                    value={financeDesc}
-                    onChange={(e) => setFinanceDesc(e.target.value)}
-                    placeholder="Description"
-                    className="w-full h-9 px-3 border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] text-sm font-mono outline-none focus:border-opacity-100"
-                  />
-
-                  <input
-                    type="number"
-                    value={financeAmount}
-                    onChange={(e) => setFinanceAmount(e.target.value)}
-                    placeholder="Amount (₹)"
-                    min="0"
-                    step="0.01"
-                    className="w-full h-9 px-3 border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] text-sm font-mono outline-none focus:border-opacity-100"
-                  />
-
-                  <select
-                    value={financeCategory}
-                    onChange={(e) => setFinanceCategory(e.target.value)}
-                    className="w-full h-9 px-3 border border-[var(--text)] border-opacity-20 bg-[var(--bg)] text-[var(--text)] text-sm font-mono outline-none focus:border-opacity-100"
-                  >
-                    {(financeType === "expense" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES).map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-
-                  <button
-                    onClick={addTransaction}
-                    disabled={!financeDesc.trim() || !financeAmount}
-                    className="w-full h-9 border border-[var(--text)] bg-[var(--text)] text-[var(--bg)] font-bold text-sm hover:opacity-90 disabled:opacity-30 transition-opacity"
-                  >
-                    Add {financeType === "income" ? "Income" : "Expense"}
+                {/* Month Navigation */}
+                <div className="flex items-center justify-between mb-4 mt-8">
+                  <button onClick={() => setSelectedDate(subMonths(selectedDate, 1))} className="p-1 hover:bg-[var(--text)] hover:bg-opacity-10">
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span className="text-xs font-bold">{format(selectedDate, "MMMM yyyy")} Transactions</span>
+                  <button onClick={() => setSelectedDate(addMonths(selectedDate, 1))} className="p-1 hover:bg-[var(--text)] hover:bg-opacity-10">
+                    <ChevronRight size={16} />
                   </button>
                 </div>
-              )}
 
-              {/* Transaction List */}
-              <div className="space-y-1">
-                {filteredTransactions.length === 0 ? (
-                  <div className="text-center py-16 text-[var(--text-alt)]">
-                    <Wallet size={32} className="mx-auto mb-3 opacity-30" />
-                    <p className="text-sm">No transactions this month</p>
-                    <p className="text-xs mt-1 opacity-60">Add one to start tracking</p>
-                  </div>
+                {/* Add Transaction */}
+                {!showFinanceForm ? (
+                  <button
+                    onClick={() => setShowFinanceForm(true)}
+                    className="w-full h-11 border border-dashed border-[var(--text)] border-opacity-20 hover:border-opacity-40 bg-transparent text-[var(--text-alt)] hover:text-[var(--text)] text-sm flex items-center justify-center gap-2 transition-all mb-4"
+                  >
+                    <Plus size={16} /> Add Split / Transaction
+                  </button>
                 ) : (
-                  filteredTransactions.map((tx) => (
-                    <div
-                      key={tx.id}
-                      className="flex items-center gap-3 px-3 py-2.5 border border-[var(--text)] border-opacity-10 hover:border-opacity-20 transition-all group"
-                    >
-                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${tx.type === "income" ? "bg-green-500" : "bg-red-500"}`} />
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm block truncate">{tx.description}</span>
-                        <span className="text-xs text-[var(--text-alt)]">
-                          {tx.category} · {format(new Date(tx.date), "MMM d")}
-                        </span>
-                      </div>
-                      <span className={`text-sm font-bold flex-shrink-0 ${tx.type === "income" ? "text-green-500" : "text-red-500"}`}>
-                        {tx.type === "income" ? "+" : "-"}₹{tx.amount.toLocaleString()}
-                      </span>
-                      <button
-                        onClick={() => deleteTransaction(tx.id)}
-                        className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all p-0.5 flex-shrink-0"
-                      >
-                        <Trash2 size={13} />
+                  <div className="border border-[var(--text)] border-opacity-20 p-4 mb-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold">New Split / Transaction</span>
+                      <button onClick={() => setShowFinanceForm(false)} className="text-[var(--text-alt)] hover:text-[var(--text)]">
+                        <X size={16} />
                       </button>
                     </div>
-                  ))
+
+                    {/* Type toggle */}
+                    <div className="flex gap-0">
+                      <button
+                        onClick={() => setFinanceType("expense")}
+                        className={`flex-1 h-9 text-xs font-bold border transition-all ${financeType === "expense"
+                          ? "bg-red-500 border-red-500 text-white"
+                          : "border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text-alt)]"
+                          }`}
+                      >
+                        I Owe Them (To Pay)
+                      </button>
+                      <button
+                        onClick={() => setFinanceType("income")}
+                        className={`flex-1 h-9 text-xs font-bold border border-l-0 transition-all ${financeType === "income"
+                          ? "bg-green-500 border-green-500 text-white"
+                          : "border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text-alt)]"
+                          }`}
+                      >
+                        They Owe Me (To Receive)
+                      </button>
+                    </div>
+
+                    <input
+                      type="text"
+                      value={financeCategory}
+                      onChange={(e) => setFinanceCategory(e.target.value)}
+                      placeholder="Person's Name (e.g. Rahul)"
+                      className="w-full h-9 px-3 border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] text-sm font-mono outline-none focus:border-opacity-100"
+                    />
+
+                    <input
+                      type="text"
+                      value={financeDesc}
+                      onChange={(e) => setFinanceDesc(e.target.value)}
+                      placeholder="Reason (e.g. Dinner, Movie)"
+                      className="w-full h-9 px-3 border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] text-sm font-mono outline-none focus:border-opacity-100"
+                    />
+
+                    <input
+                      type="number"
+                      value={financeAmount}
+                      onChange={(e) => setFinanceAmount(e.target.value)}
+                      placeholder="Amount (₹)"
+                      min="0"
+                      step="0.01"
+                      className="w-full h-9 px-3 border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] text-sm font-mono outline-none focus:border-opacity-100"
+                    />
+
+                    <button
+                      onClick={addTransaction}
+                      disabled={!financeDesc.trim() || !financeAmount || !financeCategory.trim()}
+                      className="w-full h-9 border border-[var(--text)] bg-[var(--text)] text-[var(--bg)] font-bold text-sm hover:opacity-90 disabled:opacity-30 transition-opacity"
+                    >
+                      Add {financeType === "income" ? "To Receive" : "To Pay"}
+                    </button>
+                  </div>
                 )}
-              </div>
-            </>
-          )}
+
+                {/* Transaction List */}
+                <div className="space-y-1">
+                  {filteredTransactions.length === 0 ? (
+                    <div className="text-center py-16 text-[var(--text-alt)]">
+                      <Wallet size={32} className="mx-auto mb-3 opacity-30" />
+                      <p className="text-sm">No transactions this month</p>
+                      <p className="text-xs mt-1 opacity-60">Add one to start tracking splits</p>
+                    </div>
+                  ) : (
+                    filteredTransactions.map((tx) => (
+                      <div
+                        key={tx.id}
+                        className="flex items-center gap-3 px-3 py-2.5 border border-[var(--text)] border-opacity-10 hover:border-opacity-20 transition-all group rounded-lg"
+                      >
+                        <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-xs text-white ${tx.type === "income" ? "bg-green-500" : "bg-red-500"}`}>
+                          {tx.category ? tx.category.charAt(0).toUpperCase() : "?"}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm block font-bold truncate">{tx.category}</span>
+                          <span className="text-xs text-[var(--text-alt)] truncate">
+                            {tx.description} · {format(new Date(tx.date), "MMM d")}
+                          </span>
+                        </div>
+                        <span className={`text-sm font-bold flex-shrink-0 ${tx.type === "income" ? "text-green-500" : "text-red-500"}`}>
+                          {tx.type === "income" ? "Owes you " : "You owe "}₹{tx.amount.toLocaleString()}
+                        </span>
+                        <button
+                          onClick={() => deleteTransaction(tx.id)}
+                          className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all p-1 flex-shrink-0"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
+            );
+          })()}
 
           {/* ──────────────── BIRTHDAYS VIEW ──────────────── */}
           {sidebarView === "birthdays" && (
@@ -1531,6 +1621,107 @@ export default function Workspace() {
                       </div>
                     );
                   })
+                )}
+              </div>
+            </>
+          )}
+
+          {/* ──────────────── VOCABULARY VIEW ──────────────── */}
+          {sidebarView === "vocabulary" && (
+            <>
+              {/* Add Vocabulary */}
+              {!showVocabForm ? (
+                <button
+                  onClick={() => setShowVocabForm(true)}
+                  className="w-full h-11 border border-dashed border-[var(--text)] border-opacity-20 hover:border-opacity-40 bg-transparent text-[var(--text-alt)] hover:text-[var(--text)] text-sm flex items-center justify-center gap-2 transition-all mb-6"
+                >
+                  <Plus size={16} /> Add Word
+                </button>
+              ) : (
+                <div className="border border-[var(--text)] border-opacity-20 p-4 mb-6 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold">New Vocabulary Word</span>
+                    <button onClick={() => setShowVocabForm(false)} className="text-[var(--text-alt)] hover:text-[var(--text)]">
+                      <X size={16} />
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={vocabWord}
+                    onChange={(e) => setVocabWord(e.target.value)}
+                    placeholder="Word (e.g. Ubiquitous)"
+                    className="w-full h-9 px-3 border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] text-sm font-mono outline-none focus:border-opacity-100"
+                  />
+                  <textarea
+                    value={vocabMeaning}
+                    onChange={(e) => setVocabMeaning(e.target.value)}
+                    placeholder="Meaning and example..."
+                    rows={3}
+                    className="w-full p-3 border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] text-sm font-mono outline-none focus:border-opacity-100 resize-none"
+                  />
+                  <button
+                    onClick={addVocab}
+                    disabled={!vocabWord.trim() || !vocabMeaning.trim()}
+                    className="w-full h-9 border border-[var(--text)] bg-[var(--text)] text-[var(--bg)] font-bold text-sm hover:opacity-90 disabled:opacity-30 transition-opacity"
+                  >
+                    Save Word
+                  </button>
+                </div>
+              )}
+
+              {/* Vocabulary List */}
+              <div className="space-y-4">
+                {vocabularyWords.length === 0 ? (
+                  <div className="text-center py-16 text-[var(--text-alt)]">
+                    <BookOpen size={32} className="mx-auto mb-3 opacity-30" />
+                    <p className="text-sm">No words saved yet</p>
+                    <p className="text-xs mt-1 opacity-60">Expand your vocabulary tracking new words here</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {vocabularyWords.map((vocab, index) => {
+                      // Cycle through a few subtle accent colors for the top border or side accent
+                      const accents = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#a855f7", "#ec4899"];
+                      const accent = accents[index % accents.length];
+
+                      return (
+                        <div
+                          key={vocab.id}
+                          className="group relative flex flex-col p-5 rounded-2xl transition-all hover:scale-[1.02] hover:shadow-lg overflow-hidden"
+                          style={{
+                            background: "rgba(128,128,128,0.05)",
+                            border: "1px solid rgba(128,128,128,0.1)",
+                          }}
+                        >
+                          <div
+                            className="absolute top-0 left-0 w-full h-1"
+                            style={{ background: accent, opacity: 0.8 }}
+                          />
+                          <div className="flex-1 pr-6 flex flex-col pt-1">
+                            <h3 className="text-xl font-bold mb-2 tracking-tight" style={{ color: "var(--text)" }}>
+                              {vocab.word}
+                            </h3>
+                            <p
+                              className="text-sm flex-1 whitespace-pre-wrap leading-relaxed"
+                              style={{ color: "var(--text-alt)" }}
+                            >
+                              {vocab.meaning}
+                            </p>
+                            <div className="mt-4 text-[10px] uppercase tracking-widest font-bold" style={{ color: "var(--text-alt)", opacity: 0.5 }}>
+                              {format(new Date(vocab.created_at), "MMM d, yyyy")}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => deleteVocab(vocab.id)}
+                            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-400 transition-all p-1.5 hover:bg-red-500 hover:bg-opacity-10 rounded-lg"
+                            title="Delete Word"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
             </>
@@ -1831,11 +2022,6 @@ export default function Workspace() {
                         if (editorRef.current && activeNote) {
                           updateNote(activeNote.id, { content: editorRef.current.innerHTML });
                         }
-                      }}
-                      onPaste={(e) => {
-                        e.preventDefault();
-                        const text = e.clipboardData.getData("text/html") || e.clipboardData.getData("text/plain");
-                        document.execCommand("insertHTML", false, text);
                       }}
                       className={`px-3 sm:px-5 py-3 text-sm bg-transparent text-[var(--text)] outline-none border-none w-full overflow-y-auto ${aiRewriteResult ? '' : 'flex-1'}`}
                       style={{
