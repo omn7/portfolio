@@ -93,7 +93,7 @@ export default function Projects() {
                 <div className="h-px bg-[var(--text)] opacity-20 w-full mb-6" />
 
                 <Link
-                    to="/todoist"
+                    to="/workspace"
                     className="block border border-[var(--text)] border-opacity-15 hover:border-opacity-50 transition-all no-underline group"
                 >
                     <div className="p-5">

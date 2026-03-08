@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import { Loader2, ArrowLeft, StickyNote, Clock, FileText, ExternalLink } from "lucide-react";
+import { Moon, Sun, Link as LinkIcon, Check, Loader2, StickyNote } from "lucide-react";
 import { format } from "date-fns";
+import { useDark } from "@/components/Layout";
+import SiteFooter from "@/components/SiteFooter";
 
 interface PublicNoteData {
   id: string;
@@ -14,33 +16,24 @@ interface PublicNoteData {
   updated_at: string;
 }
 
-const TAG_COLORS: Record<string, { color: string; bg: string; glow: string }> = {
-  none:   { color: "#6b7280", bg: "transparent",            glow: "transparent" },
-  red:    { color: "#ef4444", bg: "rgba(239,68,68,0.06)",   glow: "rgba(239,68,68,0.15)" },
-  orange: { color: "#f97316", bg: "rgba(249,115,22,0.06)",  glow: "rgba(249,115,22,0.15)" },
-  yellow: { color: "#eab308", bg: "rgba(234,179,8,0.06)",   glow: "rgba(234,179,8,0.15)" },
-  green:  { color: "#22c55e", bg: "rgba(34,197,94,0.06)",   glow: "rgba(34,197,94,0.15)" },
-  blue:   { color: "#3b82f6", bg: "rgba(59,130,246,0.06)",  glow: "rgba(59,130,246,0.15)" },
-  purple: { color: "#a855f7", bg: "rgba(168,85,247,0.06)",  glow: "rgba(168,85,247,0.15)" },
-  pink:   { color: "#ec4899", bg: "rgba(236,72,153,0.06)",  glow: "rgba(236,72,153,0.15)" },
-};
-
 export default function PublicNote() {
+  const [dark, setDark] = useDark();
   const { userId, noteId } = useParams<{ userId: string; noteId: string }>();
   const [note, setNote] = useState<PublicNoteData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchNote = async () => {
       if (!userId || !noteId) {
-        setError("Invalid link.");
+        setError("Invalid link. Please check your URL.");
         setLoading(false);
         return;
       }
 
       if (!supabase) {
-        setError("Service unavailable.");
+        setError("Service unavailable at the moment.");
         setLoading(false);
         return;
       }
@@ -64,195 +57,134 @@ export default function PublicNote() {
     fetchNote();
   }, [userId, noteId]);
 
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const wordCount = note?.content ? note.content.trim().split(/\s+/).filter(Boolean).length : 0;
+  const readTime = Math.max(1, Math.ceil(wordCount / 200));
+
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#050505", fontFamily: "'SF Mono', 'Fira Code', 'JetBrains Mono', monospace" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
-          <div style={{ width: "40px", height: "40px", border: "2px solid rgba(168,85,247,0.3)", borderTopColor: "#a855f7", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-          <span style={{ fontSize: "12px", color: "#6b7280", letterSpacing: "0.1em", textTransform: "uppercase" }}>Loading note...</span>
+      <main className="min-h-screen flex items-center justify-center font-sans" style={{ background: "var(--bg)", color: "var(--text)" }}>
+        <div className="flex flex-col items-center gap-4 text-[var(--text-alt)]">
+          <Loader2 className="animate-spin" size={32} />
+          <span className="text-sm font-medium tracking-wide">Loading article...</span>
         </div>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
+      </main>
     );
   }
 
   if (error || !note) {
     return (
-      <div style={{
-        minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        background: "#050505", color: "#fff", fontFamily: "'SF Mono', 'Fira Code', monospace", gap: "20px",
-      }}>
-        <div style={{ width: "64px", height: "64px", borderRadius: "16px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <FileText size={28} style={{ color: "#ef4444", opacity: 0.6 }} />
+      <main className="min-h-screen flex flex-col items-center justify-center text-center px-6 font-sans" style={{ background: "var(--bg)", color: "var(--text)" }}>
+        <div className="w-16 h-16 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center mb-6">
+          <StickyNote size={32} className="text-[var(--text-alt)] opacity-80" />
         </div>
-        <p style={{ fontSize: "14px", color: "#9ca3af", margin: 0 }}>{error || "Note not found."}</p>
-        <Link to="/" style={{ fontSize: "12px", color: "#a855f7", textDecoration: "none", display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px", borderRadius: "8px", border: "1px solid rgba(168,85,247,0.2)", background: "rgba(168,85,247,0.05)", transition: "all 0.2s" }}>
-          <ArrowLeft size={13} /> Go Home
+        <h2 className="text-2xl font-bold mb-3">Article not found</h2>
+        <p className="text-[var(--text-alt)] max-w-sm mx-auto mb-8 leading-relaxed">
+          {error || "The requested article could not be found. It may have been unpublished or deleted by the author."}
+        </p>
+        <Link to="/" className="inline-flex items-center justify-center bg-[var(--text)] text-[var(--bg)] rounded-full px-6 py-3 font-medium text-sm no-underline hover:opacity-90 transition-opacity">
+          Return to home
         </Link>
-      </div>
+      </main>
     );
   }
 
-  const tagInfo = TAG_COLORS[note.tag] || TAG_COLORS.none;
-  const hasTag = note.tag !== "none";
-  const wordCount = note.content.trim().split(/\s+/).filter(Boolean).length;
-  const readTime = Math.max(1, Math.ceil(wordCount / 200));
-
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "#050505",
-      color: "#f5f5f5",
-      fontFamily: "'SF Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', monospace",
-    }}>
-      {/* Ambient glow behind tag */}
-      {hasTag && (
-        <div style={{
-          position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
-          width: "600px", height: "300px", pointerEvents: "none", zIndex: 0,
-          background: `radial-gradient(ellipse at center top, ${tagInfo.glow}, transparent 70%)`,
-          opacity: 0.6,
-        }} />
-      )}
-
-      {/* Header */}
-      <header style={{
-        position: "sticky", top: 0, zIndex: 10,
-        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-        background: "rgba(5,5,5,0.8)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-      }}>
-        <div style={{ maxWidth: "720px", margin: "0 auto", padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Link to="/" style={{ fontSize: "12px", color: "#6b7280", textDecoration: "none", display: "flex", alignItems: "center", gap: "6px", transition: "color 0.2s" }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#d1d5db")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#6b7280")}
+    <main className="min-h-screen flex flex-col transition-colors duration-300" style={{ background: "var(--bg)", color: "var(--text)" }}>
+      {/* Header - Keeps website minimal theme */}
+      <header className="w-full max-w-[1000px] mx-auto px-6 py-6 sm:py-8 font-mono flex items-center justify-between">
+        <Link to="/" className="text-[var(--text-alt)] hover:text-[var(--text)] hover:underline inline-block no-underline">
+          ← back to index
+        </Link>
+        <div className="flex items-center gap-4">
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-alt)] hidden sm:block">
+            Shared Article
+          </span>
+          <button
+            onClick={() => setDark(d => !d)}
+            aria-label="Toggle theme"
+            className="p-2 -mr-2 text-[var(--text-alt)] hover:text-[var(--text)] transition-colors shrink-0 outline-none border-none bg-transparent cursor-pointer"
           >
-            <ArrowLeft size={13} /> Home
-          </Link>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            {hasTag && <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: tagInfo.color }} />}
-            <span style={{ fontSize: "11px", color: "#4b5563", letterSpacing: "0.05em" }}>SHARED NOTE</span>
-          </div>
+            {dark ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
         </div>
       </header>
 
-      {/* Content */}
-      <main style={{ position: "relative", zIndex: 1 }}>
-        <article style={{ maxWidth: "720px", margin: "0 auto", padding: "48px 24px 80px" }}>
-          {/* Tag accent line */}
-          {hasTag && (
-            <div style={{
-              height: "2px", borderRadius: "1px", marginBottom: "40px",
-              background: `linear-gradient(90deg, ${tagInfo.color}, transparent)`,
-              opacity: 0.6,
-            }} />
-          )}
+      {/* Article Body - Medium Style */}
+      <article className="w-full max-w-[680px] mx-auto px-6 pb-20 flex-1 mt-8 sm:mt-12">
+        <h1 className="font-sans text-4xl sm:text-5xl font-extrabold tracking-tight mb-8 leading-[1.15] text-[var(--text)]" style={{ wordBreak: 'break-word' }}>
+          {note.title || "Untitled Note"}
+        </h1>
 
-          {/* Title */}
-          <h1 style={{
-            fontSize: "clamp(28px, 5vw, 40px)",
-            fontWeight: 800,
-            lineHeight: 1.2,
-            margin: "0 0 20px",
-            letterSpacing: "-0.02em",
-            color: "#fff",
-          }}>
-            {note.title || "Untitled"}
-          </h1>
-
-          {/* Meta */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap",
-            marginBottom: "40px", paddingBottom: "24px",
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <Clock size={12} style={{ color: "#6b7280" }} />
-              <span style={{ fontSize: "11px", color: "#6b7280" }}>
-                {format(new Date(note.updated_at), "MMM d, yyyy 'at' h:mm a")}
-              </span>
-            </div>
-            <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#374151" }} />
-            <span style={{ fontSize: "11px", color: "#6b7280" }}>
-              {wordCount} words &middot; {readTime} min read
-            </span>
-            {note.author_name && (
-              <>
-                <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#374151" }} />
-                <span style={{ fontSize: "11px", color: "#6b7280" }}>
-                  Created by <span style={{ color: "#a855f7", fontWeight: 600 }}>{note.author_name}</span>
-                </span>
-              </>
+        {/* Author Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 py-6 border-y border-black/10 dark:border-white/10 mb-12 font-sans">
+          <div className="flex items-center gap-4">
+            {note.author_name ? (
+              <div className="w-12 h-12 rounded-full bg-black/[0.08] dark:bg-white/[0.08] flex items-center justify-center text-xl font-bold text-[var(--text)] shrink-0">
+                {note.author_name.charAt(0).toUpperCase()}
+              </div>
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-black/[0.08] dark:bg-white/[0.08] flex items-center justify-center text-[var(--text-alt)] shrink-0">
+                <StickyNote size={20} />
+              </div>
             )}
+            <div className="flex flex-col">
+              {note.author_name && <span className="font-semibold text-[var(--text)] text-[16px]">{note.author_name}</span>}
+              <div className="flex items-center gap-2 text-[15px] text-[var(--text-alt)] mt-0.5">
+                <span>{readTime} min read</span>
+                <span>&middot;</span>
+                <span>{format(new Date(note.updated_at), "MMM d, yyyy")}</span>
+              </div>
+            </div>
           </div>
 
-          {/* Body */}
-          {note.content ? (
-            <div
-              style={{
-                fontSize: "15px",
-                lineHeight: 2,
-                color: "rgba(255,255,255,0.82)",
-                letterSpacing: "0.01em",
-                wordBreak: "break-word",
-              }}
-              dangerouslySetInnerHTML={{ __html: note.content }}
-            />
-          ) : (
-            <div style={{
-              fontSize: "15px",
-              lineHeight: 2,
-              color: "rgba(255,255,255,0.82)",
-              letterSpacing: "0.01em",
-              wordBreak: "break-word",
-            }}>
-              <span style={{ color: "#4b5563", fontStyle: "italic" }}>This note is empty.</span>
-            </div>
-          )}
-        </article>
-      </main>
+          <div className="flex items-center shrink-0">
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-2 text-[14px] font-medium text-[var(--text)] hover:text-[var(--bg)] hover:bg-[var(--text)] transition-colors bg-transparent border border-black/30 dark:border-white/30 rounded-full px-5 py-2 focus:outline-none cursor-pointer"
+            >
+              {copied ? <Check size={16} /> : <LinkIcon size={16} />}
+              {copied ? "Link Copied" : "Share Article"}
+            </button>
+          </div>
+        </div>
 
-      {/* Footer */}
-      <footer style={{
-        borderTop: "1px solid rgba(255,255,255,0.05)",
-        padding: "28px 24px",
-      }}>
-        <div style={{
-          maxWidth: "720px", margin: "0 auto",
-          display: "flex", flexDirection: "column", alignItems: "center", gap: "12px",
-        }}>
+        {/* Content */}
+        <div
+          className="prose prose-lg sm:prose-xl max-w-none font-serif text-[var(--text)] prose-p:leading-[1.8] prose-p:text-[var(--text)] prose-p:tracking-[0.01em] prose-headings:font-sans prose-headings:font-bold prose-headings:text-[var(--text)] prose-headings:tracking-tight prose-a:text-[var(--link)] prose-strong:text-[var(--text)] prose-blockquote:border-l-[4px] prose-blockquote:border-black/80 dark:prose-blockquote:border-white/80 prose-blockquote:text-[var(--text)] prose-blockquote:bg-black/5 dark:prose-blockquote:bg-white/5 prose-blockquote:px-5 prose-blockquote:py-2 prose-blockquote:rounded-r-lg prose-blockquote:font-style-italic prose-li:text-[var(--text)]"
+          dangerouslySetInnerHTML={{ __html: note.content || "<p class='italic text-[var(--text-alt)] font-sans'>This note is empty.</p>" }}
+        />
+      </article>
+
+      {/* Minimal Footer / Engagement Banner */}
+      <div className="mt-8 border-t border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02]">
+        <div className="max-w-[680px] mx-auto w-full px-6 py-16 font-sans flex flex-col items-center text-center gap-5">
+          <div className="w-14 h-14 rounded-2xl bg-black/10 dark:bg-white/10 flex items-center justify-center mb-2">
+            <StickyNote size={28} className="text-[var(--text)]" />
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text)] m-0">Create your own workspace</h2>
+          <p className="text-[var(--text-alt)] text-[16px] sm:text-[18px] max-w-[480px] mx-auto m-0 leading-relaxed">
+            This article was published using Workspace. Create rich-text notes, manage your tasks, and track your habits in one simple place.
+          </p>
           <a
-            href="https://omnarkhede.tech/todoist"
+            href="https://omnarkhede.tech/workspace"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              fontSize: "12px", color: "#6b7280", textDecoration: "none",
-              display: "flex", alignItems: "center", gap: "6px",
-              padding: "8px 16px", borderRadius: "8px",
-              border: "1px solid rgba(255,255,255,0.06)",
-              background: "rgba(255,255,255,0.02)",
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(168,85,247,0.3)";
-              e.currentTarget.style.color = "#a855f7";
-              e.currentTarget.style.background = "rgba(168,85,247,0.05)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
-              e.currentTarget.style.color = "#6b7280";
-              e.currentTarget.style.background = "rgba(255,255,255,0.02)";
-            }}
+            className="mt-6 px-8 py-3.5 bg-[var(--text)] text-[var(--bg)] rounded-full font-bold text-[15px] hover:opacity-90 transition-opacity no-underline shadow-sm hover:shadow"
           >
-            <StickyNote size={12} />
-            Shared via Om's Workspace Notes
-            <ExternalLink size={10} />
+            Start Writing
           </a>
-          <span style={{ fontSize: "10px", color: "#374151" }}>
-            omnarkhede.tech/todoist
-          </span>
         </div>
-      </footer>
-    </div>
+      </div>
+
+      <div className="max-w-[1000px] mx-auto w-full px-6 font-mono">
+        <SiteFooter />
+      </div>
+    </main>
   );
 }

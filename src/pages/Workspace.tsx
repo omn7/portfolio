@@ -11,7 +11,7 @@ import {
   Sparkles, RotateCcw, Copy, CheckCheck,
   PanelLeftClose, PanelLeftOpen, LayoutDashboard, Clock,
   Share2, Globe, Link as LinkIcon, ExternalLink,
-  Bold, Italic, Underline, Link2, Type
+  Bold, Italic, Underline, Link2, Type, Undo, Redo
 } from "lucide-react";
 import { differenceInDays, setYear, isPast } from "date-fns";
 import { useDark } from "@/components/Layout";
@@ -66,27 +66,27 @@ interface Note {
 }
 
 const NOTE_TAGS: { key: NoteTag; label: string; color: string; bg: string; border: string }[] = [
-  { key: "none",   label: "None",   color: "var(--text-alt)", bg: "transparent",          border: "var(--text)" },
-  { key: "red",    label: "Red",    color: "#ef4444",         bg: "rgba(239,68,68,0.08)",  border: "rgba(239,68,68,0.3)" },
-  { key: "orange", label: "Orange", color: "#f97316",         bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.3)" },
-  { key: "yellow", label: "Yellow", color: "#eab308",         bg: "rgba(234,179,8,0.08)",  border: "rgba(234,179,8,0.3)" },
-  { key: "green",  label: "Green",  color: "#22c55e",         bg: "rgba(34,197,94,0.08)",  border: "rgba(34,197,94,0.3)" },
-  { key: "blue",   label: "Blue",   color: "#3b82f6",         bg: "rgba(59,130,246,0.08)", border: "rgba(59,130,246,0.3)" },
-  { key: "purple", label: "Purple", color: "#a855f7",         bg: "rgba(168,85,247,0.08)", border: "rgba(168,85,247,0.3)" },
-  { key: "pink",   label: "Pink",   color: "#ec4899",         bg: "rgba(236,72,153,0.08)", border: "rgba(236,72,153,0.3)" },
+  { key: "none", label: "None", color: "var(--text-alt)", bg: "transparent", border: "var(--text)" },
+  { key: "red", label: "Red", color: "#ef4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.3)" },
+  { key: "orange", label: "Orange", color: "#f97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.3)" },
+  { key: "yellow", label: "Yellow", color: "#eab308", bg: "rgba(234,179,8,0.08)", border: "rgba(234,179,8,0.3)" },
+  { key: "green", label: "Green", color: "#22c55e", bg: "rgba(34,197,94,0.08)", border: "rgba(34,197,94,0.3)" },
+  { key: "blue", label: "Blue", color: "#3b82f6", bg: "rgba(59,130,246,0.08)", border: "rgba(59,130,246,0.3)" },
+  { key: "purple", label: "Purple", color: "#a855f7", bg: "rgba(168,85,247,0.08)", border: "rgba(168,85,247,0.3)" },
+  { key: "pink", label: "Pink", color: "#ec4899", bg: "rgba(236,72,153,0.08)", border: "rgba(236,72,153,0.3)" },
 ];
 
 const getTagInfo = (tag: NoteTag) => NOTE_TAGS.find((t) => t.key === tag) || NOTE_TAGS[0];
 
 const CARD_COLORS: Record<NoteTag, { bg: string; text: string; sub: string }> = {
-  none:   { bg: "rgba(128,128,128,0.08)", text: "var(--text)",   sub: "var(--text-alt)" },
-  red:    { bg: "#ef4444",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
-  orange: { bg: "#f97316",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
-  yellow: { bg: "#eab308",                text: "#1a1a1a",       sub: "rgba(0,0,0,0.5)" },
-  green:  { bg: "#22c55e",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
-  blue:   { bg: "#3b82f6",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
-  purple: { bg: "#a855f7",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
-  pink:   { bg: "#ec4899",                text: "#fff",          sub: "rgba(255,255,255,0.7)" },
+  none: { bg: "rgba(128,128,128,0.08)", text: "var(--text)", sub: "var(--text-alt)" },
+  red: { bg: "#ef4444", text: "#fff", sub: "rgba(255,255,255,0.7)" },
+  orange: { bg: "#f97316", text: "#fff", sub: "rgba(255,255,255,0.7)" },
+  yellow: { bg: "#eab308", text: "#1a1a1a", sub: "rgba(0,0,0,0.5)" },
+  green: { bg: "#22c55e", text: "#fff", sub: "rgba(255,255,255,0.7)" },
+  blue: { bg: "#3b82f6", text: "#fff", sub: "rgba(255,255,255,0.7)" },
+  purple: { bg: "#a855f7", text: "#fff", sub: "rgba(255,255,255,0.7)" },
+  pink: { bg: "#ec4899", text: "#fff", sub: "rgba(255,255,255,0.7)" },
 };
 
 type SidebarView = "dashboard" | "daily" | "weekly" | "monthly" | "finance" | "birthdays" | "notes";
@@ -98,7 +98,7 @@ const INCOME_CATEGORIES = ["Salary", "Freelance", "Investment", "Gift", "Other"]
 
 // ─── Main Component ─────────────────────────────────────────────
 
-export default function Todoist() {
+export default function Workspace() {
   const { user, loading, signOut } = useAuth();
   const [dark, setDark] = useDark();
   const [sidebarView, setSidebarView] = useState<SidebarView>("dashboard");
@@ -144,6 +144,15 @@ export default function Todoist() {
   const [shareLinkCopied, setShareLinkCopied] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
   const [showFontPicker, setShowFontPicker] = useState(false);
+  const [showFontSizePicker, setShowFontSizePicker] = useState(false);
+
+  const FONT_SIZES = [
+    { label: "Small", value: "2" },
+    { label: "Normal", value: "3" },
+    { label: "Medium", value: "4" },
+    { label: "Large", value: "5" },
+    { label: "Huge", value: "6" },
+  ];
 
   const FONTS = [
     { label: "Mono", value: "'SF Mono', 'Fira Code', monospace" },
@@ -259,8 +268,8 @@ export default function Todoist() {
       const retryData = await retryRes.json();
       const rewritten = retryData?.candidates?.[0]?.content?.parts?.[0]?.text;
       setAiRewriteResult(rewritten || "No result returned from AI.");
-    } catch (err: any) {
-      setAiRewriteResult(`Error: ${err.message}`);
+    } catch (err: unknown) {
+      setAiRewriteResult(`Error: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setAiRewriting(false);
     }
@@ -704,9 +713,8 @@ export default function Todoist() {
 
       {/* ─── Sidebar ─────────────────────────────── */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 h-screen border-r border-[var(--text)] border-opacity-10 flex flex-col z-50 transition-all lg:translate-x-0 ${
-          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed lg:sticky top-0 left-0 h-screen border-r border-[var(--text)] border-opacity-10 flex flex-col z-50 transition-all lg:translate-x-0 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         style={{ background: "var(--bg)", width: sidebarCollapsed ? "60px" : "256px" }}
       >
         {/* Header */}
@@ -742,11 +750,10 @@ export default function Todoist() {
             <button
               key={key}
               onClick={() => { setSidebarView(key); setMobileSidebarOpen(false); }}
-              className={`w-full flex items-center ${sidebarCollapsed ? "justify-center px-0 py-2.5" : "gap-3 px-3 py-2.5"} text-sm text-left transition-all border-0 ${
-                sidebarView === key
-                  ? "bg-[var(--text)] text-[var(--bg)] font-bold"
-                  : "text-[var(--text)] hover:bg-[var(--text)] hover:bg-opacity-5"
-              }`}
+              className={`w-full flex items-center ${sidebarCollapsed ? "justify-center px-0 py-2.5" : "gap-3 px-3 py-2.5"} text-sm text-left transition-all border-0 ${sidebarView === key
+                ? "bg-[var(--text)] text-[var(--bg)] font-bold"
+                : "text-[var(--text)] hover:bg-[var(--text)] hover:bg-opacity-5"
+                }`}
               title={sidebarCollapsed ? label : undefined}
             >
               <Icon size={16} />
@@ -1177,11 +1184,10 @@ export default function Todoist() {
                       <div className="sm:hidden flex items-center rounded-xl bg-[var(--bg)] border border-[var(--text)] border-opacity-10 shadow-sm px-3 py-3 mb-2 gap-3 group transition-all">
                         <button
                           onClick={() => toggleTodo(todo.id)}
-                          className={`w-6 h-6 border flex-shrink-0 flex items-center justify-center rounded-full transition-all ${
-                            todo.completed
-                              ? "bg-green-500 border-green-500 text-white"
-                              : "border-[var(--text)] border-opacity-30 bg-transparent hover:border-opacity-60"
-                          }`}
+                          className={`w-6 h-6 border flex-shrink-0 flex items-center justify-center rounded-full transition-all ${todo.completed
+                            ? "bg-green-500 border-green-500 text-white"
+                            : "border-[var(--text)] border-opacity-30 bg-transparent hover:border-opacity-60"
+                            }`}
                         >
                           {todo.completed && <Check size={14} />}
                         </button>
@@ -1189,7 +1195,8 @@ export default function Todoist() {
                           <div className={`font-bold text-[15px] truncate ${todo.completed ? "line-through" : ""}`}>{todo.text}</div>
                           <div className="text-xs text-[var(--text-alt)] truncate mt-0.5">
                             {/* Show a short desc if available, else first 40 chars */}
-                            {todo.desc ? todo.desc.slice(0, 60) : todo.text.slice(0, 40)}
+                            {/* @ts-expect-error property desc may not exist */}
+                            {todo.desc ? String(todo.desc).slice(0, 60) : todo.text.slice(0, 40)}
                           </div>
                         </div>
                         <button
@@ -1211,11 +1218,10 @@ export default function Todoist() {
                       <div className="hidden sm:flex items-center gap-3 px-3 py-2.5 border border-[var(--text)] border-opacity-10 hover:border-opacity-20 transition-all group rounded-lg ${todo.completed ? 'opacity-50' : ''}">
                         <button
                           onClick={() => toggleTodo(todo.id)}
-                          className={`w-5 h-5 border flex-shrink-0 flex items-center justify-center transition-all ${
-                            todo.completed
-                              ? "bg-green-500 border-green-500 text-white"
-                              : "border-[var(--text)] border-opacity-30 bg-transparent hover:border-opacity-60"
-                          }`}
+                          className={`w-5 h-5 border flex-shrink-0 flex items-center justify-center transition-all ${todo.completed
+                            ? "bg-green-500 border-green-500 text-white"
+                            : "border-[var(--text)] border-opacity-30 bg-transparent hover:border-opacity-60"
+                            }`}
                         >
                           {todo.completed && <Check size={12} />}
                         </button>
@@ -1323,21 +1329,19 @@ export default function Todoist() {
                   <div className="flex gap-0">
                     <button
                       onClick={() => { setFinanceType("expense"); setFinanceCategory("Other"); }}
-                      className={`flex-1 h-9 text-xs font-bold border transition-all ${
-                        financeType === "expense"
-                          ? "bg-red-500 border-red-500 text-white"
-                          : "border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text-alt)]"
-                      }`}
+                      className={`flex-1 h-9 text-xs font-bold border transition-all ${financeType === "expense"
+                        ? "bg-red-500 border-red-500 text-white"
+                        : "border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text-alt)]"
+                        }`}
                     >
                       Expense
                     </button>
                     <button
                       onClick={() => { setFinanceType("income"); setFinanceCategory("Other"); }}
-                      className={`flex-1 h-9 text-xs font-bold border border-l-0 transition-all ${
-                        financeType === "income"
-                          ? "bg-green-500 border-green-500 text-white"
-                          : "border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text-alt)]"
-                      }`}
+                      className={`flex-1 h-9 text-xs font-bold border border-l-0 transition-all ${financeType === "income"
+                        ? "bg-green-500 border-green-500 text-white"
+                        : "border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text-alt)]"
+                        }`}
                     >
                       Income
                     </button>
@@ -1498,13 +1502,11 @@ export default function Todoist() {
                     return (
                       <div
                         key={bday.id}
-                        className={`flex items-center gap-3 px-3 py-3 border border-[var(--text)] border-opacity-10 hover:border-opacity-20 transition-all group ${
-                          isBirthdayToday ? "border-yellow-500 border-opacity-40 bg-yellow-500 bg-opacity-5" : ""
-                        }`}
+                        className={`flex items-center gap-3 px-3 py-3 border border-[var(--text)] border-opacity-10 hover:border-opacity-20 transition-all group ${isBirthdayToday ? "border-yellow-500 border-opacity-40 bg-yellow-500 bg-opacity-5" : ""
+                          }`}
                       >
-                        <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0 text-sm ${
-                          isBirthdayToday ? "bg-yellow-500 text-white" : daysUntil <= 7 ? "bg-orange-500 bg-opacity-20 text-orange-500" : "bg-[var(--text)] bg-opacity-5 text-[var(--text-alt)]"
-                        }`}>
+                        <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0 text-sm ${isBirthdayToday ? "bg-yellow-500 text-white" : daysUntil <= 7 ? "bg-orange-500 bg-opacity-20 text-orange-500" : "bg-[var(--text)] bg-opacity-5 text-[var(--text-alt)]"
+                          }`}>
                           {isBirthdayToday ? "🎂" : <Cake size={14} />}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -1515,9 +1517,8 @@ export default function Todoist() {
                           </span>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <span className={`text-xs font-bold ${
-                            isBirthdayToday ? "text-yellow-500" : daysUntil <= 7 ? "text-orange-500" : "text-[var(--text-alt)]"
-                          }`}>
+                          <span className={`text-xs font-bold ${isBirthdayToday ? "text-yellow-500" : daysUntil <= 7 ? "text-orange-500" : "text-[var(--text-alt)]"
+                            }`}>
                             {isBirthdayToday ? "Today!" : `${daysUntil}d`}
                           </span>
                         </div>
@@ -1539,22 +1540,24 @@ export default function Todoist() {
           {sidebarView === "notes" && (
             <div className="flex flex-col" style={{ height: "calc(100vh - 57px)" }}>
               {activeNote ? (() => {
-                  const activeTagInfo = getTagInfo(activeNote.tag || "none");
-                  return (
-                    <div className="flex flex-col flex-1 overflow-hidden">
-                      {/* Editor toolbar */}
+                const activeTagInfo = getTagInfo(activeNote.tag || "none");
+                return (
+                  <div className="flex flex-col flex-1 overflow-hidden">
+                    {/* Editor Header & Toolbar */}
+                    <div className="sticky top-0 z-10 flex flex-col bg-[var(--bg)] border-b border-[var(--text)] border-opacity-10 shadow-sm backdrop-blur-xl bg-opacity-80">
+
+                      {/* Top Action Bar */}
                       <div
-                        className="flex items-center justify-between px-2 sm:px-4 py-2 border-b border-[var(--text)] border-opacity-10"
+                        className="flex flex-wrap items-center justify-between px-3 sm:px-5 py-2.5 gap-3"
                         style={{
                           background: activeTagInfo.key !== "none" ? activeTagInfo.bg : "transparent",
-                          borderBottomColor: activeTagInfo.key !== "none" ? activeTagInfo.border : undefined,
                         }}
                       >
                         <div className="flex items-center gap-1">
                           {/* Back button — mobile only */}
                           <button
                             onClick={() => setActiveNoteId(null)}
-                            className="p-1.5 md:hidden text-[var(--text-alt)] hover:text-[var(--text)] transition-colors"
+                            className="p-1.5 md:hidden text-[var(--text-alt)] rounded-lg hover:text-[var(--text)] hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors"
                             title="Back to notes"
                           >
                             <ArrowLeft size={16} />
@@ -1562,9 +1565,8 @@ export default function Todoist() {
                           {/* Pin */}
                           <button
                             onClick={() => togglePinNote(activeNote.id)}
-                            className={`p-1.5 transition-colors ${
-                              activeNote.pinned ? "text-yellow-500" : "text-[var(--text-alt)] hover:text-[var(--text)]"
-                            }`}
+                            className={`p-1.5 rounded-lg transition-all ${activeNote.pinned ? "text-yellow-500 bg-yellow-500 bg-opacity-10" : "text-[var(--text-alt)] hover:text-[var(--text)] hover:bg-[var(--text)] hover:bg-opacity-10"
+                              }`}
                             title={activeNote.pinned ? "Unpin" : "Pin"}
                           >
                             {activeNote.pinned ? <Pin size={14} /> : <PinOff size={14} />}
@@ -1577,15 +1579,15 @@ export default function Todoist() {
                           <div className="relative">
                             <button
                               onClick={() => setShowTagPicker(!showTagPicker)}
-                              className="p-1.5 transition-colors flex items-center gap-1.5"
+                              className="px-2 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 hover:bg-[var(--text)] hover:bg-opacity-10"
                               style={{ color: activeTagInfo.key !== "none" ? activeTagInfo.color : "var(--text-alt)" }}
                               title="Change tag color"
                             >
                               <Tag size={14} />
                               {activeTagInfo.key !== "none" && (
                                 <span style={{
-                                  fontSize: "10px",
-                                  fontWeight: 600,
+                                  fontSize: "11px",
+                                  fontWeight: 700,
                                   color: activeTagInfo.color,
                                   textTransform: "uppercase",
                                   letterSpacing: "0.05em",
@@ -1598,11 +1600,10 @@ export default function Todoist() {
                               <>
                                 <div className="fixed inset-0 z-40" onClick={() => setShowTagPicker(false)} />
                                 <div
-                                  className="absolute top-full left-0 mt-1 z-50 p-2 shadow-lg"
+                                  className="absolute top-full left-0 mt-2 z-50 p-2 shadow-xl rounded-xl border border-[var(--text)] border-opacity-10 backdrop-blur-3xl"
                                   style={{
-                                    background: "var(--bg)",
-                                    border: "1px solid rgba(128,128,128,0.2)",
-                                    minWidth: "140px",
+                                    background: "color-mix(in srgb, var(--bg) 85%, transparent)",
+                                    minWidth: "160px",
                                   }}
                                 >
                                   {NOTE_TAGS.map((t) => (
@@ -1617,29 +1618,29 @@ export default function Todoist() {
                                         display: "flex",
                                         alignItems: "center",
                                         gap: "8px",
-                                        padding: "6px 8px",
+                                        padding: "8px 10px",
                                         border: "none",
-                                        background: (activeNote.tag || "none") === t.key ? "rgba(128,128,128,0.1)" : "transparent",
-                                        color: "var(--text)",
+                                        background: (activeNote.tag || "none") === t.key ? "var(--text)" : "transparent",
+                                        color: (activeNote.tag || "none") === t.key ? "var(--bg)" : "var(--text)",
                                         fontSize: "12px",
                                         cursor: "pointer",
                                         fontFamily: "inherit",
-                                        fontWeight: (activeNote.tag || "none") === t.key ? 700 : 400,
-                                        borderRadius: "2px",
+                                        fontWeight: (activeNote.tag || "none") === t.key ? 700 : 500,
+                                        borderRadius: "8px",
+                                        marginBottom: "2px"
                                       }}
-                                      onMouseEnter={(e) => e.currentTarget.style.background = "rgba(128,128,128,0.08)"}
-                                      onMouseLeave={(e) => e.currentTarget.style.background = (activeNote.tag || "none") === t.key ? "rgba(128,128,128,0.1)" : "transparent"}
                                     >
                                       <span style={{
-                                        width: "12px",
-                                        height: "12px",
+                                        width: "14px",
+                                        height: "14px",
                                         borderRadius: "50%",
                                         background: t.key === "none" ? "transparent" : t.color,
-                                        border: t.key === "none" ? "2px solid rgba(128,128,128,0.3)" : "none",
+                                        border: t.key === "none" ? "2px solid currentColor" : "none",
+                                        opacity: (activeNote.tag || "none") === t.key ? 0.8 : 1,
                                         flexShrink: 0,
                                       }} />
                                       {t.label}
-                                      {(activeNote.tag || "none") === t.key && <Check size={12} style={{ marginLeft: "auto" }} />}
+                                      {(activeNote.tag || "none") === t.key && <Check size={14} style={{ marginLeft: "auto" }} />}
                                     </button>
                                   ))}
                                 </div>
@@ -1648,60 +1649,69 @@ export default function Todoist() {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-1">
-                          <span className="text-[10px] text-[var(--text-alt)] mr-2 hidden sm:inline">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <div className="hidden sm:flex items-center text-[11px] font-medium text-[var(--text-alt)] px-3 py-1 bg-[var(--text)] bg-opacity-5 rounded-full mr-1">
                             {format(new Date(activeNote.updated_at), "MMM d, yyyy h:mm a")}
-                          </span>
+                          </div>
+
                           {/* AI Rewrite button */}
                           <button
                             onClick={() => rewriteWithAI(activeNote.id)}
                             disabled={aiRewriting || !activeNote.content.trim()}
-                            className="p-1.5 transition-colors flex items-center gap-1"
+                            className="p-1.5 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-full transition-all flex items-center gap-1.5"
                             style={{
+                              backgroundColor: aiRewriting ? "rgba(168,85,247,0.1)" : "transparent",
                               color: aiRewriting ? "#a855f7" : "var(--text-alt)",
-                              opacity: (!activeNote.content.trim() && !aiRewriting) ? 0.3 : 1,
+                              opacity: (!activeNote.content.trim() && !aiRewriting) ? 0.4 : 1,
                             }}
                             title="Rewrite with AI"
                           >
                             {aiRewriting ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                            <span className="hidden sm:inline text-[12px] font-medium">AI Rewrite</span>
                           </button>
+
                           {/* Share / Make Public button */}
-                          <button
-                            onClick={async () => {
-                              const newPublic = !activeNote.public;
-                              await updateNote(activeNote.id, { public: newPublic } as Partial<Note>);
-                              if (newPublic) {
-                                const url = `${window.location.origin}/notes/${user.id}/${activeNote.id}`;
-                                navigator.clipboard.writeText(url);
-                                setShareLinkCopied(true);
-                                setTimeout(() => setShareLinkCopied(false), 2500);
-                              }
-                            }}
-                            className="p-1.5 transition-colors flex items-center gap-1"
-                            style={{ color: activeNote.public ? "#22c55e" : "var(--text-alt)" }}
-                            title={activeNote.public ? "Public — click to make private" : "Private — click to share publicly"}
-                          >
-                            {activeNote.public ? <Globe size={14} /> : <Share2 size={14} />}
-                          </button>
-                          {/* Copy share link (only when public) */}
-                          {activeNote.public && (
+                          <div className="flex items-center border border-[var(--text)] border-opacity-10 rounded-lg sm:rounded-full overflow-hidden bg-[var(--bg)]">
                             <button
-                              onClick={() => {
-                                const url = `${window.location.origin}/notes/${user.id}/${activeNote.id}`;
-                                navigator.clipboard.writeText(url);
-                                setShareLinkCopied(true);
-                                setTimeout(() => setShareLinkCopied(false), 2500);
+                              onClick={async () => {
+                                const newPublic = !activeNote.public;
+                                await updateNote(activeNote.id, { public: newPublic } as Partial<Note>);
+                                if (newPublic) {
+                                  const url = `${window.location.origin}/notes/${user.id}/${activeNote.id}`;
+                                  navigator.clipboard.writeText(url);
+                                  setShareLinkCopied(true);
+                                  setTimeout(() => setShareLinkCopied(false), 2500);
+                                }
                               }}
-                              className="p-1.5 transition-colors"
-                              style={{ color: shareLinkCopied ? "#22c55e" : "var(--text-alt)" }}
-                              title="Copy share link"
+                              className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 transition-colors flex items-center gap-1.5 hover:bg-[var(--text)] hover:bg-opacity-5"
+                              style={{ color: activeNote.public ? "#22c55e" : "var(--text-alt)" }}
+                              title={activeNote.public ? "Public — click to make private" : "Private — click to share publicly"}
                             >
-                              {shareLinkCopied ? <CheckCheck size={14} /> : <LinkIcon size={14} />}
+                              {activeNote.public ? <Globe size={14} /> : <Share2 size={14} />}
+                              <span className="hidden sm:inline text-[12px] font-medium text-[var(--text)]">Share</span>
                             </button>
-                          )}
+                            {/* Copy share link (only when public) */}
+                            {activeNote.public && (
+                              <button
+                                onClick={() => {
+                                  const url = `${window.location.origin}/notes/${user.id}/${activeNote.id}`;
+                                  navigator.clipboard.writeText(url);
+                                  setShareLinkCopied(true);
+                                  setTimeout(() => setShareLinkCopied(false), 2500);
+                                }}
+                                className="px-2.5 py-1.5 sm:px-3 sm:py-1.5 transition-colors border-l border-[var(--text)] border-opacity-10 hover:bg-[var(--text)] hover:bg-opacity-5"
+                                style={{ color: shareLinkCopied ? "#22c55e" : "var(--text-alt)" }}
+                                title="Copy share link"
+                              >
+                                {shareLinkCopied ? <CheckCheck size={14} /> : <LinkIcon size={14} />}
+                              </button>
+                            )}
+                          </div>
+
                           <button
                             onClick={() => deleteNote(activeNote.id)}
-                            className="p-1.5 text-red-500 hover:text-red-400 transition-colors"
+                            className="p-1.5 sm:px-2.5 sm:py-1.5 ml-1 rounded-lg text-red-500 hover:bg-red-500 hover:bg-opacity-10 transition-colors"
+                            title="Delete note"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -1713,285 +1723,285 @@ export default function Todoist() {
                         <div style={{ height: "2px", background: activeTagInfo.color, opacity: 0.6 }} />
                       )}
 
-                      {/* Formatting toolbar */}
-                      <div
-                        className="flex items-center gap-0.5 px-3 sm:px-5 py-2 border-b border-[var(--text)] border-opacity-5 overflow-x-auto"
-                        style={{ flexShrink: 0 }}
-                      >
-                        <button onClick={() => execFormat("bold")} className="p-1.5 hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors" style={{ color: "var(--text-alt)", border: "none", background: "transparent" }} title="Bold (Ctrl+B)"><Bold size={14} /></button>
-                        <button onClick={() => execFormat("italic")} className="p-1.5 hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors" style={{ color: "var(--text-alt)", border: "none", background: "transparent" }} title="Italic (Ctrl+I)"><Italic size={14} /></button>
-                        <button onClick={() => execFormat("underline")} className="p-1.5 hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors" style={{ color: "var(--text-alt)", border: "none", background: "transparent" }} title="Underline (Ctrl+U)"><Underline size={14} /></button>
-                        <div style={{ width: "1px", height: "16px", background: "var(--text)", opacity: 0.1, margin: "0 4px" }} />
-                        <button onClick={insertLink} className="p-1.5 hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors" style={{ color: "var(--text-alt)", border: "none", background: "transparent" }} title="Insert Link"><Link2 size={14} /></button>
-                        <div style={{ width: "1px", height: "16px", background: "var(--text)", opacity: 0.1, margin: "0 4px" }} />
-                        {/* Font picker */}
-                        <div className="relative">
-                          <button
-                            onClick={() => setShowFontPicker(!showFontPicker)}
-                            className="p-1.5 hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors flex items-center gap-1"
-                            style={{ color: "var(--text-alt)", border: "none", background: "transparent", fontSize: "11px" }}
-                            title="Change Font"
-                          >
-                            <Type size={14} />
-                            <span className="hidden sm:inline">Font</span>
-                          </button>
-                          {showFontPicker && (
-                            <div
-                              className="absolute left-0 top-full mt-1 z-50 border border-[var(--text)] border-opacity-10 py-1 shadow-lg"
-                              style={{ background: "var(--bg)", minWidth: "160px" }}
+                      {/* Formatting Toolbar */}
+                      <div className="flex flex-wrap items-center gap-1 px-3 sm:px-5 py-2 border-b border-[var(--text)] border-opacity-[0.05] bg-transparent">
+
+                        {/* Undo/Redo Group */}
+                        <div className="flex items-center gap-0.5">
+                          <button onClick={() => execFormat("undo")} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors text-[var(--text-alt)] hover:text-[var(--text)]" title="Undo (Ctrl+Z)"><Undo size={15} /></button>
+                          <button onClick={() => execFormat("redo")} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors text-[var(--text-alt)] hover:text-[var(--text)]" title="Redo (Ctrl+Y)"><Redo size={15} /></button>
+                        </div>
+
+                        <div className="w-[1px] h-4 bg-[var(--text)] opacity-15 mx-1 sm:mx-2"></div>
+
+                        {/* Style Group */}
+                        <div className="flex items-center gap-0.5">
+                          <button onClick={() => execFormat("bold")} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors text-[var(--text-alt)] hover:text-[var(--text)]" title="Bold (Ctrl+B)"><Bold size={15} /></button>
+                          <button onClick={() => execFormat("italic")} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors text-[var(--text-alt)] hover:text-[var(--text)]" title="Italic (Ctrl+I)"><Italic size={15} /></button>
+                          <button onClick={() => execFormat("underline")} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors text-[var(--text-alt)] hover:text-[var(--text)]" title="Underline (Ctrl+U)"><Underline size={15} /></button>
+                          <button onClick={() => execFormat("strikeThrough")} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors text-[var(--text-alt)] hover:text-[var(--text)] font-medium line-through text-[13px]" title="Strikethrough">S</button>
+                        </div>
+
+                        <div className="w-[1px] h-4 bg-[var(--text)] opacity-15 mx-1 sm:mx-2"></div>
+
+                        {/* Link Group */}
+                        <div className="flex items-center">
+                          <button onClick={insertLink} className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors text-[var(--text-alt)] hover:text-[var(--text)]" title="Insert Link"><Link2 size={15} /></button>
+                        </div>
+
+                        <div className="w-[1px] h-4 bg-[var(--text)] opacity-15 mx-1 sm:mx-2"></div>
+
+                        {/* Font Group */}
+                        <div className="flex items-center gap-0.5 relative">
+                          <div className="relative">
+                            <button
+                              onClick={() => {
+                                setShowFontPicker(!showFontPicker);
+                                setShowFontSizePicker(false);
+                              }}
+                              className="h-8 px-2.5 rounded-md hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors flex items-center gap-1.5 text-[var(--text-alt)] hover:text-[var(--text)]"
+                              title="Change Font Family"
                             >
-                              {FONTS.map((f) => (
-                                <button
-                                  key={f.label}
-                                  onClick={() => {
-                                    execFormat("fontName", f.value);
-                                    setShowFontPicker(false);
-                                  }}
-                                  className="w-full text-left px-3 py-1.5 hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors"
-                                  style={{ border: "none", background: "transparent", color: "var(--text)", fontSize: "12px", fontFamily: f.value, cursor: "pointer" }}
-                                >
-                                  {f.label}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <div style={{ width: "1px", height: "16px", background: "var(--text)", opacity: 0.1, margin: "0 4px" }} />
-                        <button onClick={() => execFormat("strikeThrough")} className="p-1.5 hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors" style={{ color: "var(--text-alt)", border: "none", background: "transparent", textDecoration: "line-through", fontSize: "13px", fontWeight: 700 }} title="Strikethrough">S</button>
-                      </div>
+                              <Type size={14} />
+                              <span className="text-[12px] font-medium hidden sm:inline">Font</span>
+                            </button>
+                            {showFontPicker && (
+                              <div className="absolute left-0 top-full mt-2 z-50 p-1.5 rounded-xl shadow-xl border border-[var(--text)] border-opacity-10 backdrop-blur-3xl" style={{ background: "color-mix(in srgb, var(--bg) 85%, transparent)", minWidth: "160px" }}>
+                                {FONTS.map((f) => (
+                                  <button
+                                    key={f.label}
+                                    onClick={() => { execFormat("fontName", f.value); setShowFontPicker(false); }}
+                                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors text-[var(--text)] text-[13px]"
+                                    style={{ fontFamily: f.value }}
+                                  >
+                                    {f.label}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
 
-                      {/* Title */}
-                      <input
-                        type="text"
-                        value={activeNote.title}
-                        onChange={(e) => updateNote(activeNote.id, { title: e.target.value })}
-                        className="px-3 sm:px-5 pt-4 sm:pt-5 pb-2 text-xl sm:text-2xl font-bold bg-transparent text-[var(--text)] outline-none border-none w-full"
-                        placeholder="Title"
-                        style={{ fontFamily: "inherit" }}
-                      />
-                      {/* Content */}
+                          <div className="w-[1px] h-3 bg-[var(--text)] opacity-15 mx-0.5"></div>
+
+                          <div className="relative">
+                            <button
+                              onClick={() => {
+                                setShowFontSizePicker(!showFontSizePicker);
+                                setShowFontPicker(false);
+                              }}
+                              className="h-8 px-2.5 rounded-md hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors flex items-center gap-1 text-[var(--text-alt)] hover:text-[var(--text)]"
+                              title="Change Font Size"
+                            >
+                              <span className="text-[13px] font-bold tracking-tight">A±</span>
+                            </button>
+                            {showFontSizePicker && (
+                              <div className="absolute left-0 sm:right-0 sm:left-auto top-full mt-2 z-50 p-1.5 rounded-xl shadow-xl border border-[var(--text)] border-opacity-10 backdrop-blur-3xl" style={{ background: "color-mix(in srgb, var(--bg) 85%, transparent)", minWidth: "120px" }}>
+                                {FONT_SIZES.map((fs) => (
+                                  <button
+                                    key={fs.label}
+                                    onClick={() => { execFormat("fontSize", fs.value); setShowFontSizePicker(false); }}
+                                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-[var(--text)] hover:bg-opacity-10 transition-colors text-[var(--text)] text-[13px]"
+                                  >
+                                    {fs.label}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                      </div>
+                    </div> {/* Closes sticky toolbar */}
+
+                    {/* Title */}
+                    <input
+                      type="text"
+                      value={activeNote.title}
+                      onChange={(e) => updateNote(activeNote.id, { title: e.target.value })}
+                      className="px-3 sm:px-5 pt-4 sm:pt-5 pb-2 text-xl sm:text-2xl font-bold bg-transparent text-[var(--text)] outline-none border-none w-full"
+                      placeholder="Title"
+                      style={{ fontFamily: "inherit" }}
+                    />
+                    {/* Content */}
+                    <div
+                      ref={editorRef}
+                      contentEditable
+                      suppressContentEditableWarning
+                      onInput={() => {
+                        if (editorRef.current && activeNote) {
+                          updateNote(activeNote.id, { content: editorRef.current.innerHTML });
+                        }
+                      }}
+                      onPaste={(e) => {
+                        e.preventDefault();
+                        const text = e.clipboardData.getData("text/html") || e.clipboardData.getData("text/plain");
+                        document.execCommand("insertHTML", false, text);
+                      }}
+                      className={`px-3 sm:px-5 py-3 text-sm bg-transparent text-[var(--text)] outline-none border-none w-full overflow-y-auto ${aiRewriteResult ? '' : 'flex-1'}`}
+                      style={{
+                        fontFamily: "inherit", lineHeight: 1.8, letterSpacing: "0.01em",
+                        minHeight: aiRewriteResult ? "120px" : "200px",
+                        whiteSpace: "pre-wrap", wordBreak: "break-word",
+                      }}
+                      data-placeholder="Start writing..."
+                    />
+
+                    {/* AI Rewrite Result Panel */}
+                    {aiRewriteResult && (
                       <div
-                        ref={editorRef}
-                        contentEditable
-                        suppressContentEditableWarning
-                        onInput={() => {
-                          if (editorRef.current && activeNote) {
-                            updateNote(activeNote.id, { content: editorRef.current.innerHTML });
-                          }
-                        }}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          const text = e.clipboardData.getData("text/html") || e.clipboardData.getData("text/plain");
-                          document.execCommand("insertHTML", false, text);
-                        }}
-                        className={`px-3 sm:px-5 py-3 text-sm bg-transparent text-[var(--text)] outline-none border-none w-full overflow-y-auto ${aiRewriteResult ? '' : 'flex-1'}`}
+                        className="mx-5 mb-4 border overflow-hidden"
                         style={{
-                          fontFamily: "inherit", lineHeight: 1.8, letterSpacing: "0.01em",
-                          minHeight: aiRewriteResult ? "120px" : "200px",
-                          whiteSpace: "pre-wrap", wordBreak: "break-word",
+                          borderColor: aiRewriteResult.startsWith("Error:") ? "rgba(239,68,68,0.3)" : "rgba(168,85,247,0.3)",
+                          background: aiRewriteResult.startsWith("Error:") ? "rgba(239,68,68,0.05)" : "rgba(168,85,247,0.05)",
                         }}
-                        data-placeholder="Start writing..."
-                      />
-
-                      {/* AI Rewrite Result Panel */}
-                      {aiRewriteResult && (
+                      >
                         <div
-                          className="mx-5 mb-4 border overflow-hidden"
+                          className="flex items-center justify-between px-3 py-2"
                           style={{
-                            borderColor: aiRewriteResult.startsWith("Error:") ? "rgba(239,68,68,0.3)" : "rgba(168,85,247,0.3)",
-                            background: aiRewriteResult.startsWith("Error:") ? "rgba(239,68,68,0.05)" : "rgba(168,85,247,0.05)",
+                            borderBottom: "1px solid",
+                            borderColor: aiRewriteResult.startsWith("Error:") ? "rgba(239,68,68,0.15)" : "rgba(168,85,247,0.15)",
                           }}
                         >
-                          <div
-                            className="flex items-center justify-between px-3 py-2"
-                            style={{
-                              borderBottom: "1px solid",
-                              borderColor: aiRewriteResult.startsWith("Error:") ? "rgba(239,68,68,0.15)" : "rgba(168,85,247,0.15)",
-                            }}
-                          >
-                            <div className="flex items-center gap-1.5">
-                              <Sparkles size={12} style={{ color: aiRewriteResult.startsWith("Error:") ? "#ef4444" : "#a855f7" }} />
-                              <span style={{ fontSize: "11px", fontWeight: 700, color: aiRewriteResult.startsWith("Error:") ? "#ef4444" : "#a855f7" }}>
-                                {aiRewriteResult.startsWith("Error:") ? "Error" : "AI Rewrite"}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-0.5">
-                              {!aiRewriteResult.startsWith("Error:") && (
-                                <>
-                                  <button
-                                    onClick={copyAiResult}
-                                    className="p-1 transition-colors"
-                                    style={{ color: aiCopied ? "#22c55e" : "var(--text-alt)" }}
-                                    title="Copy"
-                                  >
-                                    {aiCopied ? <CheckCheck size={13} /> : <Copy size={13} />}
-                                  </button>
-                                  <button
-                                    onClick={() => applyAiRewrite(activeNote.id)}
-                                    className="p-1 transition-colors"
-                                    style={{ color: "#a855f7" }}
-                                    title="Apply — replace note content"
-                                  >
-                                    <Check size={13} />
-                                  </button>
-                                  <button
-                                    onClick={() => rewriteWithAI(activeNote.id)}
-                                    className="p-1 transition-colors"
-                                    style={{ color: "var(--text-alt)" }}
-                                    title="Regenerate"
-                                  >
-                                    <RotateCcw size={13} />
-                                  </button>
-                                </>
-                              )}
-                              <button
-                                onClick={() => setAiRewriteResult(null)}
-                                className="p-1 transition-colors"
-                                style={{ color: "var(--text-alt)" }}
-                                title="Dismiss"
-                              >
-                                <X size={13} />
-                              </button>
-                            </div>
+                          <div className="flex items-center gap-1.5">
+                            <Sparkles size={12} style={{ color: aiRewriteResult.startsWith("Error:") ? "#ef4444" : "#a855f7" }} />
+                            <span style={{ fontSize: "11px", fontWeight: 700, color: aiRewriteResult.startsWith("Error:") ? "#ef4444" : "#a855f7" }}>
+                              {aiRewriteResult.startsWith("Error:") ? "Error" : "AI Rewrite"}
+                            </span>
                           </div>
-                          <div
-                            className="px-3 py-3 text-sm overflow-y-auto"
-                            style={{
-                              maxHeight: "200px",
-                              lineHeight: 1.8,
-                              color: aiRewriteResult.startsWith("Error:") ? "#ef4444" : "var(--text)",
-                              whiteSpace: "pre-wrap",
-                              fontFamily: "inherit",
-                            }}
-                          >
-                            {aiRewriteResult}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })() : (
-                  /* ── Card Grid View ── */
-                  <div className="flex flex-col flex-1 overflow-hidden">
-                    {/* Search bar + Add button */}
-                    <div className="p-4 pb-2">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="flex-1 relative">
-                          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-alt)] opacity-60" />
-                          <input
-                            type="text"
-                            value={noteSearch}
-                            onChange={(e) => setNoteSearch(e.target.value)}
-                            placeholder="Search your notes"
-                            className="w-full h-10 pl-10 pr-3 border border-[var(--text)] border-opacity-10 bg-[var(--text)] bg-opacity-5 text-[var(--text)] text-sm outline-none focus:border-opacity-30 rounded-xl"
-                            style={{ fontFamily: "inherit" }}
-                          />
-                        </div>
-                        <button
-                          onClick={addNote}
-                          className="h-10 w-10 flex items-center justify-center rounded-xl border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all flex-shrink-0"
-                          title="New note"
-                        >
-                          <Plus size={18} />
-                        </button>
-                      </div>
-                      {/* Tag filter chips */}
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <button
-                          onClick={() => setNoteTagFilter("all")}
-                          style={{
-                            fontSize: "11px",
-                            padding: "4px 12px",
-                            border: "1px solid",
-                            borderColor: noteTagFilter === "all" ? "var(--text)" : "rgba(128,128,128,0.2)",
-                            background: noteTagFilter === "all" ? "var(--text)" : "transparent",
-                            color: noteTagFilter === "all" ? "var(--bg)" : "var(--text-alt)",
-                            fontWeight: noteTagFilter === "all" ? 700 : 400,
-                            fontFamily: "inherit",
-                            cursor: "pointer",
-                            borderRadius: "999px",
-                          }}
-                        >
-                          All
-                        </button>
-                        {NOTE_TAGS.filter(t => t.key !== "none").map((t) => (
-                          <button
-                            key={t.key}
-                            onClick={() => setNoteTagFilter(noteTagFilter === t.key ? "all" : t.key)}
-                            title={t.label}
-                            style={{
-                              width: "22px",
-                              height: "22px",
-                              border: "2px solid",
-                              borderColor: noteTagFilter === t.key ? t.color : "rgba(128,128,128,0.15)",
-                              background: noteTagFilter === t.key ? t.bg : "transparent",
-                              cursor: "pointer",
-                              borderRadius: "50%",
-                              padding: 0,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: t.color, display: "block" }} />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Card grid */}
-                    <div className="flex-1 overflow-y-auto px-4 pb-4">
-                      {pinnedNotes.length > 0 && (
-                        <div className="mb-2 mt-1">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-alt)] opacity-50">Pinned</span>
-                        </div>
-                      )}
-                      {pinnedNotes.length > 0 && (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
-                          {pinnedNotes.map((note) => {
-                            const card = CARD_COLORS[note.tag || "none"];
-                            return (
-                              <button
-                                key={note.id}
-                                onClick={() => { setActiveNoteId(note.id); setAiRewriteResult(null); }}
-                                className="text-left rounded-2xl p-4 transition-all hover:scale-[1.02] hover:shadow-lg"
-                                style={{
-                                  background: card.bg,
-                                  color: card.text,
-                                  border: (note.tag || "none") === "none" ? "1px solid rgba(128,128,128,0.15)" : "none",
-                                  minHeight: "140px",
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  fontFamily: "inherit",
-                                  cursor: "pointer",
-                                }}
-                              >
-                                <div className="flex items-center gap-1 mb-2">
-                                  <Pin size={11} style={{ color: card.text, opacity: 0.7, flexShrink: 0 }} />
-                                  <span className="font-bold text-sm truncate">{note.title || "Untitled"}</span>
-                                  {note.public && <Globe size={10} style={{ opacity: 0.7, flexShrink: 0 }} />}
-                                </div>
-                                <div
-                                  className="text-xs flex-1 overflow-hidden"
-                                  style={{ color: card.sub, lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical" }}
+                          <div className="flex items-center gap-0.5">
+                            {!aiRewriteResult.startsWith("Error:") && (
+                              <>
+                                <button
+                                  onClick={copyAiResult}
+                                  className="p-1 transition-colors"
+                                  style={{ color: aiCopied ? "#22c55e" : "var(--text-alt)" }}
+                                  title="Copy"
                                 >
-                                  {stripHtml(note.content).slice(0, 200) || "No content"}
-                                </div>
-                                <div className="mt-3 text-[10px]" style={{ color: card.sub, opacity: 0.7 }}>
-                                  {format(new Date(note.updated_at), "MMM d, h:mm a")}
-                                </div>
-                              </button>
-                            );
-                          })}
+                                  {aiCopied ? <CheckCheck size={13} /> : <Copy size={13} />}
+                                </button>
+                                <button
+                                  onClick={() => applyAiRewrite(activeNote.id)}
+                                  className="p-1 transition-colors"
+                                  style={{ color: "#a855f7" }}
+                                  title="Apply — replace note content"
+                                >
+                                  <Check size={13} />
+                                </button>
+                                <button
+                                  onClick={() => rewriteWithAI(activeNote.id)}
+                                  className="p-1 transition-colors"
+                                  style={{ color: "var(--text-alt)" }}
+                                  title="Regenerate"
+                                >
+                                  <RotateCcw size={13} />
+                                </button>
+                              </>
+                            )}
+                            <button
+                              onClick={() => setAiRewriteResult(null)}
+                              className="p-1 transition-colors"
+                              style={{ color: "var(--text-alt)" }}
+                              title="Dismiss"
+                            >
+                              <X size={13} />
+                            </button>
+                          </div>
                         </div>
-                      )}
-                      {unpinnedNotes.length > 0 && pinnedNotes.length > 0 && (
-                        <div className="mb-2">
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-alt)] opacity-50">Notes</span>
+                        <div
+                          className="px-3 py-3 text-sm overflow-y-auto"
+                          style={{
+                            maxHeight: "200px",
+                            lineHeight: 1.8,
+                            color: aiRewriteResult.startsWith("Error:") ? "#ef4444" : "var(--text)",
+                            whiteSpace: "pre-wrap",
+                            fontFamily: "inherit",
+                          }}
+                        >
+                          {aiRewriteResult}
                         </div>
-                      )}
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {unpinnedNotes.map((note) => {
+                      </div>
+                    )}
+                  </div>
+                );
+              })() : (
+                /* ── Card Grid View ── */
+                <div className="flex flex-col flex-1 overflow-hidden">
+                  {/* Search bar + Add button */}
+                  <div className="p-4 pb-2">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="flex-1 relative">
+                        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-alt)] opacity-60" />
+                        <input
+                          type="text"
+                          value={noteSearch}
+                          onChange={(e) => setNoteSearch(e.target.value)}
+                          placeholder="Search your notes"
+                          className="w-full h-10 pl-10 pr-3 border border-[var(--text)] border-opacity-10 bg-[var(--text)] bg-opacity-5 text-[var(--text)] text-sm outline-none focus:border-opacity-30 rounded-xl"
+                          style={{ fontFamily: "inherit" }}
+                        />
+                      </div>
+                      <button
+                        onClick={addNote}
+                        className="h-10 w-10 flex items-center justify-center rounded-xl border border-[var(--text)] border-opacity-20 bg-transparent text-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all flex-shrink-0"
+                        title="New note"
+                      >
+                        <Plus size={18} />
+                      </button>
+                    </div>
+                    {/* Tag filter chips */}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <button
+                        onClick={() => setNoteTagFilter("all")}
+                        style={{
+                          fontSize: "11px",
+                          padding: "4px 12px",
+                          border: "1px solid",
+                          borderColor: noteTagFilter === "all" ? "var(--text)" : "rgba(128,128,128,0.2)",
+                          background: noteTagFilter === "all" ? "var(--text)" : "transparent",
+                          color: noteTagFilter === "all" ? "var(--bg)" : "var(--text-alt)",
+                          fontWeight: noteTagFilter === "all" ? 700 : 400,
+                          fontFamily: "inherit",
+                          cursor: "pointer",
+                          borderRadius: "999px",
+                        }}
+                      >
+                        All
+                      </button>
+                      {NOTE_TAGS.filter(t => t.key !== "none").map((t) => (
+                        <button
+                          key={t.key}
+                          onClick={() => setNoteTagFilter(noteTagFilter === t.key ? "all" : t.key)}
+                          title={t.label}
+                          style={{
+                            width: "22px",
+                            height: "22px",
+                            border: "2px solid",
+                            borderColor: noteTagFilter === t.key ? t.color : "rgba(128,128,128,0.15)",
+                            background: noteTagFilter === t.key ? t.bg : "transparent",
+                            cursor: "pointer",
+                            borderRadius: "50%",
+                            padding: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: t.color, display: "block" }} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Card grid */}
+                  <div className="flex-1 overflow-y-auto px-4 pb-4">
+                    {pinnedNotes.length > 0 && (
+                      <div className="mb-2 mt-1">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-alt)] opacity-50">Pinned</span>
+                      </div>
+                    )}
+                    {pinnedNotes.length > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
+                        {pinnedNotes.map((note) => {
                           const card = CARD_COLORS[note.tag || "none"];
                           return (
                             <button
@@ -2009,10 +2019,11 @@ export default function Todoist() {
                                 cursor: "pointer",
                               }}
                             >
-                              <span className="font-bold text-sm truncate mb-2 flex items-center gap-1">
-                                {note.title || "Untitled"}
+                              <div className="flex items-center gap-1 mb-2">
+                                <Pin size={11} style={{ color: card.text, opacity: 0.7, flexShrink: 0 }} />
+                                <span className="font-bold text-sm truncate">{note.title || "Untitled"}</span>
                                 {note.public && <Globe size={10} style={{ opacity: 0.7, flexShrink: 0 }} />}
-                              </span>
+                              </div>
                               <div
                                 className="text-xs flex-1 overflow-hidden"
                                 style={{ color: card.sub, lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical" }}
@@ -2026,23 +2037,66 @@ export default function Todoist() {
                           );
                         })}
                       </div>
-                      {filteredNotes.length === 0 && (
-                        <div className="text-center py-20 text-[var(--text-alt)]">
-                          <StickyNote size={36} className="mx-auto mb-3 opacity-20" />
-                          <p className="text-sm">{noteSearch || noteTagFilter !== "all" ? "No matching notes" : "No notes yet"}</p>
-                          <p className="text-xs mt-1 opacity-50">Click + to create one</p>
-                        </div>
-                      )}
+                    )}
+                    {unpinnedNotes.length > 0 && pinnedNotes.length > 0 && (
+                      <div className="mb-2">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-alt)] opacity-50">Notes</span>
+                      </div>
+                    )}
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {unpinnedNotes.map((note) => {
+                        const card = CARD_COLORS[note.tag || "none"];
+                        return (
+                          <button
+                            key={note.id}
+                            onClick={() => { setActiveNoteId(note.id); setAiRewriteResult(null); }}
+                            className="text-left rounded-2xl p-4 transition-all hover:scale-[1.02] hover:shadow-lg"
+                            style={{
+                              background: card.bg,
+                              color: card.text,
+                              border: (note.tag || "none") === "none" ? "1px solid rgba(128,128,128,0.15)" : "none",
+                              minHeight: "140px",
+                              display: "flex",
+                              flexDirection: "column",
+                              fontFamily: "inherit",
+                              cursor: "pointer",
+                            }}
+                          >
+                            <span className="font-bold text-sm truncate mb-2 flex items-center gap-1">
+                              {note.title || "Untitled"}
+                              {note.public && <Globe size={10} style={{ opacity: 0.7, flexShrink: 0 }} />}
+                            </span>
+                            <div
+                              className="text-xs flex-1 overflow-hidden"
+                              style={{ color: card.sub, lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical" }}
+                            >
+                              {stripHtml(note.content).slice(0, 200) || "No content"}
+                            </div>
+                            <div className="mt-3 text-[10px]" style={{ color: card.sub, opacity: 0.7 }}>
+                              {format(new Date(note.updated_at), "MMM d, h:mm a")}
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
-
-                    {/* Note count */}
-                    <div style={{ padding: "8px 16px", borderTop: "1px solid rgba(128,128,128,0.1)", fontSize: "11px", color: "var(--text-alt)", opacity: 0.6 }}>
-                      {notes.length} note{notes.length !== 1 ? "s" : ""}
-                    </div>
+                    {filteredNotes.length === 0 && (
+                      <div className="text-center py-20 text-[var(--text-alt)]">
+                        <StickyNote size={36} className="mx-auto mb-3 opacity-20" />
+                        <p className="text-sm">{noteSearch || noteTagFilter !== "all" ? "No matching notes" : "No notes yet"}</p>
+                        <p className="text-xs mt-1 opacity-50">Click + to create one</p>
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  {/* Note count */}
+                  <div style={{ padding: "8px 16px", borderTop: "1px solid rgba(128,128,128,0.1)", fontSize: "11px", color: "var(--text-alt)", opacity: 0.6 }}>
+                    {notes.length} note{notes.length !== 1 ? "s" : ""}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          )
+          }
         </div>
       </main>
     </div>

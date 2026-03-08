@@ -23,7 +23,7 @@ export default function Auth() {
   }
 
   if (user) {
-    return <Navigate to="/todoist" replace />;
+    return <Navigate to="/workspace" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
