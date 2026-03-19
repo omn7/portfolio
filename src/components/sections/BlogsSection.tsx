@@ -29,7 +29,7 @@ const BlogsSection = () => {
         <div className="h-px bg-[var(--text)] opacity-20 w-full mb-8" />
 
         <div className="space-y-6">
-          {blogs.map((b) => (
+          {[...blogs].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((b) => (
             <Link
               key={b.id}
               to={`/blogs/${b.id}`}
