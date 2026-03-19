@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { blogs } from "@/data/blogs";
 import { useDark } from "@/components/Layout";
 import { Moon, Sun } from "lucide-react";
@@ -22,6 +22,49 @@ export default function BlogDetail() {
       </main>
     );
   }
+
+  useEffect(() => {
+    if (!blog) return;
+    
+    // Set standard title
+    document.title = `${blog.title} | Om Narkhede`;
+    
+    // Helper to update or create meta tags
+    const setMetaTag = (attr: string, key: string, content: string) => {
+      let element = document.querySelector(`meta[${attr}="${key}"]`);
+      if (!element) {
+        element = document.createElement('meta');
+        element.setAttribute(attr, key);
+        document.head.appendChild(element);
+      }
+      element.setAttribute('content', content);
+    };
+
+    // Ensure image URL is absolute for social crawlers
+    const imageUrl = blog.image.startsWith('http') 
+        ? blog.image 
+        : new URL(blog.image, window.location.origin).href;
+
+    setMetaTag('name', 'description', blog.description);
+    
+    // Open Graph
+    setMetaTag('property', 'og:title', blog.title);
+    setMetaTag('property', 'og:description', blog.description);
+    setMetaTag('property', 'og:image', imageUrl);
+    setMetaTag('property', 'og:url', window.location.href);
+    setMetaTag('property', 'og:type', 'article');
+    
+    // Twitter
+    setMetaTag('name', 'twitter:card', 'summary_large_image');
+    setMetaTag('name', 'twitter:title', blog.title);
+    setMetaTag('name', 'twitter:description', blog.description);
+    setMetaTag('name', 'twitter:image', imageUrl);
+
+    return () => {
+      // Revert title on unmount
+      document.title = "Om Narkhede | Portfolio";
+    };
+  }, [blog]);
 
   // Parse the fullDescription markdown-like text into structured sections
   const content = (blog.fullDescription || blog.description).trim();
