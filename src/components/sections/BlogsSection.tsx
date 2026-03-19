@@ -14,6 +14,14 @@ const BlogsSection = () => {
       description: "A deep dive into enhancing LangChain's knowledge graph extraction using BAML and fuzzy parsing techniques. Explores how fuzzy parsing improves structured data extraction from LLM outputs.",
       tags: ["AI/ML", "LangChain", "NLP"],
       image: "https://omn.notion.site/image/attachment%3A8c320dbf-c738-434d-b5a0-ddfd01a28af9%3A1000010678.webp?table=block&id=24ab1c3a-a294-80b7-82f2-cfaaab928e56&spaceId=74c72ac2-df7b-4267-b93c-8e96d28c4e18&width=2000&userId=&cache=v2"
+    },
+    {
+      title: "Introduction to ESP32: Getting Started",
+      url: "https://esp32s-nodemcu-controls.notion.site/Introduction-to-ESP32-Getting-Started-328e601b019a8084a161f8acbfe68610?pvs=74",
+      date: "March 19, 2026",
+      description: "A practical guide to setting up, programming, and understanding the ESP32 DevKit. Covers pinout, setup, drivers, and tips for beginners.",
+      tags: ["IoT", "Microcontroller", "ESP32"],
+      image: "/blog2.png"
     }
   ];
 
