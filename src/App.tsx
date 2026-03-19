@@ -13,6 +13,7 @@ import ExperienceEducation from "./pages/ExperienceEducation";
 // Other imports kept in case they are needed later
 import HackathonsSection from "@/components/sections/HackathonsSection";
 import BlogsSection from "@/components/sections/BlogsSection";
+import BlogDetail from "./pages/BlogDetail";
 import Resume from "./pages/Resume";
 import ProjectDetail from "./pages/ProjectDetail";
 import Professional from "./pages/Professional";
@@ -44,6 +45,7 @@ const App = () => (
 
             <Route path="/hackathons" element={<Layout><HackathonsSection /></Layout>} />
             <Route path="/blogs" element={<Layout><BlogsSection /></Layout>} />
+            <Route path="/blogs/:id" element={<Layout><BlogDetail /></Layout>} />
             <Route path="/resume" element={<Layout><Resume /></Layout>} />
             <Route path="/prof" element={<Professional />} />
             <Route path="/auth" element={<Auth />} />

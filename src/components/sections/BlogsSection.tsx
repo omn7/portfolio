@@ -2,28 +2,10 @@ import { Link } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
 import { useDark } from "@/components/Layout";
 import SiteFooter from "@/components/SiteFooter";
+import { blogs } from "@/data/blogs";
 
 const BlogsSection = () => {
   const [dark, setDark] = useDark();
-
-  const blogs = [
-    {
-      title: "Improving LangChain Knowledge Graph Extraction with BAML Fuzzy Parsing",
-      url: "https://omn.notion.site/Improving-LangChain-Knowledge-Graph-Extraction-with-BAML-Fuzzy-Parsing-24ab1c3aa29480fbbc72cde3baf6d494",
-      date: "August 9, 2025",
-      description: "A deep dive into enhancing LangChain's knowledge graph extraction using BAML and fuzzy parsing techniques. Explores how fuzzy parsing improves structured data extraction from LLM outputs.",
-      tags: ["AI/ML", "LangChain", "NLP"],
-      image: "https://omn.notion.site/image/attachment%3A8c320dbf-c738-434d-b5a0-ddfd01a28af9%3A1000010678.webp?table=block&id=24ab1c3a-a294-80b7-82f2-cfaaab928e56&spaceId=74c72ac2-df7b-4267-b93c-8e96d28c4e18&width=2000&userId=&cache=v2"
-    },
-    {
-      title: "Introduction to ESP32: Getting Started",
-      url: "https://esp32s-nodemcu-controls.notion.site/Introduction-to-ESP32-Getting-Started-328e601b019a8084a161f8acbfe68610?pvs=74",
-      date: "March 19, 2026",
-      description: "A practical guide to setting up, programming, and understanding the ESP32 DevKit. Covers pinout, setup, drivers, and tips for beginners.",
-      tags: ["IoT", "Microcontroller", "ESP32"],
-      image: "/blog2.png"
-    }
-  ];
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-6 flex flex-col min-h-[100dvh] font-mono">
@@ -48,11 +30,9 @@ const BlogsSection = () => {
 
         <div className="space-y-6">
           {blogs.map((b) => (
-            <a
-              key={b.title}
-              href={b.url}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              key={b.id}
+              to={`/blogs/${b.id}`}
               className="block no-underline border border-[var(--text)] border-opacity-20 hover:border-opacity-50 transition-all group"
             >
               <div className="flex flex-col md:flex-row">
@@ -86,7 +66,7 @@ const BlogsSection = () => {
                   </div>
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
 
