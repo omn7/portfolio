@@ -33,7 +33,7 @@ const BlogsSection = () => {
           {[...blogs].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((b) => (
             <Link
               key={b.id}
-              to={`/blogs/${b.id}`}
+              href={`/blogs/${b.id}`}
               className="block no-underline border border-[var(--text)] border-opacity-20 hover:border-opacity-50 transition-all group"
             >
               <div className="flex flex-col md:flex-row">

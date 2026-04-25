@@ -1,4 +1,5 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { blogs } from "@/data/blogs";
 import { useDark } from "@/components/Layout";
@@ -16,7 +17,7 @@ export default function BlogDetail() {
     return (
       <main className="max-w-4xl mx-auto px-6 py-6 flex flex-col items-center justify-center min-h-screen font-mono">
         <h1 className="text-2xl font-bold mb-4">Blog not found</h1>
-        <Link to="/blogs" className="text-[var(--text-alt)] hover:text-[var(--text)] hover:underline">
+        <Link href="/blogs" className="text-[var(--text-alt)] hover:text-[var(--text)] hover:underline">
           ← back to blogs
         </Link>
       </main>
@@ -255,7 +256,7 @@ export default function BlogDetail() {
       {/* Header */}
       <div className="mb-4 mt-2 sm:mt-6 relative z-10">
         <div className="flex items-center justify-between mb-8">
-          <Link to="/blogs" className="text-[var(--text-alt)] hover:text-[var(--text)] hover:underline inline-block">
+          <Link href="/blogs" className="text-[var(--text-alt)] hover:text-[var(--text)] hover:underline inline-block">
             ← back to blogs
           </Link>
           <button
