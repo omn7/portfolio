@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Moon, Sun, Link as LinkIcon, Check, Loader2, StickyNote } from "lucide-react";
 import { format } from "date-fns";
-import { useDark } from "@/components/Layout";
+import { useDark } from "@/hooks/useDark";
 import SiteFooter from "@/components/SiteFooter";
 
 interface PublicNoteData {

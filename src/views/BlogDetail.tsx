@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { blogs } from "@/data/blogs";
-import { useDark } from "@/components/Layout";
+import { useDark } from "@/hooks/useDark";
 import { Moon, Sun } from "lucide-react";
 import SiteFooter from "@/components/SiteFooter";
 

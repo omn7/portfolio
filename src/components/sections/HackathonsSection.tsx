@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
-import { useDark } from "@/components/Layout";
+import { useDark } from "@/hooks/useDark";
 import SiteFooter from "@/components/SiteFooter";
 
 const HackathonsSection = () => {

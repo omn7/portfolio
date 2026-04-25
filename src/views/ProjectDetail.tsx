@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { projects } from "@/data/projects";
-import { useDark } from "@/components/Layout";
+import { useDark } from "@/hooks/useDark";
 import { Moon, Sun } from "lucide-react";
 import SiteFooter from "@/components/SiteFooter";
 
