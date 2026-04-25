@@ -1,6 +1,8 @@
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from "@/lib/utils";
-import { Link, useLocation } from 'react-router-dom';
 import { Home, Trophy, ScrollText, Map, Menu, X, Volume2, VolumeX, ChevronDown, User, Briefcase, HelpCircle } from 'lucide-react';
 
 interface NavItem {
@@ -15,34 +17,34 @@ interface RetroNavbarProps {
 }
 
 export function RetroNavbar({ items, className }: RetroNavbarProps) {
-  const location = useLocation();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [muted, setMuted] = useState<boolean>(() => {
-    try { return localStorage.getItem('guideMuted') === '1'; } catch { return false; }
-  });
+  const [muted, setMuted] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [showProCloud, setShowProCloud] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem('proCloud') !== '0';
-    } catch { return true; }
-  });
-  const [cloudTextSize, setCloudTextSize] = useState<number>(() => {
-    try { return Number(localStorage.getItem('cloudTextSize')) || 9; } catch { return 9; }
-  });
+  const [showProCloud, setShowProCloud] = useState<boolean>(true);
+  const [cloudTextSize, setCloudTextSize] = useState<number>(9);
 
   const increaseCloudText = () => {
     setCloudTextSize((s) => {
       const next = Math.min(18, s + 1);
-      try { localStorage.setItem('cloudTextSize', String(next)); } catch {}
+      try {
+        if (typeof window !== "undefined") {
+          localStorage.setItem('cloudTextSize', String(next));
+        }
+      } catch {}
       return next;
     });
   };
   const decreaseCloudText = () => {
     setCloudTextSize((s) => {
       const next = Math.max(7, s - 1);
-      try { localStorage.setItem('cloudTextSize', String(next)); } catch {}
+      try {
+        if (typeof window !== "undefined") {
+          localStorage.setItem('cloudTextSize', String(next));
+        }
+      } catch {}
       return next;
     });
   };
@@ -52,6 +54,17 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
       setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
+    
+    // Initial load from localStorage
+    try {
+      if (typeof window !== "undefined") {
+        setMuted(localStorage.getItem('guideMuted') === '1');
+        setShowProCloud(localStorage.getItem('proCloud') !== '0');
+        const savedSize = Number(localStorage.getItem('cloudTextSize'));
+        if (savedSize) setCloudTextSize(savedSize);
+      }
+    } catch {}
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -69,24 +82,34 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
   const toggleMute = () => {
     const next = !muted;
     setMuted(next);
-    try { localStorage.setItem('guideMuted', next ? '1' : '0'); } catch {}
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem('guideMuted', next ? '1' : '0');
+      }
+    } catch {}
     window.dispatchEvent(new CustomEvent('guide:mute', { detail: next }));
   };
 
   const closeProCloud = () => {
     setShowProCloud(false);
-    try { localStorage.setItem('proCloud', '0'); } catch {}
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem('proCloud', '0');
+      }
+    } catch {}
   };
 
   // Ensure the pro-cloud popup shows automatically on initial page load
   // unless the user explicitly dismissed it (localStorage 'proCloud' === '0').
   useEffect(() => {
     try {
-      const dismissed = localStorage.getItem('proCloud') === '0';
-      if (!dismissed) {
-        // small delay so it doesn't feel abrupt when the page loads
-        const t = setTimeout(() => setShowProCloud(true), 250);
-        return () => clearTimeout(t);
+      if (typeof window !== "undefined") {
+        const dismissed = localStorage.getItem('proCloud') === '0';
+        if (!dismissed) {
+          // small delay so it doesn't feel abrupt when the page loads
+          const t = setTimeout(() => setShowProCloud(true), 250);
+          return () => clearTimeout(t);
+        }
       }
     } catch {
       setShowProCloud(true);
@@ -202,12 +225,12 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-1">
             {items.map((item) => {
-              const isActive = location.pathname === item.url;
+              const isActive = pathname === item.url;
               const Icon = item.icon;
               return (
                 <Link
                   key={item.name}
-                  to={item.url}
+                  href={item.url}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 font-heading text-xs transition-all duration-200 border-2 border-transparent",
                     isActive 
@@ -248,12 +271,12 @@ export function RetroNavbar({ items, className }: RetroNavbarProps) {
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-[#0a0a16] border-b-4 border-b-black shadow-retro p-4 flex flex-col gap-2 border-t-2 border-t-[#00ffff]">
           {items.map((item) => {
-            const isActive = location.pathname === item.url;
+            const isActive = pathname === item.url;
             const Icon = item.icon;
             return (
               <Link
                 key={item.name}
-                to={item.url}
+                href={item.url}
                 onClick={() => setIsOpen(false)}
                 className={cn(
                   "flex items-center gap-3 p-3 font-heading text-xs border-2 transition-all",

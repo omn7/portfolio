@@ -1,6 +1,8 @@
+"use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Link, useLocation } from "react-router-dom"
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -17,12 +19,11 @@ interface NavBarProps {
 }
 
 export function AnimeNavBar({ items, className, defaultActive = "Home" }: NavBarProps) {
-  const location = useLocation();
+  const pathname = usePathname();
   const [hoveredTab, setHoveredTab] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
 
-  // Set active tab based on current route
-  const activeTab = items.find(item => location.pathname === item.url)?.name || defaultActive;
+  const activeTab = items.find(item => pathname === item.url)?.name || defaultActive;
 
   useEffect(() => {
     const handleResize = () => {
@@ -54,7 +55,7 @@ export function AnimeNavBar({ items, className, defaultActive = "Home" }: NavBar
             return (
               <Link
                 key={item.name}
-                to={item.url}
+                href={item.url}
                 onMouseEnter={() => setHoveredTab(item.name)}
                 onMouseLeave={() => setHoveredTab(null)}
                 className={cn(

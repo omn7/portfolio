@@ -23,4 +23,15 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+# Next.js
+.next/
+out/
+build/
+
+# Backups
+*.backup
+*.ps1
+tsconfig.tsbuildinfo
+
+# Production
+.vercel

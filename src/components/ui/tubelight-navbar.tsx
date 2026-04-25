@@ -1,14 +1,13 @@
 "use client"
-
+import Link from "next/link"
+import { useRouter, usePathname } from "next/navigation"
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { useNavigate, useLocation } from "react-router-dom"
 
 interface NavItem {
   name: string
   url: string
-  // icon kept optional to remain compatible with existing nav item definitions
   icon?: any
 }
 
@@ -18,25 +17,12 @@ interface NavBarProps {
 }
 
 export function NavBar({ items, className }: NavBarProps) {
-  const navigate = useNavigate()
-  const location = useLocation()
+  const router = useRouter()
+  const pathname = usePathname()
   
-  // Set active tab based on current URL
   const getCurrentTab = () => {
-    const path = location.pathname;
-    const hash = location.hash;
-    
-    // Check path first
-    const matchByPath = items.find(item => item.url === path);
+    const matchByPath = items.find(item => item.url === pathname);
     if (matchByPath) return matchByPath.name;
-    
-    // Then check hash
-    if (hash) {
-      const matchByHash = items.find(item => item.url === hash);
-      if (matchByHash) return matchByHash.name;
-    }
-    
-    // Default to first item
     return items[0].name;
   };
 
@@ -47,24 +33,18 @@ export function NavBar({ items, className }: NavBarProps) {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768)
     }
-
     handleResize()
     window.addEventListener("resize", handleResize)
-    
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    }
+    return () => window.removeEventListener("resize", handleResize)
   }, [])
   
-  // Update active tab when location changes
   useEffect(() => {
     setActiveTab(getCurrentTab());
-  }, [location.pathname, location.hash, items])
+  }, [pathname, items])
 
   return (
     <div
       className={cn(
-        // Default to top on mobile, keep top positioning on larger screens as well
         "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-auto max-w-[90%] sm:max-w-none",
         className,
       )}
@@ -80,8 +60,6 @@ export function NavBar({ items, className }: NavBarProps) {
               onClick={(e) => {
                 e.preventDefault();
                 setActiveTab(item.name);
-                
-                // Handle hash navigation
                 if (item.url.startsWith('#')) {
                   const targetId = item.url.substring(1);
                   const targetElement = document.getElementById(targetId);
@@ -89,8 +67,7 @@ export function NavBar({ items, className }: NavBarProps) {
                     targetElement.scrollIntoView({ behavior: 'smooth' });
                   }
                 } else {
-                  // For regular URLs, use React Router navigation
-                  navigate(item.url);
+                  router.push(item.url);
                 }
               }}
               className={cn(
@@ -99,7 +76,6 @@ export function NavBar({ items, className }: NavBarProps) {
                 isActive && "bg-primary/20 text-primary",
               )}
             >
-              {/* Always show the name. Icons removed per request. */}
               <span className="inline-flex items-center gap-2">
                 <span>{item.name}</span>
               </span>
@@ -114,13 +90,11 @@ export function NavBar({ items, className }: NavBarProps) {
                     damping: 30,
                   }}
                 >
-                  {/* Top indicator light for desktop */}
                   <div className="hidden sm:block absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-full">
                     <div className="absolute w-12 h-6 bg-primary/20 rounded-full blur-md -top-2 -left-2" />
                     <div className="absolute w-8 h-6 bg-primary/20 rounded-full blur-md -top-1" />
                     <div className="absolute w-4 h-4 bg-primary/20 rounded-full blur-sm top-0 left-2" />
                   </div>
-                  {/* Bottom indicator light for mobile */}
                   <div className="sm:hidden absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-primary rounded-b-full">
                     <div className="absolute w-6 h-3 bg-primary/30 rounded-full blur-md -bottom-1 -left-1" />
                   </div>
@@ -133,4 +107,4 @@ export function NavBar({ items, className }: NavBarProps) {
       </div>
     </div>
   )
-} 
+}

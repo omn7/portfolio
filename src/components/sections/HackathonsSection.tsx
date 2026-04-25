@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+"use client";
+import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 import { useDark } from "@/components/Layout";
 import SiteFooter from "@/components/SiteFooter";
@@ -8,15 +9,15 @@ const HackathonsSection = () => {
 
   const hackathons = [
     {
-      id: 1,
-      name: "INOVATION FOUNDATION HACKATHON 2025",
-      date: "FEB 2025",
-      position: "First Hackathon",
-      location: "AISSMS College of Engineering, Pune, India",
-      description: "Built an Unified digital education platform covering all levels of from kindergarten to postgraduate",
-      technologies: ["React", "Typescript", "OpenAI API", "Tailwindcss"],
-      link: "https://github.com/omn7/hackathon/",
-      image: "/h1.png"
+      id: 3,
+      name: "DEV CLASH 2026",
+      date: "APR 2026",
+      position: "2nd Runner-up",
+      location: "Zeal College of Engineering, Pune, India",
+      description: "BrainSync — an AI-powered personal planner built on Telegram. Just send a message like 'Finish assignment by 6 PM tomorrow' and BrainSync extracts time, priority, and deadlines using NLP, then automatically schedules and reminds you.",
+      technologies: ["Next.js", "Tailwind CSS", "Python", "Prisma", "Neon", "OpenClaw", "Telegram Bot API"],
+      link: "#",
+      image: "/hackathonp1.png"
     },
     {
       id: 2,
@@ -35,7 +36,7 @@ const HackathonsSection = () => {
     <main className="max-w-4xl mx-auto px-6 py-6 flex flex-col min-h-[100dvh] font-mono">
       <div className="mb-4 mt-2 sm:mt-6">
         <div className="flex items-center justify-between mb-8">
-          <Link to="/" className="text-[var(--text-alt)] hover:text-[var(--text)] hover:underline inline-block">
+          <Link href="/" className="text-[var(--text-alt)] hover:text-[var(--text)] hover:underline inline-block">
             ← back to index
           </Link>
           <button
@@ -54,12 +55,12 @@ const HackathonsSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {hackathons.map((h) => (
-            <div key={h.id} className="group flex flex-col gap-3">
+            <div key={h.id} className="group flex flex-col gap-3 border border-[var(--text)] border-opacity-20 rounded-md p-4 hover:border-opacity-40 transition-all">
               <a href={h.link} target="_blank" rel="noopener noreferrer" className="block relative overflow-hidden rounded-md border border-[var(--text)] border-opacity-10 bg-[var(--bg)] aspect-video">
                 <img
                   src={h.image}
                   alt={h.name}
-                  className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 scale-[1.01] group-hover:scale-105"
+                  className="w-full h-full object-cover transition-all duration-500 scale-[1.01] group-hover:scale-105"
                 />
               </a>
               <div>

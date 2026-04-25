@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 
 const quotes = [
@@ -55,11 +56,15 @@ const quotes = [
 
 export default function SiteFooter() {
     const [quote, setQuote] = useState("");
-    const [elapsed, setElapsed] = useState(() => {
-        try { return parseInt(localStorage.getItem("timeSpent") || "0", 10); } catch { return 0; }
-    });
+    const [elapsed, setElapsed] = useState(0);
 
     useEffect(() => {
+        try {
+            if (typeof window !== "undefined") {
+                const saved = localStorage.getItem("timeSpent");
+                if (saved) setElapsed(parseInt(saved, 10));
+            }
+        } catch { }
         setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
         const quoteInterval = setInterval(() => {
             setQuote(quotes[Math.floor(Math.random() * quotes.length)]);

@@ -1,3 +1,4 @@
+"use client";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
@@ -18,13 +19,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const normalizeAuthError = (error: unknown): Error => {
+    if (error instanceof Error) {
+      const isNetworkError = /fetch|network|failed to fetch|dns|resolve/i.test(error.message);
+      if (isNetworkError) {
+        return new Error(
+          "Cannot connect to Supabase. Check NEXT_PUBLIC_SUPABASE_URL and your internet/DNS settings."
+        );
+      }
+      return error;
+    }
+    return new Error("Unexpected authentication error");
+  };
+
   useEffect(() => {
     if (!supabase) { setLoading(false); return; }
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+      })
+      .catch(() => {
+        setSession(null);
+        setUser(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
@@ -37,14 +58,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     if (!supabase) return { error: new Error("Supabase not configured") };
-    const { error } = await supabase.auth.signUp({ email, password });
-    return { error: error as Error | null };
+    try {
+      const { error } = await supabase.auth.signUp({ email, password });
+      return { error: error as Error | null };
+    } catch (error) {
+      return { error: normalizeAuthError(error) };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
     if (!supabase) return { error: new Error("Supabase not configured") };
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error as Error | null };
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      return { error: error as Error | null };
+    } catch (error) {
+      return { error: normalizeAuthError(error) };
+    }
   };
 
   const signOut = async () => {

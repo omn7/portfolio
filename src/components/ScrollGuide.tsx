@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Typewriter from "typewriter-effect";
@@ -51,9 +52,15 @@ export default function ScrollGuide() {
   const audioPrimed = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const lastIndexRef = useRef<number>(0);
-  const [muted, setMuted] = useState<boolean>(() => {
-    try { return localStorage.getItem('guideMuted') === '1'; } catch { return false; }
-  });
+  const [muted, setMuted] = useState<boolean>(false);
+
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        setMuted(localStorage.getItem('guideMuted') === '1');
+      }
+    } catch { }
+  }, []);
   const playRing = () => {
     const base = audioRef.current;
     // Try file-based playback first

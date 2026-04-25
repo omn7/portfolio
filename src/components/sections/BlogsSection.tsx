@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+"use client";
+import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 import { useDark } from "@/components/Layout";
 import SiteFooter from "@/components/SiteFooter";
@@ -11,7 +12,7 @@ const BlogsSection = () => {
     <main className="max-w-4xl mx-auto px-6 py-6 flex flex-col min-h-[100dvh] font-mono">
       <div className="mb-4 mt-2 sm:mt-6">
         <div className="flex items-center justify-between mb-8">
-          <Link to="/" className="text-[var(--text-alt)] hover:text-[var(--text)] hover:underline inline-block">
+          <Link href="/" className="text-[var(--text-alt)] hover:text-[var(--text)] hover:underline inline-block">
             ← back to index
           </Link>
           <button

@@ -1,3 +1,4 @@
+"use client";
 import { useMemo, useState, useCallback, useEffect } from "react";
 import { AnimatePresence, motion, PanInfo } from "framer-motion";
 import { Github, ExternalLink, Star, ChevronLeft, ChevronRight } from "lucide-react";

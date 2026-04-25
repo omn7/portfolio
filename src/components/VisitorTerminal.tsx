@@ -1,5 +1,7 @@
+"use client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 
 // ════════════════════════════════════════════════════════
 //  TECH NEWS — RSS feed popup via rss2json.com
@@ -63,7 +65,7 @@ async function fetchAllFeeds(): Promise<NewsItem[]> {
 // ════════════════════════════════════════════════════════
 
 export default function VisitorTerminal() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const [articles, setArticles] = useState<NewsItem[]>([]);
@@ -259,7 +261,7 @@ export default function VisitorTerminal() {
                 </span>
                 <div className="flex items-center gap-4">
                   <button
-                    onClick={(e) => { e.stopPropagation(); navigate("/news"); handleClose(); }}
+                    onClick={(e) => { e.stopPropagation(); router.push("/news"); handleClose(); }}
                     className="text-[10px] text-[var(--text)] hover:underline font-mono transition-colors no-underline"
                   >
                     View detailed news →
