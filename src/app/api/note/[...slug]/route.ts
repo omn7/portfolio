@@ -1,9 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-
-export default async function handler(request: Request) {
+export async function GET(request: Request) {
     const url = new URL(request.url);
-    const parts = url.pathname.split("/").filter(Boolean); // e.g. ['notes', 'userId', 'noteId']
+    const parts = url.pathname.split("/").filter(Boolean); // e.g. ['api', 'note', 'userId', 'noteId']
     const noteId = parts.pop();
     const userId = parts.pop();
 
