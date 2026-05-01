@@ -13,7 +13,7 @@
 
   /* Optional simple dark mode if preferred, but user wanted it adimail style */
   .dark {
-    --bg: #121212;
+    --bg: #000000;
     --text: #ffffff;
     --text-alt: #a0a0a0;
     --link: #ffffff;
