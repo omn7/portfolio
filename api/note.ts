@@ -1,8 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
 
-export const config = {
-    runtime: "edge",
-};
 
 export default async function handler(request: Request) {
     const url = new URL(request.url);
