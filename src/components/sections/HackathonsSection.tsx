@@ -3,34 +3,11 @@ import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 import { useDark } from "@/hooks/useDark";
 import SiteFooter from "@/components/SiteFooter";
+import { hackathons } from "@/data/hackathons";
+import { ImageSlider } from "@/components/ImageSlider";
 
 const HackathonsSection = () => {
   const [dark, setDark] = useDark();
-
-  const hackathons = [
-    {
-      id: 3,
-      name: "DEV CLASH 2026",
-      date: "APR 2026",
-      position: "2nd Runner-up",
-      location: "Zeal College of Engineering, Pune, India",
-      description: "BrainSync — an AI-powered personal planner built on Telegram. Just send a message like 'Finish assignment by 6 PM tomorrow' and BrainSync extracts time, priority, and deadlines using NLP, then automatically schedules and reminds you.",
-      technologies: ["Next.js", "Tailwind CSS", "Python", "Prisma", "Neon", "OpenClaw", "Telegram Bot API"],
-      link: "#",
-      image: "/hackathonp1.png"
-    },
-    {
-      id: 2,
-      name: "INNOHACK 2025",
-      date: "July 2025",
-      position: "Finalist",
-      location: "VIT Pune, India",
-      description: "AI-powered debugging assistant that helps developers understand and fix code issues using AI. Get clear explanations of complex errors in simple English and receive practical solutions instantly.",
-      technologies: ["Reactjs", "ExpressJS", "PostgreSQL", "OpenAI API", "Gemini APIs"],
-      link: "https://deburger.omnarkhede.tech/",
-      image: "/debugger.png"
-    }
-  ];
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-6 flex flex-col min-h-[100dvh] font-mono">
@@ -57,11 +34,7 @@ const HackathonsSection = () => {
           {hackathons.map((h) => (
             <div key={h.id} className="group flex flex-col gap-3 border border-[var(--text)] border-opacity-20 rounded-md p-4 hover:border-opacity-40 transition-all">
               <a href={h.link} target="_blank" rel="noopener noreferrer" className="block relative overflow-hidden rounded-md border border-[var(--text)] border-opacity-10 bg-[var(--bg)] aspect-video">
-                <img
-                  src={h.image}
-                  alt={h.name}
-                  className="w-full h-full object-cover transition-all duration-500 scale-[1.01] group-hover:scale-105"
-                />
+                <ImageSlider images={h.images} name={h.name} />
               </a>
               <div>
                 <div className="flex items-center justify-between mb-1">
@@ -82,6 +55,16 @@ const HackathonsSection = () => {
                       {tech}
                     </span>
                   ))}
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <Link href={`/hackathon/${h.id}`} className="text-sm font-bold text-[var(--text)] hover:underline underline-offset-4">
+                    Read more →
+                  </Link>
+                  {h.github && (
+                    <a href={h.github} target="_blank" rel="noopener noreferrer" className="text-[var(--text-alt)] hover:text-[var(--text)] transition-colors text-sm flex items-center gap-1.5">
+                      github ↗
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

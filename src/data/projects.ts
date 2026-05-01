@@ -10,6 +10,7 @@ export interface Project {
   image: string;
   tech?: string[];
   features?: string[];
+  label?: string;
 }
 
 export const projects: Project[] = [
@@ -82,8 +83,9 @@ Deployment runs on Vercel with a GitHub Actions CI/CD pipeline for automated bui
     `,
     github: "https://github.com/omn7/Vura",
     live: "https://vurakit.vercel.app",
-    image: "/vura.png",
-    tech: ["Next.js", "TypeScript", "Prisma", "PostgreSQL", "AWS S3", "Vercel", "GitHub Actions"]
+    image: "/vurakitupdated.png",
+    tech: ["Next.js", "TypeScript", "Prisma", "PostgreSQL", "AWS S3", "Vercel", "GitHub Actions"],
+    label: "Personal Project"
   },
   {
     id: "deburger",
@@ -142,7 +144,8 @@ DeBurger simplifies the debugging process, making it easier for developers of al
     github: "https://github.com/omn7/docDeBurger",
     live: "https://deburger.omnarkhede.tech/",
     image: "/debugger.png",
-    tech: ["React", "TypeScript", "Node.js", "PostgreSQL", "OpenAI API", "TailwindCSS", "Gemini API"]
+    tech: ["React", "TypeScript", "Node.js", "PostgreSQL", "OpenAI API", "TailwindCSS", "Gemini API"],
+    label: "Hackathon Project"
   },
   {
     id: "upliftx",
@@ -206,9 +209,10 @@ The project is deployed on Vercel with a custom vercel.json configuration for ro
 The project follows a clean separation with Supabase handling the database layer including custom SQL scripts for admin permissions, application workflows, rating systems, and opportunity deletion logic.
     `,
     github: "https://github.com/omn7/Upliftx",
-    live: "https://upliftx.vercel.app/",
-    image: "/image.png",
-    tech: ["Next.js", "TypeScript", "TailwindCSS", "Supabase", "PostgreSQL", "Clerk API", "Express.js", "Vercel"]
+    live: "https://www.upliftxevents.com/",
+    image: "/uplfitxupdated.png",
+    tech: ["Next.js", "TypeScript", "TailwindCSS", "Supabase", "PostgreSQL", "Clerk API", "Express.js", "Vercel"],
+    label: "Volunteering Project"
   },
   {
     id: "dsa",
@@ -274,6 +278,7 @@ Currently at 48/49 problems solved (98% complete), with Spiral Matrix 2D being t
     github: "https://github.com/omn7/DSA",
     live: "https://omn7.github.io/DSA/",
     image: "/DSAproject.png",
-    tech: ["Java", "Algorithms", "Data Structures", "GitHub Pages"]
+    tech: ["Java", "Algorithms", "Data Structures", "GitHub Pages"],
+    label: "Personal Docs"
   }
 ];

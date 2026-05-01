@@ -131,6 +131,14 @@ export default function ProjectDetail({ params: propParams }: { params?: { id: s
 
       {/* Project Hero */}
       <div className="mb-10">
+        {project.label && (
+          <div 
+            className="text-xs font-semibold uppercase tracking-widest text-blue-400 mb-2" 
+            style={{ textShadow: "0 0 8px rgba(96,165,250,0.8)" }}
+          >
+            {project.label}
+          </div>
+        )}
         <h1 className="text-3xl font-bold tracking-tight mb-2">{pageTitle}</h1>
         <p className="text-[var(--text-alt)] text-[0.95rem] mb-6">{project.description}</p>
 
@@ -140,7 +148,7 @@ export default function ProjectDetail({ params: propParams }: { params?: { id: s
             github ↗
           </a>
           <a href={project.live} target="_blank" rel="noopener noreferrer" className="text-[var(--text)] hover:underline underline-offset-4">
-            live ↗
+            {project.live.replace(/^https?:\/\//, '').replace(/\/$/, '')} ↗
           </a>
         </div>
 

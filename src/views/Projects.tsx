@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 import { useDark } from "@/hooks/useDark";
@@ -39,7 +40,15 @@ export default function Projects() {
                                 />
                             </Link>
                             <div className="flex flex-col flex-1 p-4 border-t border-[var(--text)] border-opacity-10">
-                                <div className="flex items-center justify-between mb-1">
+                                <div className="flex flex-col mb-1">
+                                    {p.label && (
+                                        <span 
+                                            className="text-[10px] font-semibold uppercase tracking-widest text-blue-400 mb-1" 
+                                            style={{ textShadow: "0 0 8px rgba(96,165,250,0.8)" }}
+                                        >
+                                            {p.label}
+                                        </span>
+                                    )}
                                     <Link href={`/project/${p.id}`} className="text-lg font-bold hover:underline underline-offset-4">
                                         {p.name}
                                     </Link>
@@ -58,7 +67,7 @@ export default function Projects() {
                                     )}
                                     {p.live && (
                                         <a href={p.live} target="_blank" rel="noopener noreferrer" className="text-[var(--text-alt)] hover:text-[var(--text)] transition-colors">
-                                            live ↗
+                                            {p.live.replace(/^https?:\/\//, '').replace(/\/$/, '')} ↗
                                         </a>
                                     )}
                                 </div>
