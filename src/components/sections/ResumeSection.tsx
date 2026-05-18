@@ -1,6 +1,6 @@
 import { Download, Eye, FileText, Briefcase, GraduationCap, MapPin, Mail, Linkedin, Github } from "lucide-react";
 
-const RESUME_URL = "https://drive.google.com/file/d/1kdkcr4ii43_6OZDs39wJLYM2whZZ49td/view?usp=drivesdk";
+const RESUME_URL = "/OmResume.pdf";
 
 const education = [
   {
